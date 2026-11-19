@@ -182,6 +182,23 @@ function Progression.StartContracts(hud, upgrades)
 	Instance.new("UICorner", quest).CornerRadius = UDim.new(0, 9)
 	local questHeader = Style.Text(quest, "CONTRACTS", 12, 5, 216, 28, 17, Config.Palette.Mint)
 	questHeader.ZIndex = 2
+	local expanded = false
+	local questTab = Instance.new("TextButton")
+	questTab.Name = "ContractsTab"
+	questTab.Position = UDim2.fromOffset(1024, 115)
+	questTab.Size = UDim2.fromOffset(240, 46)
+	questTab.BackgroundColor3 = Config.Palette.Ink
+	questTab.TextColor3 = Config.Palette.Mint
+	questTab.Font = Enum.Font.GothamBold
+	questTab.TextSize = 17
+	questTab.Visible = false
+	questTab.Parent = hud.Gui
+	Instance.new("UICorner", questTab).CornerRadius = UDim.new(0, 9)
+	HudController.ButtonFeedback(questTab, function()
+		expanded = not expanded
+		quest.Visible = expanded
+		questTab:SetAttribute("Selected", expanded)
+	end)
 	local compactRows = {}
 	for index = 1, 3 do
 		local y = 62 + (index - 1) * 108
@@ -237,8 +254,11 @@ function Progression.StartContracts(hud, upgrades)
 		if not state then return end
 		local indexPanel = hud.Gui:FindFirstChild("IndexPanel")
 		local crewPanel = hud.Gui:FindFirstChild("CrewPanel")
-		quest.Visible = not panel.Visible and not (indexPanel and indexPanel.Visible)
+		local show = not panel.Visible and not (indexPanel and indexPanel.Visible)
 			and not (crewPanel and crewPanel.Visible)
+		local compact = HudController.IsCompact() and state.SaveStatus ~= "STUDIO PREVIEW"
+		questTab.Visible = show and compact
+		quest.Visible = show and (not compact or expanded)
 		local completed, available = 0, 0
 		for index, contract in ipairs(state.Contracts or {}) do
 			completed += contract.Completed
@@ -251,6 +271,7 @@ function Progression.StartContracts(hud, upgrades)
 		end
 		local title = "CONTRACTS · " .. completed .. "/" .. available .. " DONE"
 		detailHeader.Text, questHeader.Text = title, title
+		questTab.Text = (expanded and "− " or "+ ") .. "Contracts  " .. completed .. "/" .. available
 	end)
 	return panel
 end

@@ -414,3 +414,7 @@ The live boot check still takes first priority if a new Studio error arrives.
 - Next: collapse phone quests, trim repeated hints, improve the ring silhouette
   and pod motion, then follow up on squad flow and thief movement from the owner
   notes. Title entry, item boxes and the Rot King endgame are queued behind them.
+- Phone HUD defaults to a single action toast and a collapsed Contracts tab
+  with its live completion count. First-dock and full-bay hints each use one
+  short line. Desktop and staging keep the fuller HUD. Check taps and spacing
+  in Studio's phone emulator before approving captures.

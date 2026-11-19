@@ -1,6 +1,7 @@
 -- Screen edges carry the controls; the centre stays clear for the 3D station.
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local Debris = game:GetService("Debris")
 local shared = game:GetService("ReplicatedStorage")
@@ -9,6 +10,11 @@ local Traits = require(shared:WaitForChild("BrainrotTraits"))
 local Format = Traits.Format
 local Remotes = require(shared:WaitForChild("Remotes"))
 local HudController = {}
+
+function HudController.IsCompact()
+	local camera = workspace.CurrentCamera
+	return UserInputService.TouchEnabled or (camera ~= nil and camera.ViewportSize.Y <= 540)
+end
 
 -- Shared mouse, touch and gamepad feedback, used by both HUD and panel controls.
 function HudController.ButtonFeedback(button, callback, pendingSeconds)
@@ -164,10 +170,10 @@ function HudController.Start()
 	carrying.BackgroundTransparency = 0.12
 	carrying.Visible = false
 	Instance.new("UICorner", carrying).CornerRadius = UDim.new(0, 9)
-	HudController.Text(gui, "Counts", Config.CatalogCount .. " BRAINROTS · " .. Config.RarityCount
+	local counts = HudController.Text(gui, "Counts", Config.CatalogCount .. " BRAINROTS · " .. Config.RarityCount
 		.. " RARITIES · " .. Config.MutationCount .. " MUTATIONS · STEAL · LOCK · REBIRTH",
 		UDim2.new(0.5, 0, 1, -120), UDim2.fromOffset(930, 24), 17, Config.Palette.Mint)
-	local hint = HudController.Text(gui, "Hint", "WASD MOVE  ·  E BUY CARGO  ·  E DOCK ON AN EMPTY PEDESTAL",
+	local hint = HudController.Text(gui, "Hint", "",
 		UDim2.new(0.5, 0, 1, -91), UDim2.fromOffset(940, 33), 17)
 	local boss = HudController.Text(gui, "CaptainHealth", "", UDim2.new(0.5, 0, 0, 156),
 		UDim2.fromOffset(640, 36), 22, Config.Palette.Sun)
@@ -258,7 +264,6 @@ function HudController.Start()
 		detail.Text = Format.Money(snapshot.Income) .. "/s  ·  REBIRTH " .. snapshot.Rebirths
 			.. "  ·  x" .. snapshot.Multiplier .. " INCOME  ·  BAY " .. string.format("%02d", snapshot.BayIndex)
 		carrying.Visible = snapshot.Carrying ~= false
-		hint.Visible = not snapshot.Carrying
 		if snapshot.Carrying then carrying.Text = "CARRYING " .. snapshot.Carrying.Name .. " → RUN TO YOUR BAY" end
 		marker.Position = snapshot.BayPosition + Vector3.new(0, 11, 0)
 		if snapshot.OfflineHaul and not showedOfflineHaul then
@@ -309,19 +314,26 @@ function HudController.Start()
 	end)
 	RunService.RenderStepped:Connect(function()
 		resize()
+		local compact = HudController.IsCompact() and (not state or state.SaveStatus ~= "STUDIO PREVIEW")
+		counts.Visible = not compact
+		logo.Visible = not compact
+		save.Visible = not compact
+		raidStatus.Visible = not compact
+		for index = 2, #feedLabels do feedLabels[index].Visible = not compact and feed[index] ~= nil end
 		local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+		hint.Visible = false
 		if state and root then
 			local distance = math.floor((root.Position - state.BayPosition).Magnitude)
 			home.Text = "YOUR BAY " .. string.format("%02d", state.BayIndex) .. " ↓  " .. distance .. "m"
 			if state.Carrying and state.SaveStatus ~= "STUDIO PREVIEW" then
 				carrying.Text = "CARRYING " .. state.Carrying.Name .. " → "
-					.. (distance > 23 and ("YOUR BAY · " .. distance .. "m") or "E AT AN EMPTY HOME PEDESTAL")
+					.. (distance > 23 and ("YOUR BAY · " .. distance .. "m") or "DOCK AT AN EMPTY PEDESTAL")
 			elseif not state.Carrying and #state.Inventory == 0 then
-				hint.Text = "FIRST DOCK: E BUY A COMMON ON THE RING → FOLLOW YOUR BAY BEACON → E TO DOCK"
-			elseif #state.Inventory >= state.Slots then
-				hint.Text = "BAY FULL · HOLD G AT HOME TO RETIRE CARGO · OR U TO ADD PEDESTALS"
-			else
-				hint.Text = "E BUY OR STEAL CARGO · E DOCK AT HOME · L SHIELD YOUR COLLECTION"
+				hint.Text = "Buy a Common on the ring, then dock it at your bay"
+				hint.Visible = state.SaveStatus ~= "STUDIO PREVIEW"
+			elseif not state.Carrying and #state.Inventory >= state.Slots then
+				hint.Text = "Bay full · retire cargo or upgrade your bay"
+				hint.Visible = state.SaveStatus ~= "STUDIO PREVIEW"
 			end
 		end
 	end)
