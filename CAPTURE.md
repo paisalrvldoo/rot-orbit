@@ -19,7 +19,7 @@ Public-link verification passes. The published starter still needs the latest
 
 | File | Server Command Bar | Visible proof to check |
 | --- | --- | --- |
-| 01-cover.jpg | `require(game.ReplicatedStorage.ScreenshotMode).Cover(0)` | $867.5M, live income, rebirth 3, 18s meteor banner, Diamond Cosmo Cornetto carry, five heroes with the Supernova SECRET in the middle, station title and orange planet. |
+| 01-cover.jpg | `require(game.ReplicatedStorage.ScreenshotMode).Cover(0)` | $867.5M, live income, rebirth 3, 18s meteor banner, Diamond Cosmo Cornetto carry, five docked heroes with the Supernova SECRET in the middle; a genuine buyable Aurora SECRET on the foreground cargo ring; station title and orange planet. |
 | 02-index.jpg | `require(game.ReplicatedStorage.ScreenshotMode).Index(0)` | Exactly 32/43 FOUND, seven rarity counts, undiscovered silhouettes, six mutation tabs and next cash reward. |
 | 03-raid.jpg | `require(game.ReplicatedStorage.ScreenshotMode).Raid(0)` | 27s raid banner, crowned captain escaping with cargo (18/32 HP, wave 3), one zapped gremlin and dropped recoverable cargo, shared captain health bar. |
 | 04-upgrades.jpg | `require(game.ReplicatedStorage.ScreenshotMode).Upgrades(0)` | Five upgrade tracks with levels/costs; rebirth x3 → x4.5, +3s shield, next Orbit Ace aura and keep-best text; three contracts with progress/rewards and 4/15 done. |
@@ -28,8 +28,22 @@ Check the cover at 768 pixels wide and the three secondary pictures at 253
 pixels wide. Keep the title and SECRET face clear of the HUD; confirm names,
 rarity cards, income, banner and bottom controls remain readable. The saved
 three-quarter camera gives the carry its own space left of the central SECRET.
-Camera projection and staging were reviewed in source; actual brightness,
-silhouettes, occlusion and text still require this Studio check.
+The showcase dock is inside the near arc of the actual cargo conveyor; its
+rails should read across the foreground. Exactly one cargo BUY card stays
+visible in the frozen cover, showing the Aurora SECRET's real price/income.
+The five dock cards spread below their models. Check that the BUY card clears
+the dock cards, the foreground ring clears the counts strip, and the crew rank
+board stays outside the useful frame. These are source-reviewed camera choices;
+actual brightness, silhouettes, occlusion and text still need Studio approval.
+
+Run Cover → Index → Raid → Upgrades → Cover in the same Play session. Each
+should replace the prior preview: six cargo pods (not twelve), one BUY card
+only on Cover, no old showcase platform or meteors on the other presets, and
+only the requested panels open. Index must remain 32/43 on every return. If a
+pose/card overlaps at 768px wide, report the shot and object before capturing
+the final file; the preset is adjustable in ScreenshotService. Existing source
+checks cover cargo replacement, frozen card selection and repeat discoveries,
+but do not simulate the full Roblox renderer or approve these images.
 
 Copy these four real captures into `screenshots/`, then remove its three starter
 PNGs in the same change. Keep exactly four images. Verify and commit with

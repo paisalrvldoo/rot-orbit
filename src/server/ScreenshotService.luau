@@ -27,8 +27,8 @@ function ScreenshotService:StageCargo(shot)
 		capsule:Destroy()
 	end
 	local records = shot == "Cover" and {
-		{ Id = 30, Mutation = "Aurora", Angle = math.pi * 0.75, Card = true },
-		{ Id = 40, Mutation = "Diamond", Angle = math.pi * 0.25 },
+		{ Id = 30, Mutation = "Aurora", Angle = math.pi * 0.65, Card = true },
+		{ Id = 40, Mutation = "Diamond", Angle = math.pi * 1.95 },
 		{ Id = 7, Angle = math.pi * 1.1 }, { Id = 18, Mutation = "Gold", Angle = math.pi * 1.3 },
 		{ Id = 23, Angle = math.pi * 1.6 }, { Id = 27, Mutation = "Gold", Angle = math.pi * 1.8 },
 	} or {
@@ -105,7 +105,7 @@ local function stageCover(state, root, meteors)
 		local card = pose(pedestal, center * CFrame.new(0, 0.55, 0) * CFrame.Angles(0, math.pi, 0))
 		card.Size = UDim2.fromOffset(164, 90)
 		card.MaxDistance = 80
-		card.StudsOffsetWorldSpace = Vector3.new(0, -0.48, 1)
+		card.StudsOffsetWorldSpace = Vector3.new(column * 1.9, -0.48, 1)
 		card.Enabled = true
 	end
 	-- Keep the carried Cornetto to the left of the SECRET face and its beam.

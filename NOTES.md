@@ -14,9 +14,13 @@ progression. Core systems already pass; no new side systems this pass.
   orbit crosses the foreground, with the station title and planet beyond.
   Increase hero spacing and card range for the saved camera. Source staging
   only; Studio framing, silhouettes and judge-scale readability remain pending.
-- [ ] Review preset transitions and freeze behaviour, then document owner checks.
+- [x] Review cargo preset transitions and freeze behaviour. Actual-function
+  regressions exercise Cover → Index → Raid → Upgrades → Cover: six pods,
+  destruction of old pods, exactly one near-arc SECRET BUY card on Cover,
+  camera-facing saved poses, and normal proximity-selection restoration.
+  CAPTURE.md now lists the full Studio transition/render checklist.
 - [x] Cover stages a genuine Aurora SECRET pod and Diamond Cosmic on the near
-  ring arc, facing the saved camera. One buyable SECRET card shows name/price/
+  ring and far arc respectively, facing the saved camera. One buyable SECRET card shows name/price/
   rarity/income; the remaining cargo cards stay hidden. Other presets retain
   the evenly spaced cargo orbit. Studio visual approval remains pending.
 
@@ -27,7 +31,8 @@ progression. Core systems already pass; no new side systems this pass.
 - [x] Strengthened the live cargo rail with larger rarity rails and bright
   clamps. Cargo faces nearby shoppers on both sides, and Legendary+ sleds
   have wider rims, wakes, beams, chimes and brief arrival notices.
-- [ ] Stage the cover at the cargo ring and review the other three presets.
+- [x] Source-stage the cover at the cargo ring and review the other three presets;
+  actual Studio render/transition approval is still the owner's next step.
 - [ ] Owner Studio pass at 1024×460 and 1280×720, cover at 768×432 judge scale,
   then latest publish and genuine captures.
 
