@@ -2,6 +2,20 @@
 
 ## Current continuation
 
+20 November recovery: initial `git status`/diff were clean and verification
+passed; committed checkpoint `1205c14` immediately. Read owner refs.md and
+retained its top ten priorities in order: staged late-game cover; 42–45
+originals (43 implemented); four genuine captures; about 20–24 purposeful
+scripts (25 with crew support); big world title; readable meteors/dom es;
+six mutations; live HUD/quests/feed; readable rarity/value cards; earned
+progression. Core systems already pass; no new side systems this pass.
+
+- [x] Move the cover's five-hero dock inside the near cargo arc so the actual
+  orbit crosses the foreground, with the station title and planet beyond.
+  Increase hero spacing and card range for the saved camera. Source staging
+  only; Studio framing, silhouettes and judge-scale readability remain pending.
+- [ ] Review preset transitions and freeze behaviour, then document owner checks.
+
 - [x] Clean recovery checkpoint `0b6b79e`. Existing core gameplay passed verification.
 - [x] Applied the latest phone control override. Run, Blink and Zap are direct
   controls. Removed the utility page and free bomb action, including server

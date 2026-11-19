@@ -32,8 +32,8 @@ local function stageCover(state, root, meteors)
 	local effects = meteors.Effects
 	-- The sun is the key; two restrained studio lamps separate the hero silhouettes.
 	for _, lamp in ipairs({
-		{ "DockFill", Vector3.new(-22, 13, 30), Color3.fromRGB(203, 230, 255), 1.1 },
-		{ "DockRim", Vector3.new(14, 15, 1), Color3.fromRGB(255, 221, 163), 1.8 },
+		{ "DockFill", Vector3.new(-22, 13, 45), Color3.fromRGB(203, 230, 255), 1.1 },
+		{ "DockRim", Vector3.new(14, 15, 16), Color3.fromRGB(255, 221, 163), 1.8 },
 	}) do
 		local mount = WorldBuilder.Part(lamp[1], Vector3.one, CFrame.new(lamp[2]),
 			Config.Palette.White, Enum.Material.SmoothPlastic, effects, nil, false)
@@ -42,18 +42,20 @@ local function stageCover(state, root, meteors)
 		local light = Instance.new("PointLight", mount)
 		light.Color, light.Brightness, light.Range = lamp[3], lamp[4], 55
 	end
-	local platform = CFrame.new(0, 0.3, 12)
+	-- Dock inside the near arc: the real cargo rail crosses the foreground,
+	-- with the title and planet beyond the collection instead of behind camera.
+	local platform = CFrame.new(0, 0.3, 27)
 	local palette = Config.Palette
-	WorldBuilder.Part("ShowcaseDock", Vector3.new(48, 0.6, 12), platform,
+	WorldBuilder.Part("ShowcaseDock", Vector3.new(54, 0.6, 12), platform,
 		palette.Deck, Enum.Material.SmoothPlastic, effects)
 	for _, side in ipairs({ -1, 1 }) do
-		WorldBuilder.Part("ShowcaseTrim", Vector3.new(48, 0.12, 0.24),
+		WorldBuilder.Part("ShowcaseTrim", Vector3.new(54, 0.12, 0.24),
 			platform * CFrame.new(0, 0.32, side * 5.8), palette.Teal, Enum.Material.Neon, effects, nil, false)
 	end
 	for index = 1, 5 do
 		local column = index - 3
 		local pedestal = state.Bay.Slots[index]
-		local center = platform * CFrame.new(column * 8.4, 0.8, math.abs(column) * 0.85)
+		local center = platform * CFrame.new(column * 10.2, 0.8, -math.abs(column) * 0.85)
 		local color = index == 3 and palette.Sun or palette.Mint
 		WorldBuilder.Part("ShowcasePedestal", Vector3.new(1, 6.2, 6.2),
 			center * CFrame.Angles(0, 0, math.pi / 2), palette.Ink, Enum.Material.SmoothPlastic,
@@ -61,12 +63,13 @@ local function stageCover(state, root, meteors)
 		WorldBuilder.Ring("ShowcaseSocket", 2.8, 0.2, 0.13, center * CFrame.new(0, 0.56, 0),
 			color, Enum.Material.Neon, effects, 18, false)
 		local card = pose(pedestal, center * CFrame.new(0, 0.55, 0) * CFrame.Angles(0, math.pi, 0))
-		card.Size = UDim2.fromOffset(174, 90)
+		card.Size = UDim2.fromOffset(164, 90)
+		card.MaxDistance = 80
 		card.StudsOffsetWorldSpace = Vector3.new(0, -0.48, 1)
 		card.Enabled = true
 	end
 	-- Keep the carried Cornetto to the left of the SECRET face and its beam.
-	root.CFrame = CFrame.new(-6, 3.4, 25) * CFrame.Angles(0, math.rad(152), 0)
+	root.CFrame = CFrame.new(-7, 3.4, 39) * CFrame.Angles(0, math.rad(152), 0)
 	for _, offset in ipairs({ Vector3.new(-26, 0.16, 12), Vector3.new(28, 0.16, 10), Vector3.new(23, 0.16, -12) }) do
 		WorldBuilder.Ring("PreviewWarning", 7, 0.34, 0.15, CFrame.new(offset),
 			palette.Sun, Enum.Material.Neon, effects, 24, false)
@@ -75,7 +78,7 @@ local function stageCover(state, root, meteors)
 		Vector3.new(42, 18, -40), Vector3.new(-44, 20, -46) }) do
 		meteors:CreateMeteor(center, 2.5, Vector3.new(5, 10, -4))
 	end
-	return CFrame.lookAt(Vector3.new(6, 14, 46), Vector3.new(0, 7, 11)), 58
+	return CFrame.lookAt(Vector3.new(5, 18, 64), Vector3.new(0, 6, 27)), 58
 end
 
 function ScreenshotService.new(context)
