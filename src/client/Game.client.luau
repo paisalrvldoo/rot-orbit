@@ -39,7 +39,7 @@ function InputController.Start(hud)
 	menu.TextColor3, menu.BackgroundColor3 = Config.Palette.White, Config.Palette.Ink
 	menu.Font, menu.TextSize = Enum.Font.GothamBold, 17
 	Instance.new("UICorner", menu).CornerRadius = UDim.new(0, 10)
-	menu.Size, menu.Position = UDim2.fromOffset(144, 62), UDim2.fromOffset(96, 158)
+	menu.Size, menu.Position = UDim2.fromOffset(144, 72), UDim2.fromOffset(96, 156)
 	menu.Visible = false
 	menu.Parent = hud.Gui
 	HudController.ButtonFeedback(menu, function()
@@ -80,21 +80,21 @@ function InputController.Start(hud)
 				if index then
 					button.Position = compact and UDim2.new(1, arc[index].X, 1, arc[index].Y)
 						or UDim2.new(0.5, (index - (#skills + 1) / 2) * spacing, 1, -168)
-					button.Size = compact and UDim2.fromOffset(92, 68) or UDim2.fromOffset(spacing - 14, 48)
+					button.Size = compact and UDim2.fromOffset(92, 72) or UDim2.fromOffset(spacing - 14, 48)
 				end
 			end
 			more.Visible = compact
 			more.Text = utility and "MAIN" or "MORE"
-			more.Size = UDim2.fromOffset(84, 52)
+			more.Size = UDim2.fromOffset(84, 72)
 			more.Position = UDim2.new(1, -292, 1, -224)
 			more:SetAttribute("Selected", utility)
 			for index, name in ipairs({ "Lock", "Upgrades", "Rebirth", "Index" }) do
 				local button = self.Buttons[name]
 				if button then
 					button.Visible = not compact or self.MenuOpen == true
-					button.Position = compact and UDim2.fromOffset(144, 228 + (index - 1) * 64)
+					button.Position = compact and UDim2.fromOffset(144, 238 + (index - 1) * 78)
 						or UDim2.new(0.5, (index - 3) * 188, 1, -53)
-					button.Size = UDim2.fromOffset(compact and 240 or 176, compact and 58 or 48)
+					button.Size = UDim2.fromOffset(compact and 240 or 176, compact and 72 or 48)
 				end
 			end
 			self.Buttons.Zap.Position = compact and UDim2.new(1, -80, 1, -172) or UDim2.new(0.5, 376, 1, -53)
@@ -276,8 +276,8 @@ local function startCrewPanel(hud)
 		if not view then return end
 		local compact = HudController.IsCompact() and state.SaveStatus ~= "STUDIO PREVIEW"
 		open.Visible = not compact or hud.Gui:GetAttribute("MobileMenuOpen") == true
-		open.Position = compact and UDim2.fromOffset(24, 484) or UDim2.fromOffset(16, 365)
-		open.Size = compact and UDim2.fromOffset(240, 58) or UDim2.fromOffset(236, 44)
+		open.Position = compact and UDim2.fromOffset(24, 550) or UDim2.fromOffset(16, 365)
+		open.Size = compact and UDim2.fromOffset(240, 72) or UDim2.fromOffset(236, 44)
 		open:SetAttribute("Selected", panel.Visible)
 		open.Text = "CREWS [Y] · " .. (view.Current and Config.Crews.Teams[view.Current].Name or "JOIN A CREW")
 		if not panel.Visible then return end

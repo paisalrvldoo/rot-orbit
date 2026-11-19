@@ -16,6 +16,10 @@ Newest phone feedback takes precedence over extra features this pass:
   compact right-thumb arc for Blink/Sprint/Bomb/Zap, secondary skills behind
   More. Preserve keyboard bindings, cooldowns and full staged/desktop controls.
   Phone rendering/touch approval remains pending; no Studio exists here.
+  `node tools/check-controls.mjs` runs the actual input/layout controller:
+  1024×460-scale visible controls have >=44px tap targets, stay in the canvas,
+  do not overlap, and restore desktop/staged controls correctly; Menu, More,
+  keyboard dispatch and panel dismissal checks pass. This is not a screenshot.
 - [x] Rebirth keeps the highest-income docked cargo (including its mutation
   and stable ID), restores it to pod 1 and immediately includes it in income.
   Actual selection/orchestration/income regressions cover preview/loading/
