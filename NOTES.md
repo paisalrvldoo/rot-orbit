@@ -17,10 +17,17 @@ finish remaining readability and pedestal accents before adding side systems.
   the HUD/camera moves. Actual-function tests cover 1024×460 HUD obstruction,
   edge clipping, overlapping carry/dock/buy cards and frozen preset ownership.
   All source/place/dossier checks pass; Studio rendering remains unverified.
-- [ ] Add lightweight layered moving pedestal accents, driven locally and
-  limited by distance; keep empty slots quiet and frozen presets repeatable.
+- [ ] Next code pass: lightweight layered moving pedestal accents, driven
+  locally and limited by distance; keep empty slots quiet and frozen presets
+  repeatable. Not started: the session time box elapsed after the card fix.
 - [ ] Studio phone/cover review, zero-error live boot and four genuine captures
   remain owner steps; this machine has no Roblox renderer.
+
+Handoff: `e55578f` contains the verified live card protection and regression
+checks. All 25 Luau scripts compile, Rojo rebuilds the matching game.rbxl and
+the dossier export passes. No new gameplay side systems or capture assets were
+added. Next owner check: pan past a stocked bay while carrying during a meteor
+warning at 1024×460, then run all four presets at 1280×720.
 
 ## Current build pass
 
