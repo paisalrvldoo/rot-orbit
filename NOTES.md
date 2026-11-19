@@ -116,7 +116,8 @@ The research is prose guidance, not source or reusable names. Rank is not guaran
    [x] Aurora Surge guarantees mutations for newly spawned cargo for 20 seconds
    every 270 seconds, including an affordable Gold capsule in the rotation.
 8. [x] Edge HUD has live upgrade/found/cost/cooldown buttons, a three-action feed,
-   larger money and event text, and a right quest card with saved completion.
+   larger money and event text, a right quest card with saved completion and
+   separate income pops above occupied pedestals.
 9. [x] Large income and rarity cards, BUY prices on cargo, Cosmic beams and
    SECRET crowns/light pillars. Cover cards sit beneath the hero models.
 10. Progression now has 15 rotating contracts and saved first completions.

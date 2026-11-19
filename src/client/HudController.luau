@@ -176,7 +176,7 @@ function HudController.Start()
 			renderFeed()
 		end)
 	end)
-	network.CashPop.OnClientEvent:Connect(function(position, amount)
+	local function incomePop(position, amount)
 		local anchor = Instance.new("Part")
 		anchor.Anchored = true
 		anchor.CanCollide = false
@@ -186,14 +186,23 @@ function HudController.Start()
 		anchor.Parent = workspace
 		local pop = Instance.new("BillboardGui")
 		pop.Adornee = anchor
-		pop.Size = UDim2.fromOffset(220, 45)
+		pop.Size = UDim2.fromOffset(106, 29)
 		pop.AlwaysOnTop = true
-		pop.MaxDistance = 90
+		pop.MaxDistance = 52
 		pop.Parent = anchor
-		local text = HudController.Text(pop, "IncomePop", "+" .. Format.Money(amount), UDim2.fromScale(0.5, 0), UDim2.fromScale(1, 1), 24, Config.Palette.Mint)
+		local text = HudController.Text(pop, "IncomePop", "+" .. Format.Money(amount), UDim2.fromScale(0.5, 0), UDim2.fromScale(1, 1), 18, Config.Palette.Mint)
 		TweenService:Create(anchor, TweenInfo.new(0.9), { Position = position + Vector3.new(0, 3, 0) }):Play()
 		TweenService:Create(text, TweenInfo.new(0.9), { TextTransparency = 1, TextStrokeTransparency = 1 }):Play()
 		Debris:AddItem(anchor, 1)
+	end
+	network.CashPop.OnClientEvent:Connect(function(pops)
+		local camera = workspace.CurrentCamera
+		if not camera then return end
+		for index, pop in ipairs(pops) do
+			if (camera.CFrame.Position - pop.Position).Magnitude <= 52 then
+				task.delay((index - 1) % 4 * 0.08, incomePop, pop.Position, pop.Amount)
+			end
+		end
 	end)
 	RunService.RenderStepped:Connect(function()
 		resize()

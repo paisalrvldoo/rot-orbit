@@ -13,12 +13,9 @@ function EconomyService.new(bases, network)
 		while true do
 			task.wait(Config.IncomeInterval)
 			for player, profile in pairs(self.Profiles) do
-				local income = self:Income(player)
+				local income, pops = self:Income(player, true)
 				if not profile.Demo then profile.Cash = math.min(Config.MaxCash, profile.Cash + income) end
-				local state = bases.Players[player]
-				if income > 0 and state then
-					network.CashPop:FireClient(player, state.Bay.Frame.Position + Vector3.new(0, 6, 0), income)
-				end
+				if income > 0 then network.CashPop:FireClient(player, pops) end
 				self:Send(player)
 			end
 		end
@@ -31,15 +28,26 @@ function EconomyService:AddPlayer(player)
 	self:Send(player)
 end
 
-function EconomyService:Income(player)
+function EconomyService:Income(player, showPops)
 	local state = self.Bases.Players[player]
 	local profile = self.Profiles[player]
 	if not state or not profile or state.Loading then return 0 end
 	local income = 0
+	local pops = showPops and {} or nil
+	local multiplier = profile.Multiplier * self.IncomeMultiplier
 	for _, pedestal in ipairs(state.Bay.Slots) do
-		if pedestal.Occupant then income += Catalog.Income(pedestal.Occupant.Record) end
+		local occupant = pedestal.Occupant
+		if occupant then
+			local previous = math.floor(income * multiplier)
+			income += Catalog.Income(occupant.Record)
+			if pops then
+				local position = occupant.Model:GetPivot().Position
+				table.insert(pops, { Position = position + Vector3.new(1.5, 2.4, 0),
+					Amount = math.floor(income * multiplier) - previous })
+			end
+		end
 	end
-	return math.floor(income * profile.Multiplier * self.IncomeMultiplier)
+	return math.floor(income * multiplier), pops
 end
 
 function EconomyService:Purchase(player, record, position)
