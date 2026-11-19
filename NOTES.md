@@ -272,3 +272,7 @@ remain the submission blockers.
   The actual Load/Write functions pass regressions for same-server contention,
   expiry/reacquisition, stale writes, renewals, transient failures and queued
   final release. Live DataStore/multiplayer tests remain on the Studio handoff.
+- [x] Freeze a departing player's interactions before the final DataStore write
+  yields. Player theft and gremlins skip loading/departing bays; death/meteors
+  cannot turn already-snapshotted carried cargo into a second recoverable drop.
+  Regression checks cover the freeze boundary and keep NPC bays raidable.

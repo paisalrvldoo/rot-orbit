@@ -66,7 +66,7 @@ function GremlinRaid:Grab(state, slotIndex)
 	local bay = state.Bay
 	state.Mode = "Escape"
 	state.Destination = state.Start
-	if not bay.Owner or self.Locks:IsLocked(bay) then
+	if not bay.Owner or not self.Bases:IsBayReady(bay) or self.Locks:IsLocked(bay) then
 		state.Label.Text = "SHIELD BLOCKED ME!"
 		return
 	end

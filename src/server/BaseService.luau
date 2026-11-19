@@ -32,11 +32,19 @@ function BaseService.new(world, network)
 end
 
 function BaseService:Near(player, position, distance)
+	local state = self.Players[player]
+	if state and state.Closing then return false end
 	local character = player.Character
 	local root = character and character:FindFirstChild("HumanoidRootPart")
 	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
 	return root and humanoid and humanoid.Health > 0
 		and (root.Position - position).Magnitude <= (distance or Config.InteractionDistance)
+end
+
+function BaseService:IsBayReady(bay)
+	if not bay.Owner then return true end
+	local state = self.Players[bay.Owner]
+	return state ~= nil and not state.Loading and not state.Closing
 end
 
 function BaseService:SetSpeed(player)
@@ -251,7 +259,7 @@ end
 
 function BaseService:Drop(player)
 	local state = self.Players[player]
-	if not state or not state.Carry then return end
+	if not state or state.Closing or not state.Carry then return end
 	local carry = state.Carry
 	state.Carry = nil
 	local position = carry.Model:GetPivot().Position

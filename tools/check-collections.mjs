@@ -142,9 +142,30 @@ thirdSession.FinalPayload = { Cash = 44 }
 saves:Write(thirdSession, { Cash = 43 }, false)
 assert(document.Cash == 44 and document.Session == nil and thirdSession.FinalPayload == nil,
     "queued departure must write final state and release its own lease")
+local closingState = { Bay = { Owner = first }, Carry = { Record = { Id = 1 } } }
+local closingBases = setmetatable({ Players = { [first] = closingState } }, BaseService)
+assert(closingBases:IsBayReady(closingState.Bay))
+closingState.Loading = true
+assert(not closingBases:IsBayReady(closingState.Bay), "loading cargo cannot be raided")
+closingState.Loading = false
+local captured = false
+local closingData = setmetatable({ Bases = closingBases, Sessions = { [first] = {} },
+    Save = function(_, who, release)
+        assert(who == first and release and closingState.Closing,
+            "departure must freeze before the yielding final save")
+        assert(not closingBases:IsBayReady(closingState.Bay), "departing cargo cannot be raided")
+        assert(not closingBases:Near(first, {}), "departing players cannot trigger cargo prompts")
+        closingBases:Drop(first)
+        assert(closingState.Carry, "a death or meteor during final save cannot duplicate owned carry as a drop")
+        captured = true
+    end }, DataService)
+closingData:Close(first)
+assert(captured and closingData.Sessions[first] == nil)
+assert(closingBases:IsBayReady({}), "NPC bays remain raidable")
 print("Collection checks passed: unique variants, independent tabs, one-time rewards, preview/load guards, cap, save isolation.")
 print("Screenshot discovery checks passed: 32/43, 10 Gold, owned SECRET and repeatable presets.")
 print("Save lease checks passed: same-server rejoin, stale write rejection, renewal, transient failure and queued release.")
+print("Departure checks passed: freeze before save, block raids/prompts/drops and retain NPC stealing.")
 `;
 const directory = join(root, 'out', 'collection-check');
 mkdirSync(directory, { recursive: true });

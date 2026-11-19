@@ -220,6 +220,9 @@ function DataService:Save(player, release)
 end
 
 function DataService:Close(player)
+	local state = self.Bases.Players[player]
+	-- UpdateAsync yields: freeze interactions before capturing the departure save.
+	if state then state.Closing = true end
 	self:Save(player, true)
 	self.Sessions[player] = nil
 end

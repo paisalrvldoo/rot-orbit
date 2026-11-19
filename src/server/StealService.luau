@@ -40,6 +40,7 @@ function StealService:Attach(bay, pedestal)
 	prompt.Parent = occupant.Model.PrimaryPart
 	prompt.Triggered:Connect(function(player)
 		if bay.Owner == player or pedestal.Occupant ~= occupant then return end
+		if not self.Bases:IsBayReady(bay) then return end
 		if not self.Bases:Near(player, pedestal.Pad.Position) then return end
 		if (bay.Model:GetAttribute("LockedUntil") or 0) > workspace:GetServerTimeNow() then
 			self.Network.Notice:FireClient(player, "This bay is shield locked. Find another target!")
