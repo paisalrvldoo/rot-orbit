@@ -51,6 +51,20 @@ function InputController.Start(hud)
 			end
 		end
 	end)
+	local trap = Instance.new("TextButton")
+	trap.Name, trap.AnchorPoint = "PlaceTrap", Vector2.new(0.5, 0)
+	trap.BackgroundColor3, trap.TextColor3 = Config.Palette.Ink, Config.Palette.White
+	trap.Font, trap.TextSize = Enum.Font.GothamBold, 14
+	trap.Parent = hud.Gui
+	Instance.new("UICorner", trap).CornerRadius = UDim.new(0, 10)
+	local placeTrap = HudController.ButtonFeedback(trap, function()
+		hud.Network.Action:FireServer("Skill", "Bomb", "Trap")
+	end, 0.35)
+	ContextActionService:BindAction("RotOrbitTrap", function(_, phase)
+		if hud.InTitle or UserInputService:GetFocusedTextBox() then return Enum.ContextActionResult.Pass end
+		if phase == Enum.UserInputState.Begin then placeTrap() end
+		return Enum.ContextActionResult.Sink
+	end, false, Enum.KeyCode.T)
 	local lastLayout
 	local previous
 	RunService.RenderStepped:Connect(function()
@@ -58,6 +72,12 @@ function InputController.Start(hud)
 		if not state then return end
 		local now = workspace:GetServerTimeNow()
 		local compact = HudController.IsCompact() and state.SaveStatus ~= "STUDIO PREVIEW"
+		local bombLeft = math.max(0, ((state.SkillReadyAt or {}).Bomb or 0) - now)
+		trap.Visible = state.SaveStatus ~= "STUDIO PREVIEW" and (not compact or utility)
+		trap.Position = compact and UDim2.new(1, -300, 1, -320) or UDim2.new(1, -106, 1, -224)
+		trap.Size = compact and UDim2.fromOffset(128, 72) or UDim2.fromOffset(176, 48)
+		trap.Text = (compact and "TRAP" or "TRAP [T]") .. "\n" .. (bombLeft > 0 and (math.ceil(bombLeft) .. "s") or "READY")
+		trap:SetAttribute("Unavailable", bombLeft > 0)
 		for _, name in ipairs({ "UpgradePanel", "IndexPanel", "CrewPanel" }) do
 			local panel = hud.Gui:FindFirstChild(name)
 			if panel and panel.Visible then self.MenuOpen = false end

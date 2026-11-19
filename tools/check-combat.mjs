@@ -73,6 +73,35 @@ assert(uses == 1, 'capture staging must not invoke live skills')
 assert(Config.Skills.Unlocked('Bubble', { Rebirths = 2 }))
 assert(not Config.Skills.Unlocked('Bubble', { Rebirths = 1 }))
 assert(Config.Skills.Unlocked('Dash', {}))
+-- Exercise actual Bomb entry checks without relying on simulated projectile physics.
+do
+    skillProfile.Demo, skillState.Closing = false, false
+    skillState.SkillReadyAt = {}
+    local shots, canLand = 0, false
+    skills.Bomb = function(_, _, _, _, trap)
+        assert(trap, 'trap action must reach the trap branch'); shots += 1; return canLand
+    end
+    skills:Skill(user, 'Bomb', 'invalid')
+    assert(shots == 0 and not skillState.SkillReadyAt.Bomb)
+    skills:Skill(user, 'Bomb', 'Trap')
+    assert(shots == 1 and not skillState.SkillReadyAt.Bomb, 'failed placement must not spend cooldown')
+    skillState.Traps = { [{ Parent = true }] = true, [{ Parent = true }] = true }
+    skills:Skill(user, 'Bomb', 'Trap')
+    assert(shots == 1, 'two live traps must enforce the server limit')
+    skillState.Traps = { [{ Parent = nil }] = true }
+    canLand = true
+    skills:Skill(user, 'Bomb', 'Trap')
+    assert(shots == 2 and skillState.SkillReadyAt.Bomb == 113, 'expired traps must not block placement')
+    skills:Skill(user, 'Bomb')
+    assert(shots == 2, 'throw cannot bypass the shared trap cooldown')
+    local friendly = {}
+    skills.Crews = { Same = function(_, _, other) return other == friendly end }
+    assert(not skills:TargetableThief(user, user, { Carry = { Stolen = true } }))
+    assert(not skills:TargetableThief(user, friendly, { Carry = { Stolen = true } }))
+    assert(not skills:TargetableThief(user, {}, { Carry = { Stolen = false } }))
+    assert(not skills:TargetableThief(user, {}, { Closing = true, Carry = { Stolen = true } }))
+    assert(skills:TargetableThief(user, {}, { Carry = { Stolen = true } }))
+end
 local CrewService = ${moduleBody('src/server/CrewService.luau', 'local CrewService =')}
 local one, two, rival, far = {}, {}, {}, {}
 local crewPlayers = { [one] = { CrewId = 1 }, [two] = { CrewId = 1 }, [rival] = { CrewId = 2 }, [far] = { CrewId = 1 } }

@@ -31,6 +31,10 @@ Newest phone feedback takes precedence over extra features this pass:
   respawn restore cosmetics. UI advertises next unlock and keeps cost/gates.
   Existing saves inherit these perks. Rot King/R5 key is still queued, not
   advertised as usable. Studio motion/colour and multiplayer checks pending.
+- [x] Connect the recovered Bomb trap branch to T and the More touch page;
+  G throws. Both share live cooldowns. Actual-function checks deny malformed
+  mode, full trap inventory, failed placement, cooldown bypass, friendly/self
+  targets and leaving players. Corrected the old retirement hint to H.
 - [ ] Owner: 1024×460 phone render/playtest (Studio unavailable here), then
   publish and four genuine screenshots. Source checks cannot approve rendering.
 
