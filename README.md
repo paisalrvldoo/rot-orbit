@@ -17,8 +17,10 @@ and contracts; R opens rebirth (click again to confirm); B opens the index.
   fail an entry), and writes `/output/dossier.json` with `vendor/makefun-roblox.ts`, the kit's copy, unchanged.
 - `game.rbxl` is rebuilt from `src/` and `default.project.json` after every source
   change. `WorldBuilder` creates the sunny station, orange planet, bays and domes at runtime.
-- `screenshots/` still contains starter placeholders. Genuine Studio captures and
-  positive place/universe IDs in `PLAY.json` are required before submission.
+- [Play ROT ORBIT](https://www.roblox.com/games/75703852342218). The kit verified
+  the Public start place, universe and description code on 19 November 2026.
+- `screenshots/` still contains starter placeholders. Genuine Studio captures
+  are required before submission.
 - One of your screenshots must also be your game's first thumbnail on Roblox: the same picture, uploaded on the
   Creator Dashboard with your game's icon.
 - `TOUR.json` names four Studio screenshot presets: Cover, Index, Raid and Upgrades.

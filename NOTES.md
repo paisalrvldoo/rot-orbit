@@ -32,11 +32,10 @@ priority over new features.
 
 ## Publishing and pictures
 
-The owner publishes the starter as a new Public experience with the make.fun
-play code in its description. Real place/universe IDs have not arrived.
-Keep the starter's zero-valued `PLAY.json` until they do, then write the exact
-rules shape with numeric IDs, commit, and rerun the kit check until `play_link`
-passes. Never invent IDs or publish to an unrelated experience.
+The owner published ROT ORBIT as Public: place `75703852342218`, universe
+`10777849208`. PLAY.json now contains these numeric IDs and the real play URL.
+The kit check passed `play_link` on 19 November at 21:20 WIB: correct start
+place/universe, Public, creator xiaaoxiee, description includes our play code.
 
 The starter PNGs remain until genuine Studio captures replace them. They are
 placeholders and cannot represent the finished ROT ORBIT entry. Final captures:
@@ -84,7 +83,8 @@ ScreenshotMode and an exact rules-format TOUR only when those features exist.
   TOUR presets: high-rarity bay, Diamond carry, exactly 23/30 found, staged raid
   and paired progression panels. Preview changes never overwrite real progress.
 - [x] README describes the implemented game, controls, verification and Studio presets.
-- [ ] Genuine Studio pictures and published IDs (owner laptop; no Studio here).
+- [x] Published IDs committed; Public play link passes the kit check.
+- [ ] Genuine Studio pictures (owner laptop; no Studio here).
 
 NPC stealing; meteor warnings/impacts and safe domes; solar flare; green gremlin
 raids with lock/zap; upgrades; rebirth; index; contracts; pcall-safe saving; final
@@ -201,3 +201,18 @@ originals, six mutations, station title, 24 scripts, dense HUD and staged cover.
   departure once. Previous saves earn offline cash after their next save.
   Needs a Studio DataStore playtest.
 - [ ] Source-review the four staged shots and make the owner capture handoff clear.
+
+## Public-link continuation (19 November, 21:20 WIB; 25-minute cap)
+
+Initial status/diff were clean at c0ba8a8; verify passed all 24 scripts, so no
+uncommitted WIP needed recovery. PLAY.json committed as 8941507; the requested
+kit check passed (5 passed, 0 failed). Kit reports level 26 versus site level 27;
+refresh the kit before final submission. The check does not validate pictures.
+
+Read owner refs.md and visual guidance. Retain the ten priorities above: 43
+originals, six mutations, 24 meaningful scripts, large title, late-game cover,
+four distinct shots, visible hazards, live HUD, quests/feed and earned progression.
+Core systems precede more spectacle. This pass's remaining order:
+- [ ] Persist mutation discoveries and make the index tabs reward real collecting.
+- [ ] Correct/review deterministic staging, then document the four-shot handoff.
+- [ ] Reverify, retry the Public link check, and leave a clean committed tree.
