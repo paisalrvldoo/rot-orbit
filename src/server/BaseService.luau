@@ -119,6 +119,20 @@ function BaseService:FreeSlot(player)
 	return nil
 end
 
+function BaseService:HighestDockRank(player)
+	local state = self.Players[player]
+	local highest = 0
+	if state then
+		for _, pedestal in ipairs(state.Bay.Slots) do
+			if pedestal.Occupant then
+				local entry = Catalog.Get(pedestal.Occupant.Record.Id)
+				highest = math.max(highest, Rarity.ByName[entry.Rarity].Rank)
+			end
+		end
+	end
+	return highest
+end
+
 function BaseService:CanCarry(player)
 	local state = self.Players[player]
 	local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")

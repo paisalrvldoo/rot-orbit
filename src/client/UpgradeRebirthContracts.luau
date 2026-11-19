@@ -117,14 +117,16 @@ function Progression.StartUpgrades(hud, input)
 end
 
 function Progression.AddRebirth(hud, input, panel)
-	Style.Text(panel, "REBIRTH · PERMANENT INCOME", 22, 320, 510, 24, 18, Config.Palette.Sun)
-	local detail = Style.Text(panel, "", 22, 350, 304, 34, 16)
+	Style.Text(panel, "REBIRTH · PERMANENT REWARDS", 22, 313, 510, 24, 18, Config.Palette.Sun)
+	local detail = Style.Text(panel, "", 22, 337, 510, 26, 16)
+	local gate = Style.Text(panel, "", 22, 364, 307, 23, 15)
 	Style.Text(panel, "Reset cash, upgrades and bay. Keep your discoveries.", 22, 393, 516, 20, 13, Config.Palette.Muted)
 	local confirmUntil = 0
 	local button = Style.Button(panel, "REBIRTH", 336, 350, 202, 36, function()
 		local state = hud.GetState()
 		if not state or state.Rebirths >= Config.Rebirth.MaxLevel then return end
 		if state.Cash < Config.Rebirth.Cost(state.Rebirths) then return end
+		if state.HighestDockRank < Config.Rebirth.RequiredRank(state.Rebirths) then return end
 		local now = os.clock()
 		if now < confirmUntil then
 			confirmUntil = 0
@@ -143,15 +145,24 @@ function Progression.AddRebirth(hud, input, panel)
 		if not state then return end
 		local maxed = state.Rebirths >= Config.Rebirth.MaxLevel
 		local nextMultiplier = Config.Rebirth.Multiplier(state.Rebirths + 1)
-		detail.Text = maxed and ("LEVEL " .. state.Rebirths .. " · x" .. state.Multiplier)
-			or ("LEVEL " .. state.Rebirths .. "  ·  x" .. state.Multiplier .. " → x" .. nextMultiplier)
+		local slotReward = state.Rebirths < Config.Rebirth.BonusSlotCap and "  ·  +1 slot" or ""
+		detail.Text = maxed and ("Level " .. state.Rebirths .. " · x" .. state.Multiplier .. " income")
+			or ("x" .. state.Multiplier .. " → x" .. nextMultiplier .. " income  ·  +"
+				.. Config.Rebirth.LockSecondsPerLevel .. "s shield" .. slotReward)
 		local cost = Config.Rebirth.Cost(state.Rebirths)
-		button:SetAttribute("Unavailable", maxed or state.Cash < cost)
+		local requiredRank = Config.Rebirth.RequiredRank(state.Rebirths)
+		local dockReady = state.HighestDockRank >= requiredRank
+		gate.Text = maxed and "" or ("Dock " .. Traits.Rarity.Order[requiredRank]
+			.. " or better · " .. (dockReady and "READY" or "NEEDED"))
+		gate.TextColor3 = dockReady and Config.Palette.Mint or Config.Palette.Sun
+		button:SetAttribute("Unavailable", maxed or state.Cash < cost or not dockReady)
+		if maxed or state.Cash < cost or not dockReady then confirmUntil = 0 end
 		button:SetAttribute("Selected", os.clock() < confirmUntil)
 		button.Text = maxed and "MAX REBIRTH"
 			or (os.clock() < confirmUntil and "RESET BAY? CONFIRM"
 				or ((state.Cash >= cost and "REBIRTH · " or "NEED · ") .. Format.Money(cost)))
-		button.BackgroundColor3 = not maxed and state.Cash >= cost and Config.Palette.Teal or Color3.fromRGB(43, 67, 83)
+		button.BackgroundColor3 = not maxed and state.Cash >= cost and dockReady
+			and Config.Palette.Teal or Color3.fromRGB(43, 67, 83)
 	end)
 end
 

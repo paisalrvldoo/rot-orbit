@@ -99,10 +99,10 @@ function ScreenshotService:Prepare(player, shot)
 	profile.Upgrades = { WalkSpeed = 2, CarrySpeed = 3, LockDuration = 2, BaySlots = 1, IncomeBoost = 3 }
 	self.Bases:Reset(player)
 	state.Found = {}
-	self.Bases:AddSlot(player)
-	self.Bases:AddSlot(player)
 	profile.Cash = 867500000
 	profile.Rebirths = 3
+	local extraSlots = Config.World.SlotsPerUpgrade + Config.Rebirth.BonusSlots(profile.Rebirths)
+	for _ = 1, extraSlots do self.Bases:AddSlot(player) end
 	profile.Multiplier = Config.Rebirth.Multiplier(profile.Rebirths)
 	profile.IndexMilestone = 3
 	profile.SaveStatus = "STUDIO PREVIEW"

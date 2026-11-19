@@ -192,8 +192,10 @@ originals, six mutations, station title, 24 scripts, dense HUD and staged cover.
   reset on theft, retirement and rebirth and are restored with saved cargo.
 - [x] SECRET arrivals get a named announcement, yielding to safety banners.
   Moving sleds use the same rarity rim color as the docks.
-- [ ] Improve progression feedback using the research priorities for earned
-  rewards, the index and rebirth while preserving old saves.
+- [x] Rebirth shows its income step, permanent shield time and bonus slot.
+  Cash and docked rarity requirements match client and server. Existing
+  rebirth levels receive the perks on load without moving saved cargo.
+- [ ] Improve the index and earned rewards while preserving old saves.
 - [x] Offline haul pays 25% of the saved dock rate for up to two hours and
   appears in the HUD feed on return. The lease acquisition credits each
   departure once. Previous saves earn offline cash after their next save.

@@ -21,13 +21,14 @@ function LockService:Activate(player)
 		return
 	end
 	local duration = Config.Lock.Duration + (profile.Upgrades.LockDuration or 0) * Config.Upgrades.LockDuration.Step
+		+ profile.Rebirths * Config.Rebirth.LockSecondsPerLevel
 	state.LockUntil = now + duration
 	local lockedUntil = state.LockUntil
 	state.LockReadyAt = state.LockUntil + Config.Lock.Cooldown
 	local bay = state.Bay
 	bay.Model:SetAttribute("LockedUntil", state.LockUntil)
-	local shield = WorldBuilder.Part("BayLockShield", Vector3.new(49, 48, 49),
-		bay.Frame * CFrame.new(0, 0, 7.5), Config.Palette.Mint, Enum.Material.ForceField,
+	local shield = WorldBuilder.Part("BayLockShield", Vector3.new(68, 56, 68),
+		bay.Frame * CFrame.new(0, 0, 12), Config.Palette.Mint, Enum.Material.ForceField,
 		bay.Model, Enum.PartType.Ball, false)
 	shield.Transparency = 0.78
 	shield.CanQuery = false

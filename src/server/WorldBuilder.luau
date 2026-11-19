@@ -230,12 +230,14 @@ local function buildBays(world)
 		model:SetAttribute("Rival", rival)
 		model.Parent = parent
 		local color = rival and Color3.fromRGB(255, 162, 83) or palette.Teal
-		local floor = WorldBuilder.Part("DockFloor", Vector3.new(36, 0.7, 43),
-			frame * CFrame.new(0, 0.4, 7.5), rival and Color3.fromRGB(255, 235, 211)
+		local depth = rival and 43 or 51
+		local floorZ = depth / 2 - 14
+		local floor = WorldBuilder.Part("DockFloor", Vector3.new(36, 0.7, depth),
+			frame * CFrame.new(0, 0.4, floorZ), rival and Color3.fromRGB(255, 235, 211)
 			or Color3.fromRGB(207, 238, 240), Enum.Material.SmoothPlastic, model)
 		for _, side in ipairs({ -1, 1 }) do
-			WorldBuilder.Part("DockEdge", Vector3.new(0.35, 0.1, 43),
-				frame * CFrame.new(side * 17.7, 0.8, 7.5), color, Enum.Material.Neon, model, nil, false)
+			WorldBuilder.Part("DockEdge", Vector3.new(0.35, 0.1, depth),
+				frame * CFrame.new(side * 17.7, 0.8, floorZ), color, Enum.Material.Neon, model, nil, false)
 			WorldBuilder.Part("SignPost", Vector3.new(0.7, 10.4, 0.7),
 				frame * CFrame.new(side * 16.3, 5.5, 23), palette.Teal, Enum.Material.SmoothPlastic, model)
 		end

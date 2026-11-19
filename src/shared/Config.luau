@@ -29,7 +29,7 @@ local Config = {
 		RivalBays = 3,
 		InitialSlots = 8,
 		SlotsPerUpgrade = 2,
-		MaxSlots = 16,
+		MaxSlots = 20,
 		DomeRadius = 14,
 		DomeOrbit = 63,
 		PlanetPosition = Vector3.new(-110, -190, -330),
@@ -59,7 +59,8 @@ local Config = {
 		BaySlots = { BaseCost = 4000, CostGrowth = 3, Step = 2, MaxLevel = 4 },
 		IncomeBoost = { BaseCost = 10000, CostGrowth = 3, Step = 0.08, MaxLevel = 6 },
 	},
-	Rebirth = { BaseCost = 100000, CostGrowth = 5, MaxLevel = 15,
+	Rebirth = { BaseCost = 100000, CostGrowth = 5, MaxLevel = 15, BonusSlotCap = 4, LockSecondsPerLevel = 3,
+		DockRanks = { 2, 3, 3, 4, 4, 5, 5, 6 },
 		Multipliers = { 1, 1.5, 2, 3, 4.5, 6, 8, 10 } },
 	IndexMilestones = { { Goal = 10, Reward = 5000 }, { Goal = 20, Reward = 50000 },
 		{ Goal = 30, Reward = 750000 }, { Goal = 40, Reward = 15000000 } },
@@ -101,6 +102,15 @@ end
 function Config.Rebirth.Multiplier(level)
 	local multipliers = Config.Rebirth.Multipliers
 	return multipliers[level + 1] or (multipliers[#multipliers] + (level + 1 - #multipliers) * 2)
+end
+
+function Config.Rebirth.BonusSlots(level)
+	return math.min(level, Config.Rebirth.BonusSlotCap)
+end
+
+function Config.Rebirth.RequiredRank(level)
+	local ranks = Config.Rebirth.DockRanks
+	return ranks[math.min(level + 1, #ranks)]
 end
 
 return table.freeze(Config)

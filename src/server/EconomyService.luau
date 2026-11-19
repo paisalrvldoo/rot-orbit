@@ -108,6 +108,7 @@ function EconomyService:Snapshot(player)
 	end
 	return { Ready = true, Cash = profile.Cash, Income = self:Income(player),
 		Rebirths = profile.Rebirths, Multiplier = profile.Multiplier, Upgrades = profile.Upgrades,
+		HighestDockRank = self.Bases:HighestDockRank(player),
 		SaveStatus = profile.SaveStatus or "SESSION ONLY",
 		OfflineHaul = not profile.Demo and profile.OfflineHaul or nil,
 		BayIndex = state.Bay.Index, BayPosition = state.Bay.SpawnFrame.Position,

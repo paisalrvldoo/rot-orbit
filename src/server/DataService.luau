@@ -104,7 +104,9 @@ function DataService:Load(player)
 		for name, config in pairs(Config.Upgrades) do
 			profile.Upgrades[name] = integer(type(saved.Upgrades) == "table" and saved.Upgrades[name], 0, 0, config.MaxLevel)
 		end
-		for _ = 1, profile.Upgrades.BaySlots * Config.World.SlotsPerUpgrade do self.Bases:AddSlot(player) end
+		local extraSlots = profile.Upgrades.BaySlots * Config.World.SlotsPerUpgrade
+			+ Config.Rebirth.BonusSlots(profile.Rebirths)
+		for _ = 1, extraSlots do self.Bases:AddSlot(player) end
 		for _, entry in ipairs(Catalog.Entries) do
 			if type(saved.Found) == "table" and saved.Found[tostring(entry.Id)] == true then state.Found[tostring(entry.Id)] = true end
 		end

@@ -36,11 +36,17 @@ function UpgradeRebirthService:Perform(player)
 		self.Economy.Network.Notice:FireClient(player, "You need more cash before rebirthing.")
 		return
 	end
+	local required = Config.Rebirth.RequiredRank(profile.Rebirths)
+	if self.Bases:HighestDockRank(player) < required then
+		self.Economy.Network.Notice:FireClient(player, "Dock higher rarity cargo to qualify for rebirth.")
+		return
+	end
 	profile.Rebirths += 1
 	profile.Multiplier = Config.Rebirth.Multiplier(profile.Rebirths)
 	profile.Cash = Config.StartingCash
 	profile.Upgrades = {}
 	self.Bases:Reset(player)
+	for _ = 1, Config.Rebirth.BonusSlots(profile.Rebirths) do self.Bases:AddSlot(player) end
 	self.Economy.Network.Notice:FireClient(player, "REBIRTH! Permanent income is now x" .. profile.Multiplier .. ". Your index is kept.")
 	self.Economy:Activity(player, "Rebirth")
 	self.Economy:Send(player)
