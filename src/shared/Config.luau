@@ -120,7 +120,8 @@ local Config = {
 			{ Kind = "SurviveMeteor", MinRank = 4, Goal = 3, Reward = 200000, Title = "Shelter Legendary cargo 3 times" } },
 	} },
 	Palette = {
-		Deck = Color3.fromRGB(237, 245, 247),
+	-- Dark station metal lets the teal and gold orbit guides read on phones.
+	Deck = Color3.fromRGB(38, 46, 57),
 		Teal = Color3.fromRGB(17, 183, 186),
 		Mint = Color3.fromRGB(104, 255, 222),
 		Ink = Color3.fromRGB(11, 31, 52),

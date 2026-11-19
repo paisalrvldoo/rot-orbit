@@ -263,8 +263,13 @@ function HudController.Start()
 		cash.Text = Format.Money(snapshot.Cash)
 		raidStatus.Text = "RAIDS DEFENDED  " .. (snapshot.RaidsDefended or 0)
 		save.Text = snapshot.SaveStatus == "SAVED" and "PROGRESS SAVED" or snapshot.SaveStatus
-		detail.Text = Format.Money(snapshot.Income) .. "/s  ·  REBIRTH " .. snapshot.Rebirths
-			.. "  ·  x" .. snapshot.Multiplier .. " INCOME  ·  BAY " .. string.format("%02d", snapshot.BayIndex)
+		if snapshot.Income > 0 then
+			detail.Text = Format.Money(snapshot.Income) .. "/s  ·  REBIRTH " .. snapshot.Rebirths
+				.. "  ·  x" .. snapshot.Multiplier .. " INCOME  ·  BAY " .. string.format("%02d", snapshot.BayIndex)
+		else
+			detail.Text = "DOCK A BRAINROT!  ·  x" .. snapshot.Multiplier .. " INCOME  ·  BAY "
+				.. string.format("%02d", snapshot.BayIndex)
+		end
 		carrying.Visible = snapshot.Carrying ~= false
 		if snapshot.Carrying then carrying.Text = "CARRYING " .. snapshot.Carrying.Name .. " → RUN TO YOUR BAY" end
 		marker.Position = snapshot.BayPosition + Vector3.new(0, 11, 0)

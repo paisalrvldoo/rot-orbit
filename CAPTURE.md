@@ -36,6 +36,11 @@ the dock cards, the foreground ring clears the counts strip, and the crew rank
 board stays outside the useful frame. These are source-reviewed camera choices;
 actual brightness, silhouettes, occlusion and text still need Studio approval.
 
+For the phone smoke pass, also confirm the dark station deck separates the
+teal/gold paths, a player with zero docked cargo sees a clear dock-a-brainrot
+hint instead of a misleading `$0/s`, and joining-crew signs stay legible without
+overlapping. Keep the gremlin event warning short enough to fit at 1024×460.
+
 Run Cover → Index → Raid → Upgrades → Cover in the same Play session. Each
 should replace the prior preview: six cargo pods (not twelve), one BUY card
 only on Cover, no old showcase platform or meteors on the other presets, and

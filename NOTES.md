@@ -3,13 +3,16 @@
 ## Current 25-minute orbit continuation
 
 Initial status/diff were clean; `node tools/verify.mjs` passed and checkpoint
-`430cac9` was committed immediately. Read owner refs.md once, including the
-latest 00:43–00:47 phone feedback, and the visual guidance. Core systems pass.
-Research priorities retained: (1) late-game cover, (2) 42–45 originals (43),
-(3) four real captures, (4) ~20–24 purposeful scripts (25 with crews),
-(5) world title, (6) visible meteors/domes, (7) six mutations,
-(8) live HUD/quests/feed, (9) readable cast/value cards, (10) earned progression.
-Latest owner orbit/mobile corrections take precedence over new side systems.
+`485154e` was committed immediately. Read `/workspace/rbx/refs.md` once. The
+top-ten plan is: (1) staged late-game cover that sells the loop, (2) 42–45
+original brainrots (43), (3) four genuine Studio captures, (4) 20–24 purposeful
+scripts (currently 25 with crew support), (5) a readable large in-world title,
+(6) visible hazards and shields, (7) six mutations, (8) dense live-state HUD
+with quest card and action feed, (9) readable rarity/name/value cards, and
+(10) earned progression. Keep the orbit and cast dominant in the frame; finish
+core correctness before new systems. The latest phone notes also call out the
+dark metal deck, clear first-run income hint, restrained labels and short raid
+banner; phone playtest/capture approval remains with the owner.
 
 - [x] Raise the nearby cargo track, enlarge its brainrots/pods, add two cargo
   warp arches, and break up the empty hub floor with station deck panels.
@@ -29,7 +32,10 @@ Latest owner orbit/mobile corrections take precedence over new side systems.
   Cover's Aurora SECRET to the left near arc: conservative source projection
   puts its silhouette near x20–270 at 1280×720, away from the first dock face
   near x341 and carry near x436. This is a framing estimate, not a render.
-- [ ] Update Studio capture handoff; verify and commit every working piece.
+- [x] Update the active handoff with the latest ten priorities and the first
+  phone review items; keep final Studio rendering/captures explicit.
+- [ ] Recheck 1024×460 phone presentation: dark deck, useful zero-income hint,
+  clean join labels, readable cover cards, and compact raid warning.
 - [ ] Owner Studio render/playtest and four genuine captures remain required.
   This machine has no Roblox renderer; source checks cannot approve the look.
 
