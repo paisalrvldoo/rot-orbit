@@ -185,7 +185,7 @@ function Progression.StartContracts(hud, upgrades)
 	local expanded = false
 	local questTab = Instance.new("TextButton")
 	questTab.Name = "ContractsTab"
-	questTab.Position = UDim2.fromOffset(1024, 115)
+	questTab.Position = UDim2.fromOffset(1024, 155)
 	questTab.Size = UDim2.fromOffset(240, 46)
 	questTab.BackgroundColor3 = Config.Palette.Ink
 	questTab.TextColor3 = Config.Palette.Mint
@@ -258,6 +258,7 @@ function Progression.StartContracts(hud, upgrades)
 			and not (crewPanel and crewPanel.Visible)
 		local compact = HudController.IsCompact() and state.SaveStatus ~= "STUDIO PREVIEW"
 		questTab.Visible = show and compact
+		quest.Position = UDim2.fromOffset(1024, compact and 207 or 168)
 		quest.Visible = show and (not compact or expanded)
 		local completed, available = 0, 0
 		for index, contract in ipairs(state.Contracts or {}) do
