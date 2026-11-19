@@ -7,13 +7,20 @@ Read `git log`, `git status`, and this file before continuing. Extend the existi
 files in small patches; do not restart the game. All game code is authored in
 the recorded session, with no downloaded packages or uploaded assets.
 
-Latest checkpoint: 19 November, capture-readiness pass. Core systems and top-10
-source targets are implemented (43 originals, six mutations, 24 scripts).
-Start with Studio error reports if any. Otherwise the next unfinished brief
-item is the four genuine Studio captures in CAPTURE.md, followed by publishing
-the latest game.rbxl and approved icon/cover thumbnail. Local development
-verification passes; `--submission` intentionally fails until starter images
-are replaced. Do not treat a passing kit Public-link check as media approval.
+Latest checkpoint: 19 November, live recovery / combat / crews pass (25-minute
+session beginning 21:55 WIB). Fixed the reported live boot blocker in code;
+FallenPartsDestroyHeight now lives in default.project.json. Added earlier combat
+raids, captain waves, roaming rival thieves, four skills, touch cooldowns, three
+station crews, friendly cargo protection, nearby rewards, server ranks and
+retry-safe all-time crew totals. There are 43 originals, six mutations and 25
+meaningful scripts (one added CrewService for the owner's newer squad request).
+All source/actual-function regressions and development verification pass.
+
+NEXT: owner must republish this game.rbxl and confirm zero live server errors,
+then run the combat/crew multiplayer smoke test in CAPTURE.md. Do not claim
+live correctness from compiler tests. Four genuine Studio captures, approved
+icon/cover and latest publish remain blockers. `--submission` intentionally
+fails while starter images remain. Public-link checks do not approve pictures.
 
 ## First pass
 
@@ -362,3 +369,10 @@ Studio rendering and combat balance remain unverified.
   waits for an in-flight crew sync before flushing newer score. Verify now
   rejects known restricted runtime Workspace/Lighting assignments. Boss death
   and late-join defence qualification have actual-function regressions.
+
+- [x] Raid preset now stages a crowned captain at 18/32 HP (wave 3) plus the
+  original zapped thief/recoverable drop. Shared boss bar and skill controls
+  remain truthful to the implemented systems. Preview actions cannot alter
+  staged server state. Recheck camera/billboard bounds in real Studio captures.
+- [x] Current-kit check at 6d957dd (22:11 WIB) passed 5/5, including Public
+  start place/universe/description. It does not check live world boot or media.

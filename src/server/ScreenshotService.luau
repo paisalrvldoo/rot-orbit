@@ -154,14 +154,17 @@ function ScreenshotService:Prepare(player, shot)
 			Color = Color3.fromRGB(155, 255, 105) })
 		local frame = state.Bay.Frame
 		root.CFrame = frame * CFrame.new(1, 3.8, 15) * CFrame.Angles(0, math.rad(38), 0)
-		local left = self.Gremlins:Spawn(state.Bay, (frame * CFrame.new(-6.5, 0.86, 8)).Position)
+		self.Gremlins.Wave = 3
+		local left = self.Gremlins:Spawn(state.Bay, (frame * CFrame.new(-6.5, 0.86, 8)).Position, true, 32)
+		left.Health = 18
+		self.Gremlins:HealthView(left)
 		local right = self.Gremlins:Spawn(state.Bay, (frame * CFrame.new(8, 0.86, 11)).Position)
 		for _, gremlin in ipairs({ left, right }) do
 			gremlin.Model:PivotTo(CFrame.lookAt(gremlin.Position, gremlin.Position - frame.LookVector))
 		end
 		self.Gremlins:Grab(left, 4)
 		self.Gremlins:Grab(right, 2)
-		left.Label.Text = "THIEF ESCAPING · ZAP [F]"
+		left.Label.Text = "CAPTAIN ESCAPING · ZAP [F]"
 		right.Label.Text = "ZAPPED!"
 		right.Label.TextColor3 = Config.Palette.Mint
 		local dropped = self.Gremlins:Stun(right, workspace:GetServerTimeNow())

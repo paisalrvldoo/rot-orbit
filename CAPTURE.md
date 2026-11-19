@@ -21,7 +21,7 @@ Public-link verification passes. The published starter still needs the latest
 | --- | --- | --- |
 | 01-cover.jpg | `require(game.ReplicatedStorage.ScreenshotMode).Cover(0)` | $867.5M, live income, rebirth 3, 18s meteor banner, Diamond Cosmo Cornetto carry, five heroes with the Supernova SECRET in the middle, station title and orange planet. |
 | 02-index.jpg | `require(game.ReplicatedStorage.ScreenshotMode).Index(0)` | Exactly 32/43 FOUND, seven rarity counts, undiscovered silhouettes, six mutation tabs and next cash reward. |
-| 03-raid.jpg | `require(game.ReplicatedStorage.ScreenshotMode).Raid(0)` | 27s raid banner, one escaping gremlin with cargo, one zapped gremlin and dropped recoverable cargo. |
+| 03-raid.jpg | `require(game.ReplicatedStorage.ScreenshotMode).Raid(0)` | 27s raid banner, crowned captain escaping with cargo (18/32 HP, wave 3), one zapped gremlin and dropped recoverable cargo, shared captain health bar. |
 | 04-upgrades.jpg | `require(game.ReplicatedStorage.ScreenshotMode).Upgrades(0)` | Five upgrade tracks with levels/costs; rebirth x3 → x4.5, +3s shield, +1 slot; three contracts with progress/rewards and 4/15 done. |
 
 Check the cover at 768 pixels wide and the three secondary pictures at 253
@@ -61,3 +61,27 @@ countdown agrees with the HUD. With DataStore API access, try a quick rejoin:
 a still-held save lease should ask you to rejoin shortly, and an old connection
 must not overwrite the new session. A departing player's final save freezes
 raids and carried-cargo drops until their bay is released.
+
+Live recovery / combat smoke test (19 November continuation):
+
+- Republish the rebuilt place first. Confirm **zero server errors**, the sunny
+  deck, planet and bays all spawning. FallenPartsDestroyHeight is now authored
+  in the place rather than written by a restricted runtime thread.
+- Dock a Common. A rival thief can patrol after 30s; first raid is within 75s
+  of loading and repeats every 135s. Check the six-second red warning, arrival
+  portal, HP bars, F beam, stolen-cargo recovery and kill/defence cash. Third
+  raid has a crowned captain and shared HUD health. Chase timing needs testing.
+- X dashes without passing through walls or leaving the deck. Buy Carry Speed
+  1 to unlock Q Slam; buy Lock Duration 1 to unlock C Bubble. Rebirths 1/2 are
+  alternative unlocks. Test keys and touch buttons, cooldown badges, Slam
+  knockback and Bubble's twelve-second protection; regular L still works.
+- With two clients, use Y or the coloured arrival pads to join the same crew.
+  Teammates must not steal cargo; outsiders still can when unlocked. Check
+  crew nameplates, bay status, nearby assist cash, shared raid score and gold
+  leading banners. Switching while carrying or during a raid must be denied.
+- With API access, check Y → ALL-TIME and the world board after at least 60s;
+  crew scores combine across servers. Without API access, gameplay must stay
+  playable with retry/local status. Test server close after earning points.
+- Run `node tools/check-combat.mjs`, `node tools/check-collections.mjs` and
+  `node tools/verify.mjs`. These are source regressions and artifact checks;
+  they cannot confirm Roblox physics, rendering, audio or live capabilities.

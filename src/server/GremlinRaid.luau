@@ -58,7 +58,7 @@ function GremlinRaid:Spawn(bay, position, boss, health)
 	model:PivotTo(CFrame.new(position))
 	model.Parent = self.World.Root
 	local label = WorldBuilder.Billboard(root, boss and "CAPTAIN GREMLIN · FIGHT TOGETHER!" or "SPACE GREMLIN · ZAP [F]", green,
-		Vector3.new(0, boss and 8 or 4, 0), boss and 310 or 250, 34)
+		Vector3.new(0, boss and 8 or 4, 0), boss and 420 or 250, 34)
 	local maxHealth = health or Config.Gremlin.Health
 	local hp = WorldBuilder.Billboard(root, "", Config.Palette.White,
 		Vector3.new(0, boss and 7 or 3.5, 0), boss and 360 or 180, boss and 30 or 24)
@@ -151,7 +151,7 @@ function GremlinRaid:Grab(state, slotIndex)
 	state.Loot = occupant.Record
 	self.Bases:ClearPedestal(pedestal)
 	state.LootModel = BrainrotModel.Create(state.Loot,
-		state.Model:GetPivot() * CFrame.new(0, 3.4, 0), state.Model)
+		state.Model:GetPivot() * (state.Boss and CFrame.new(3.4, 4, 0) or CFrame.new(0, 3.4, 0)), state.Model)
 	state.LootModel:SetAttribute("VisualState", "Raided")
 	state.Label.Text = "STOLEN CARGO! ZAP [F]"
 	self.Economy.Network.Notice:FireClient(bay.Owner,
