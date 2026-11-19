@@ -59,6 +59,8 @@ local Config = {
 	},
 	Rebirth = { BaseCost = 100000, CostGrowth = 5, MaxLevel = 15,
 		Multipliers = { 1, 1.5, 2, 3, 4.5, 6, 8, 10 } },
+	IndexMilestones = { { Goal = 10, Reward = 5000 }, { Goal = 20, Reward = 50000 },
+		{ Goal = 30, Reward = 750000 }, { Goal = 40, Reward = 15000000 } },
 	Data = { StoreName = "RotOrbit_v1", AutosaveSeconds = 60, Version = 1, LeaseSeconds = 180 },
 	Contracts = { Tracks = {
 		{ { Kind = "Dock", Goal = 3, Reward = 1200, Title = "Dock 3 brainrots" },

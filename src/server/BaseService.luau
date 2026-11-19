@@ -162,12 +162,17 @@ function BaseService:Place(player, pedestal)
 	pedestal.Occupant = { Record = record, Model = BrainrotModel.Create(record, pedestal.Frame, state.Bay.Model) }
 	pedestal.Label.Visible = false
 	pedestal.PlacePrompt.Enabled = false
+	local discovered = not state.Found[tostring(record.Id)]
 	state.Found[tostring(record.Id)] = true
 	if self.OnPlaced then self.OnPlaced(state.Bay, pedestal) end
 	self:SetSpeed(player)
 	self.Network.Notice:FireClient(player, Catalog.DisplayName(record) .. " docked! Earning every second.")
-	if self.Economy then self.Economy:Activity(player, "Dock", record) end
-	if self.Economy then self.Economy:Send(player) end
+	if discovered then self.Network.Notice:FireClient(player, "INDEX DISCOVERY · " .. Catalog.Get(record.Id).Name) end
+	if self.Economy then
+		if discovered then self.Economy:ClaimIndexMilestones(player) end
+		self.Economy:Activity(player, "Dock", record)
+		self.Economy:Send(player)
+	end
 	return true
 end
 

@@ -1,5 +1,7 @@
 -- Cash, purchases and income are computed exclusively on the server.
-local Config = require(game:GetService("ReplicatedStorage"):WaitForChild("Config"))
+local shared = game:GetService("ReplicatedStorage")
+local Config = require(shared:WaitForChild("Config"))
+local Format = require(shared:WaitForChild("BrainrotTraits")).Format
 local Catalog = require(script.Parent:WaitForChild("BrainrotCatalog"))
 local EconomyService = {}
 EconomyService.__index = EconomyService
@@ -24,7 +26,8 @@ function EconomyService.new(bases, network)
 end
 
 function EconomyService:AddPlayer(player)
-	self.Profiles[player] = { Cash = Config.StartingCash, Rebirths = 0, Multiplier = 1, Upgrades = {} }
+	self.Profiles[player] = { Cash = Config.StartingCash, Rebirths = 0, Multiplier = 1,
+		Upgrades = {}, IndexMilestone = 0 }
 	self:Send(player)
 end
 
@@ -71,6 +74,21 @@ function EconomyService:Purchase(player, record, position)
 	return true
 end
 
+function EconomyService:ClaimIndexMilestones(player)
+	local profile = self.Profiles[player]
+	local state = self.Bases.Players[player]
+	if not profile or profile.Demo or not state or state.Loading then return end
+	local found = 0
+	for _, known in pairs(state.Found) do if known then found += 1 end end
+	for index = profile.IndexMilestone + 1, #Config.IndexMilestones do
+		local milestone = Config.IndexMilestones[index]
+		if found < milestone.Goal then break end
+		profile.IndexMilestone = index
+		profile.Cash = math.min(Config.MaxCash, profile.Cash + milestone.Reward)
+		self.Network.Notice:FireClient(player, "INDEX " .. milestone.Goal .. " FOUND · +" .. Format.Money(milestone.Reward))
+	end
+end
+
 function EconomyService:Activity(player, kind, record)
 	self.Activities:Fire(player, kind, record)
 end
@@ -93,6 +111,7 @@ function EconomyService:Snapshot(player)
 		SaveStatus = profile.SaveStatus or "SESSION ONLY",
 		BayIndex = state.Bay.Index, BayPosition = state.Bay.SpawnFrame.Position,
 		Slots = #state.Bay.Slots, Inventory = inventory, Found = state.Found,
+		IndexMilestone = profile.IndexMilestone,
 		LockUntil = state.LockUntil or 0, LockReadyAt = state.LockReadyAt or 0,
 		ZapReadyAt = state.ZapReadyAt or 0,
 		Carrying = state.Carry and { Name = Catalog.DisplayName(state.Carry.Record),

@@ -14,6 +14,8 @@ function IndexPanel.Start(hud, input)
 	header.Size = UDim2.fromOffset(1100, 49)
 	header.TextSize = 43
 	header.Font = Enum.Font.GothamBlack
+	local milestoneLabel = Style.Text(panel, "", 629, 20, 501, 36, 20, Config.Palette.Sun)
+	milestoneLabel.TextXAlignment = Enum.TextXAlignment.Right
 	local cells, counts = {}, {}
 	for index, rarity in ipairs(Rarity.Order) do
 		counts[rarity] = Style.Text(panel, rarity .. " 0/0", 21 + (index - 1) * 167, 61, 165, 27,
@@ -84,6 +86,9 @@ function IndexPanel.Start(hud, input)
 			for _, piece in ipairs(cell.Parts) do piece.BackgroundColor3 = color end
 		end
 		header.Text = "INDEX · " .. discovered .. "/" .. #state.Catalog .. " FOUND"
+		local milestone = Config.IndexMilestones[(state.IndexMilestone or 0) + 1]
+		milestoneLabel.Text = milestone and ("AT " .. milestone.Goal .. " FOUND  ·  +" .. Traits.Format.Money(milestone.Reward))
+			or "ALL INDEX MILESTONES EARNED"
 		for rarity, label in pairs(counts) do
 			label.Text = string.upper(rarity) .. " " .. (found[rarity] or 0) .. "/" .. (total[rarity] or 0)
 		end

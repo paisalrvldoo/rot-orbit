@@ -92,6 +92,7 @@ function ScreenshotService:Prepare(player, shot)
 	profile.Cash = 867500000
 	profile.Rebirths = 3
 	profile.Multiplier = Config.Rebirth.Multiplier(profile.Rebirths)
+	profile.IndexMilestone = 3
 	profile.SaveStatus = "STUDIO PREVIEW"
 	profile.Contracts = { { Stage = 2, Progress = 3, Completed = 1 },
 		{ Stage = 2, Progress = 4, Completed = 1 }, { Stage = 3, Progress = 0, Completed = 2 } }

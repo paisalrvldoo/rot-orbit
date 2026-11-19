@@ -86,6 +86,7 @@ function DataService:Load(player)
 		profile.Cash = integer(saved.Cash, Config.StartingCash, 0, Config.MaxCash)
 		profile.Rebirths = integer(saved.Rebirths, 0, 0, Config.Rebirth.MaxLevel)
 		profile.Multiplier = Config.Rebirth.Multiplier(profile.Rebirths)
+		profile.IndexMilestone = integer(saved.IndexMilestone, 0, 0, #Config.IndexMilestones)
 		for name, config in pairs(Config.Upgrades) do
 			profile.Upgrades[name] = integer(type(saved.Upgrades) == "table" and saved.Upgrades[name], 0, 0, config.MaxLevel)
 		end
@@ -124,6 +125,7 @@ function DataService:Load(player)
 	end
 	state.Loading = false
 	self.Bases:SetSpeed(player)
+	self.Economy:ClaimIndexMilestones(player)
 	self.Economy:Send(player)
 end
 
@@ -142,6 +144,7 @@ function DataService:Serialize(player)
 	if state.Carry then add(state.Carry.Record, 0) end
 	return { Version = Config.Data.Version, Cash = profile.Cash, Rebirths = profile.Rebirths,
 		Upgrades = table.clone(profile.Upgrades), Found = table.clone(state.Found), Inventory = inventory,
+		IndexMilestone = profile.IndexMilestone,
 		Contracts = { table.clone(profile.Contracts[1]), table.clone(profile.Contracts[2]), table.clone(profile.Contracts[3]) } }
 end
 
