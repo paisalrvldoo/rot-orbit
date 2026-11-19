@@ -195,7 +195,10 @@ originals, six mutations, station title, 24 scripts, dense HUD and staged cover.
 - [x] Rebirth shows its income step, permanent shield time and bonus slot.
   Cash and docked rarity requirements match client and server. Existing
   rebirth levels receive the perks on load without moving saved cargo.
-- [ ] Improve the index and earned rewards while preserving old saves.
+- [x] Mutation index tabs record distinct docked variants, keep discoveries on
+  rebirth, and auto-pay one-time milestones at 10/22/33/43 per mutation. New
+  fields are optional in old saves; owned variants are recovered from inventory.
+  Cash rewards scale with the mutation multiplier. Studio UI/save test pending.
 - [x] Offline haul pays 25% of the saved dock rate for up to two hours and
   appears in the HUD feed on return. The lease acquisition credits each
   departure once. Previous saves earn offline cash after their next save.
@@ -213,6 +216,9 @@ Read owner refs.md and visual guidance. Retain the ten priorities above: 43
 originals, six mutations, 24 meaningful scripts, large title, late-game cover,
 four distinct shots, visible hazards, live HUD, quests/feed and earned progression.
 Core systems precede more spectacle. This pass's remaining order:
-- [ ] Persist mutation discoveries and make the index tabs reward real collecting.
+- [x] Persist mutation discoveries and make the index tabs reward real collecting.
+  `node tools/check-collections.mjs` exercises the actual server functions:
+  duplicate docking, independent mutations, repeat/catch-up claims, preview/load
+  guards, cash cap and immutable queued save snapshots all pass.
 - [ ] Correct/review deterministic staging, then document the four-shot handoff.
 - [ ] Reverify, retry the Public link check, and leave a clean committed tree.

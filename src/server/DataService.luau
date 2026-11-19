@@ -101,6 +101,19 @@ function DataService:Load(player)
 		profile.Rebirths = integer(saved.Rebirths, 0, 0, Config.Rebirth.MaxLevel)
 		profile.Multiplier = Config.Rebirth.Multiplier(profile.Rebirths)
 		profile.IndexMilestone = integer(saved.IndexMilestone, 0, 0, #Config.IndexMilestones)
+		for _, name in ipairs(Mutation.Order) do
+			profile.MutationMilestones[name] = integer(type(saved.MutationMilestones) == "table"
+				and saved.MutationMilestones[name], 0, 0, #Config.MutationMilestones)
+			local variants = type(saved.Variants) == "table" and saved.Variants[name]
+			state.Variants[name] = {}
+			for _, entry in ipairs(Catalog.Entries) do
+				local id = tostring(entry.Id)
+				if type(variants) == "table" and variants[id] == true then
+					state.Variants[name][id] = true
+					state.Found[id] = true
+				end
+			end
+		end
 		for name, config in pairs(Config.Upgrades) do
 			profile.Upgrades[name] = integer(type(saved.Upgrades) == "table" and saved.Upgrades[name], 0, 0, config.MaxLevel)
 		end
@@ -158,10 +171,13 @@ function DataService:Serialize(player)
 	end
 	-- Cargo already purchased/stolen is owned; reconnecting safely docks it in a free slot.
 	if state.Carry then add(state.Carry.Record, 0) end
+	local variants = {}
+	for name, found in pairs(state.Variants) do variants[name] = table.clone(found) end
 	return { Version = Config.Data.Version, Cash = profile.Cash, Rebirths = profile.Rebirths,
 		LastSeen = os.time(), DockRate = self.Economy:Income(player, false, true),
 		Upgrades = table.clone(profile.Upgrades), Found = table.clone(state.Found), Inventory = inventory,
 		IndexMilestone = profile.IndexMilestone,
+		Variants = variants, MutationMilestones = table.clone(profile.MutationMilestones),
 		Contracts = { table.clone(profile.Contracts[1]), table.clone(profile.Contracts[2]), table.clone(profile.Contracts[3]) } }
 end
 

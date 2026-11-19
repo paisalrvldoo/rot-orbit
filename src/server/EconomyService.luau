@@ -1,7 +1,8 @@
 -- Cash, purchases and income are computed exclusively on the server.
 local shared = game:GetService("ReplicatedStorage")
 local Config = require(shared:WaitForChild("Config"))
-local Format = require(shared:WaitForChild("BrainrotTraits")).Format
+local Traits = require(shared:WaitForChild("BrainrotTraits"))
+local Format = Traits.Format
 local Catalog = require(script.Parent:WaitForChild("BrainrotCatalog"))
 local EconomyService = {}
 EconomyService.__index = EconomyService
@@ -27,7 +28,7 @@ end
 
 function EconomyService:AddPlayer(player)
 	self.Profiles[player] = { Cash = Config.StartingCash, Rebirths = 0, Multiplier = 1,
-		Upgrades = {}, IndexMilestone = 0 }
+		Upgrades = {}, IndexMilestone = 0, MutationMilestones = {} }
 	self:Send(player)
 end
 
@@ -87,6 +88,19 @@ function EconomyService:ClaimIndexMilestones(player)
 		profile.Cash = math.min(Config.MaxCash, profile.Cash + milestone.Reward)
 		self.Network.Notice:FireClient(player, "INDEX " .. milestone.Goal .. " FOUND · +" .. Format.Money(milestone.Reward))
 	end
+	for _, name in ipairs(Traits.Mutation.Order) do
+		local variants = 0
+		for _, known in pairs(state.Variants[name] or {}) do if known then variants += 1 end end
+		for index = (profile.MutationMilestones[name] or 0) + 1, #Config.MutationMilestones do
+			local milestone = Config.MutationMilestones[index]
+			if variants < milestone.Goal then break end
+			local reward = milestone.Reward * Traits.Mutation.Multiplier(name)
+			profile.MutationMilestones[name] = index
+			profile.Cash = math.min(Config.MaxCash, profile.Cash + reward)
+			self.Network.Notice:FireClient(player, string.upper(name) .. " INDEX " .. milestone.Goal
+				.. " FOUND · +" .. Format.Money(reward))
+		end
+	end
 end
 
 function EconomyService:Activity(player, kind, record)
@@ -114,6 +128,7 @@ function EconomyService:Snapshot(player)
 		BayIndex = state.Bay.Index, BayPosition = state.Bay.SpawnFrame.Position,
 		Slots = #state.Bay.Slots, Inventory = inventory, Found = state.Found,
 		IndexMilestone = profile.IndexMilestone,
+		Variants = state.Variants, MutationMilestones = profile.MutationMilestones,
 		LockUntil = state.LockUntil or 0, LockReadyAt = state.LockReadyAt or 0,
 		ZapReadyAt = state.ZapReadyAt or 0,
 		Carrying = state.Carry and { Name = Catalog.DisplayName(state.Carry.Record),

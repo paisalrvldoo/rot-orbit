@@ -64,6 +64,8 @@ local Config = {
 		Multipliers = { 1, 1.5, 2, 3, 4.5, 6, 8, 10 } },
 	IndexMilestones = { { Goal = 10, Reward = 5000 }, { Goal = 20, Reward = 50000 },
 		{ Goal = 30, Reward = 750000 }, { Goal = 40, Reward = 15000000 } },
+	MutationMilestones = { { Goal = 10, Reward = 50000 }, { Goal = 22, Reward = 750000 },
+		{ Goal = 33, Reward = 15000000 }, { Goal = 43, Reward = 100000000 } },
 	Data = { StoreName = "RotOrbit_v1", AutosaveSeconds = 60, Version = 1, LeaseSeconds = 180,
 		OfflineMinSeconds = 60, OfflineMaxSeconds = 7200, OfflineShare = 0.25 },
 	Contracts = { Tracks = {

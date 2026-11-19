@@ -16,16 +16,24 @@ function IndexPanel.Start(hud, input)
 	header.Font = Enum.Font.GothamBlack
 	local milestoneLabel = Style.Text(panel, "", 629, 20, 501, 36, 20, Config.Palette.Sun)
 	milestoneLabel.TextXAlignment = Enum.TextXAlignment.Right
+	local selected = "All"
+	local tabs = {}
+	local function tab(name, text, x, width, color)
+		local button = Style.Button(panel, text, x, 394, width, 39, function() selected = name end)
+		button.TextSize = 16
+		button.BackgroundColor3 = color or Config.Palette.Teal
+		tabs[name] = button
+	end
+	tab("All", "ALL", 21, 98)
 	local cells, counts = {}, {}
 	for index, rarity in ipairs(Rarity.Order) do
 		counts[rarity] = Style.Text(panel, rarity .. " 0/0", 21 + (index - 1) * 167, 61, 165, 27,
 			19, Rarity.ByName[rarity].Color)
 	end
-	Style.Text(panel, "MUTATIONS", 21, 404, 135, 33, 19, Config.Palette.Muted)
 	for index, name in ipairs(Mutation.Order) do
 		local mutation = Mutation.ByName[name]
-		Style.Text(panel, string.upper(name) .. " ×" .. mutation.Multiplier,
-			164 + (index - 1) * 170, 404, 166, 33, 19, mutation.Color)
+		tab(name, string.upper(name) .. " ×" .. mutation.Multiplier,
+			129 + (index - 1) * 174, 164, Color3.fromRGB(43, 67, 83))
 	end
 	local function silhouette(parent, color)
 		local parts = {}
@@ -51,9 +59,15 @@ function IndexPanel.Start(hud, input)
 		if not state or not panel.Visible then return end
 		local found, total = {}, {}
 		local discovered = 0
+		local discoveries = selected == "All" and state.Found or ((state.Variants or {})[selected] or {})
+		for name, button in pairs(tabs) do
+			button:SetAttribute("Selected", name == selected)
+			button.BackgroundColor3 = name == selected and Config.Palette.Teal or Color3.fromRGB(43, 67, 83)
+			button.TextColor3 = name == "All" and Config.Palette.White or Mutation.ByName[name].Color
+		end
 		for index, entry in ipairs(state.Catalog) do
 			local rarity = Rarity.ByName[entry.Rarity]
-			local known = state.Found[tostring(entry.Id)] == true
+			local known = discoveries[tostring(entry.Id)] == true
 			total[entry.Rarity] = (total[entry.Rarity] or 0) + 1
 			if known then
 				discovered += 1
@@ -85,10 +99,15 @@ function IndexPanel.Start(hud, input)
 			cell.Stroke.Color = color
 			for _, piece in ipairs(cell.Parts) do piece.BackgroundColor3 = color end
 		end
-		header.Text = "INDEX · " .. discovered .. "/" .. #state.Catalog .. " FOUND"
-		local milestone = Config.IndexMilestones[(state.IndexMilestone or 0) + 1]
-		milestoneLabel.Text = milestone and ("AT " .. milestone.Goal .. " FOUND  ·  +" .. Traits.Format.Money(milestone.Reward))
-			or "ALL INDEX MILESTONES EARNED"
+		header.Text = (selected == "All" and "INDEX" or string.upper(selected))
+			.. " · " .. discovered .. "/" .. #state.Catalog .. " FOUND"
+		local earned = selected == "All" and (state.IndexMilestone or 0)
+			or ((state.MutationMilestones or {})[selected] or 0)
+		local milestones = selected == "All" and Config.IndexMilestones or Config.MutationMilestones
+		local milestone = milestones[earned + 1]
+		local multiplier = selected == "All" and 1 or Mutation.Multiplier(selected)
+		milestoneLabel.Text = milestone and (discovered .. "/" .. milestone.Goal .. "  ·  +"
+			.. Traits.Format.Money(milestone.Reward * multiplier) .. " AUTO") or "ALL REWARDS EARNED"
 		for rarity, label in pairs(counts) do
 			label.Text = string.upper(rarity) .. " " .. (found[rarity] or 0) .. "/" .. (total[rarity] or 0)
 		end

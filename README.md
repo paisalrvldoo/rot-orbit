@@ -8,6 +8,9 @@ Solar flares double income; upgrades, rebirths, a discovery index, three rotatin
 contracts and protected DataStore saving provide progression.
 Collect 43 original brainrots across seven rarities and six mutations, including
 the x7 Aurora and x10 Supernova variants.
+The index tracks each mutation separately and pays automatic cash milestones
+for 10, 22, 33 and 43 distinct variants. Discoveries survive rebirths. Saved
+docks earn a 25% offline haul for up to two hours away.
 
 WASD moves; E buys, steals, recovers and docks; L locks; F zaps; U opens upgrades
 and contracts; R opens rebirth (click again to confirm); B opens the index.
@@ -37,6 +40,8 @@ and contracts; R opens rebirth (click again to confirm); B opens the index.
 `node tools/verify.mjs` rebuilds the place, compiles every Luau script and checks
 the exported dossier. Roblox Studio playtesting remains necessary: this machine
 has no Studio. See NOTES.md for current progress and the next polish priorities.
+`node tools/check-collections.mjs` checks one-time collection payouts and save
+snapshot isolation using the real server functions in the Luau interpreter.
 
 Run it as the grader does, writing `out/` in place of `/output`:
 

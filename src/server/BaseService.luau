@@ -66,7 +66,7 @@ function BaseService:Assign(player)
 	bay.Owner = player
 	bay.Model:SetAttribute("OwnerUserId", player.UserId)
 	bay.Label.Text = string.upper(player.DisplayName) .. " · BAY " .. string.format("%02d", bay.Index)
-	local state = { Bay = bay, Carry = nil, Found = {} }
+	local state = { Bay = bay, Carry = nil, Found = {}, Variants = {} }
 	self.Players[player] = state
 	for _, pedestal in ipairs(bay.Slots) do
 		self:AttachPlacePrompt(bay, pedestal)
@@ -207,6 +207,20 @@ function BaseService:Carry(player, record)
 	return true
 end
 
+function BaseService:Discover(state, record)
+	local id = tostring(record.Id)
+	local discovered = not state.Found[id]
+	state.Found[id] = true
+	if record.Mutation then
+		local variants = state.Variants[record.Mutation] or {}
+		state.Variants[record.Mutation] = variants
+		local newVariant = not variants[id]
+		variants[id] = true
+		return discovered, newVariant
+	end
+	return discovered, false
+end
+
 function BaseService:Place(player, pedestal)
 	local state = self.Players[player]
 	if not state or not state.Carry or pedestal.Occupant
@@ -218,14 +232,14 @@ function BaseService:Place(player, pedestal)
 	pedestal.Occupant = { Record = record, Model = BrainrotModel.Create(record, pedestal.Frame, state.Bay.Model) }
 	self:RefreshPedestal(pedestal)
 	self:AttachRetirePrompt(player, pedestal)
-	local discovered = not state.Found[tostring(record.Id)]
-	state.Found[tostring(record.Id)] = true
+	local discovered, newVariant = self:Discover(state, record)
 	if self.OnPlaced then self.OnPlaced(state.Bay, pedestal) end
 	self:SetSpeed(player)
 	self.Network.Notice:FireClient(player, Catalog.DisplayName(record) .. " docked! Earning every second.")
 	if discovered then self.Network.Notice:FireClient(player, "INDEX DISCOVERY · " .. Catalog.Get(record.Id).Name) end
+	if newVariant then self.Network.Notice:FireClient(player, "MUTATION DISCOVERY · " .. Catalog.DisplayName(record)) end
 	if self.Economy then
-		if discovered then self.Economy:ClaimIndexMilestones(player) end
+		if discovered or newVariant then self.Economy:ClaimIndexMilestones(player) end
 		self.Economy:Activity(player, "Dock", record)
 		self.Economy:Send(player)
 	end
@@ -294,7 +308,7 @@ function BaseService:Restore(player, record, slotIndex)
 		Model = BrainrotModel.Create(record, pedestal.Frame, state.Bay.Model) }
 	self:RefreshPedestal(pedestal)
 	self:AttachRetirePrompt(player, pedestal)
-	state.Found[tostring(record.Id)] = true
+	self:Discover(state, record)
 	if self.OnPlaced then self.OnPlaced(state.Bay, pedestal) end
 	return true
 end
