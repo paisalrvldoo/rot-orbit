@@ -325,7 +325,15 @@ Core fixes and combat take priority over more visual polish.
   READY or countdown with circular badges. Expanding VFX and built-in ping need
   Studio visual/audio/mobile confirmation. Actual unlock/spam/preview/departure
   regressions pass. No new script modules were needed (still 24).
-- [ ] Same-server crew joining, friendly theft protection and shared defence.
+- [x] Three original station crews, joined on arrival pads or Y/touch panel.
+  Friendly cargo theft is denied on the server and hidden in prompt UI. Crew
+  nameplates, coloured dock banners, teammate bay OPEN/LOCKED status, nearby
+  kill assists and shared defence score are implemented. Server rankings show
+  score, raids, bosses, cash and income; gold #1 dock banners. Switching is
+  blocked during raids, while carrying and for 15s after joining. Actual
+  alliance/assist/score/membership regressions pass; Studio multiplayer pending.
+  Added one purposeful CrewService: 25 scripts, slightly above the prior
+  approximate 20–24 target to fulfil the owner's newer squad request cleanly.
 - [ ] Server/global crew ranks with throttled pcall-safe persistence.
 - [ ] Four genuine Studio captures, approved icon/thumbnail and latest publish.
 

@@ -136,6 +136,7 @@ function EconomyService:Snapshot(player)
 			Id = state.Carry.Record.Id, Mutation = state.Carry.Record.Mutation } or false,
 		Catalog = Catalog.Public(), Events = self.Events,
 		NextMeteorAt = not profile.Demo and self.NextMeteorAt or nil,
+		Crew = self.Crews and self.Crews:View(player) or nil,
 		Contracts = self.Contracts and self.Contracts:View(player) or {} }
 end
 

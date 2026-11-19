@@ -9,6 +9,7 @@ local StealService = require(script.Parent:WaitForChild("StealService"))
 local MeteorSolarEvents = require(script.Parent:WaitForChild("MeteorSolarEvents"))
 local LockService = require(script.Parent:WaitForChild("LockService"))
 local GremlinRaid = require(script.Parent:WaitForChild("GremlinRaid"))
+local CrewService = require(script.Parent:WaitForChild("CrewService"))
 local UpgradeRebirthService = require(script.Parent:WaitForChild("UpgradeRebirthService"))
 local ContractService = require(script.Parent:WaitForChild("ContractService"))
 local DataService = require(script.Parent:WaitForChild("DataService"))
@@ -26,6 +27,7 @@ local stealing = StealService.new(bases, economy, network)
 local meteors = MeteorSolarEvents.new(world, bases, economy)
 local locks = LockService.new(bases, economy)
 local gremlins = GremlinRaid.new(world, bases, economy, locks)
+local crews = CrewService.new(world, bases, economy, gremlins)
 local upgrades = UpgradeRebirthService.new(bases, economy)
 local contracts = ContractService.new(economy)
 local data = DataService.new(bases, economy)
@@ -34,6 +36,7 @@ local screenshots = ScreenshotService.new({ Bases = bases, Economy = economy, Da
 local actions = { Lock = function(player) locks:Activate(player) end,
 	Zap = function(player) gremlins:Zap(player) end,
 	Skill = function(player, name) gremlins:Skill(player, name) end,
+	Crew = function(player, id) crews:Join(player, id) end,
 	Upgrade = function(player, name) upgrades:Buy(player, name) end,
 	Rebirth = function(player) upgrades:Perform(player) end,
 	Screenshot = function(player, shot) screenshots:Prepare(player, shot) end }
@@ -59,6 +62,7 @@ end
 Players.PlayerAdded:Connect(joined)
 Players.PlayerRemoving:Connect(function(player)
 	data:Close(player)
+	crews:Remove(player)
 	bases:Release(player)
 	economy.Profiles[player] = nil
 	lastAction[player] = nil

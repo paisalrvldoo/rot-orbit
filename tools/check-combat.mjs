@@ -72,6 +72,31 @@ assert(uses == 1, 'capture staging must not invoke live skills')
 assert(Config.Skills.Unlocked('Bubble', { Rebirths = 2 }))
 assert(not Config.Skills.Unlocked('Bubble', { Rebirths = 1 }))
 assert(Config.Skills.Unlocked('Dash', {}))
+local CrewService = ${moduleBody('src/server/CrewService.luau', 'local CrewService =')}
+local one, two, rival, far = {}, {}, {}, {}
+local crewPlayers = { [one] = { CrewId = 1 }, [two] = { CrewId = 1 }, [rival] = { CrewId = 2 }, [far] = { CrewId = 1 } }
+local crewProfiles = { [one] = { Cash = 0 }, [two] = { Cash = 0 }, [rival] = { Cash = 0 }, [far] = { Cash = 0 } }
+local crews = setmetatable({ Bases = { Players = crewPlayers, Near = function(_, p) return p ~= far end },
+    Economy = { Profiles = crewProfiles, Network = { Notice = { FireClient = function() end } }, Send = function() end },
+    Crews = { { Id = 1, Score = 0, Raids = 0, Bosses = 0 }, { Id = 2, Score = 0, Raids = 0, Bosses = 0 } },
+    Raids = { Active = false } }, CrewService)
+assert(crews:Same(one, two) and not crews:Same(one, rival) and not crews:Same(one, nil))
+crews:OnDefeat(one, { Boss = true, Position = {} })
+assert(crews.Crews[1].Bosses == 1 and crews.Crews[1].Score == Config.Crews.BossScore)
+assert(crewProfiles[two].Cash == Config.Crews.BossAssist and crewProfiles[far].Cash == 0 and crewProfiles[rival].Cash == 0)
+crews:Defended({ one, two, rival })
+assert(crews.Crews[1].Raids == 1 and crews.Crews[2].Raids == 1, 'crew defence counts once per crew, not per member')
+crews:Join(one, {})
+crews:Join(one, 1.5)
+crews:Join(one, 999)
+crewPlayers[one].Carry = {}
+crews:Join(one, 2)
+assert(crewPlayers[one].CrewId == 1, 'cannot transfer crew while carrying')
+crewPlayers[one].Carry = nil
+crews.Raids.Active = true
+crews:Join(one, 2)
+assert(crewPlayers[one].CrewId == 1, 'cannot hop crews during a raid')
+print('Crew checks passed: friendly protection, nearby assist payout, outsider exclusion, once-per-crew raid score and membership guards.')
 print('Skill checks passed: invalid names, unlocks, upgrade/rebirth paths, cooldown spam and departure/preview guards.')
 print('Combat checks passed: damage, stun, death once, boss reward, cargo recovery, wave reward once, cash cap and profile guards.')
 `;

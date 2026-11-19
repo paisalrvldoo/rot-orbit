@@ -95,6 +95,7 @@ function GremlinRaid:Damage(state, player, amount)
 		profile.Cash = math.min(Config.MaxCash, profile.Cash + reward)
 		self.Economy.Network.Notice:FireClient(player, (state.Boss and "CAPTAIN DOWN! +$" or "GREMLIN DOWN! +$") .. reward)
 	end
+	if self.Crews and profile and not profile.Demo then self.Crews:OnDefeat(player, state) end
 	if state.Wave == self.Wave then self.Defeated = (self.Defeated or 0) + 1 end
 	self:Remove(state, true)
 	if self.Active and self.Defeated == self.WaveCount then self:Finish() end
@@ -105,15 +106,18 @@ function GremlinRaid:Finish()
 	if not self.Active then return end
 	self.Active = false
 	if self.Defeated == self.WaveCount and self.WaveCount > 0 then
+		local defended = {}
 		for player, state in pairs(self.Bases.Players) do
 			local profile = self.Economy.Profiles[player]
 			if profile and not profile.Demo and not state.Loading and not state.Closing then
+				table.insert(defended, player)
 				state.RaidsDefended = (state.RaidsDefended or 0) + 1
 				profile.Cash = math.min(Config.MaxCash, profile.Cash + Config.Gremlin.DefendReward)
-				self.Economy.Network.Notice:FireClient(player, "RAID DEFENDED! +$" .. Config.Gremlin.DefendReward)
+				self.Economy.Network.Notice:FireClient(player, (state.CrewId and "CREW DEFENDED! +$" or "RAID DEFENDED! +$") .. Config.Gremlin.DefendReward)
 				self.Economy:Send(player)
 			end
 		end
+		if self.Crews then self.Crews:Defended(defended) end
 	end
 	self.Active = false
 end

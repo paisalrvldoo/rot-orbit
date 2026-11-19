@@ -133,15 +133,96 @@ function InputController:Register(name, label, key, callback)
 	end, false, key)
 end
 
+local function startCrewPanel(hud)
+	local panel = Instance.new("Frame")
+	panel.Name = "CrewPanel"
+	panel.AnchorPoint = Vector2.new(0.5, 0.5)
+	panel.Position = UDim2.fromScale(0.5, 0.5)
+	panel.Size = UDim2.fromOffset(960, 410)
+	panel.BackgroundColor3 = Config.Palette.Ink
+	panel.Visible = false
+	panel.Parent = hud.Gui
+	Instance.new("UICorner", panel).CornerRadius = UDim.new(0, 12)
+	local title = HudController.Text(panel, "Title", "CREW RANKS", UDim2.fromOffset(480, 10),
+		UDim2.fromOffset(700, 38), 30, Config.Palette.Sun)
+	local function button(parent, name, text, pos, size, callback)
+		local b = Instance.new("TextButton")
+		b.Name, b.Text, b.Position, b.Size = name, text, pos, size
+		b.BackgroundColor3, b.TextColor3 = Config.Palette.Teal, Config.Palette.White
+		b.TextSize, b.Font = 17, Enum.Font.GothamBold
+		b.Parent = parent
+		Instance.new("UICorner", b).CornerRadius = UDim.new(0, 9)
+		HudController.ButtonFeedback(b, callback, 0.3)
+		return b
+	end
+	local global = false
+	local serverTab = button(panel, "ServerTab", "SERVER", UDim2.fromOffset(24, 54), UDim2.fromOffset(170, 34), function() global = false end)
+	local globalTab = button(panel, "GlobalTab", "ALL-TIME", UDim2.fromOffset(204, 54), UDim2.fromOffset(170, 34), function() global = true end)
+	button(panel, "Close", "CLOSE", UDim2.fromOffset(820, 16), UDim2.fromOffset(116, 34), function() panel.Visible = false end)
+	local footer = HudController.Text(panel, "Status", "", UDim2.fromOffset(480, 370), UDim2.fromOffset(910, 30), 14)
+	local rows = {}
+	for index = 1, 3 do
+		local top = 98 + (index - 1) * 87
+		local row = HudController.Text(panel, "Crew" .. index, "", UDim2.fromOffset(400, top),
+			UDim2.fromOffset(746, 78), 16)
+		row.TextWrapped = true
+		row.TextXAlignment = Enum.TextXAlignment.Left
+		local id = index
+		local join = button(panel, "Join" .. index, "JOIN", UDim2.fromOffset(790, top + 10),
+			UDim2.fromOffset(144, 54), function() hud.Network.Action:FireServer("Crew", id) end)
+		rows[index] = { Label = row, Button = join, SetId = function(value) id = value end }
+	end
+	local open = button(hud.Gui, "CrewButton", "CREWS [Y]", UDim2.fromOffset(24, 365), UDim2.fromOffset(220, 44), function() panel.Visible = not panel.Visible end)
+	ContextActionService:BindAction("RotOrbitCrews", function(_, phase)
+		if UserInputService:GetFocusedTextBox() then return Enum.ContextActionResult.Pass end
+		if phase == Enum.UserInputState.Begin then panel.Visible = not panel.Visible end
+		return Enum.ContextActionResult.Sink
+	end, false, Enum.KeyCode.Y)
+	RunService.Heartbeat:Connect(function()
+		local state = hud.GetState()
+		local view = state and state.Crew
+		if not view then return end
+		open.Text = "CREWS [Y] · " .. (view.Current and Config.Crews.Teams[view.Current].Name or "JOIN A CREW")
+		if not panel.Visible then return end
+		serverTab:SetAttribute("Selected", not global)
+		globalTab:SetAttribute("Selected", global)
+		title.Text = global and "ALL-TIME CREW RANKS" or "SERVER CREW RANKS"
+		local entries = global and view.Global or view.Rows
+		for index, item in ipairs(rows) do
+			local row = entries[index]
+			item.Label.Visible = row ~= nil
+			item.Button.Visible = row ~= nil and not global
+			if row then
+				item.SetId(row.Id)
+				local members = {}
+				for _, member in ipairs(row.Members or {}) do
+					table.insert(members, member.Name .. " B" .. member.Bay .. (member.Locked and " LOCKED" or " OPEN"))
+				end
+				item.Label.TextColor3 = index == 1 and row.Score > 0 and Config.Palette.Sun or row.Color
+				item.Label.Text = "#" .. index .. "  " .. row.Name .. "  ·  " .. row.Score .. " SCORE"
+					.. (global and "\nCOMBINED ALL-SERVER CREW DEFENCE TOTAL" or ("  ·  " .. row.Raids .. " RAIDS  ·  " .. row.Bosses .. " BOSSES\n"
+					.. Format.Money(row.Cash) .. " CASH  ·  " .. Format.Money(row.Income) .. "/s  ·  " .. table.concat(members, " / ")))
+				item.Button.Text = view.Current == row.Id and "YOUR CREW" or "JOIN CREW"
+				item.Button:SetAttribute("Unavailable", view.Current == row.Id)
+			end
+		end
+		footer.Text = global and (view.Status .. " · REFRESHES EVERY 60s") or "TEAM CARGO PROTECTED · NEARBY ALLIES SHARE COMBAT CASH · NO SWITCHING DURING RAIDS"
+	end)
+end
+
 local function filterDockPrompts(hud)
 	local dockPrompts = {}
 	local carrying = false
 	local function update(prompt)
-		local own = prompt:GetAttribute("OwnerUserId") == localPlayer.UserId
+		local ownerId = prompt:GetAttribute("OwnerUserId")
+		local own = ownerId == localPlayer.UserId
+		local owner = game:GetService("Players"):GetPlayerByUserId(ownerId or 0)
+		local crew = localPlayer:GetAttribute("OrbitCrewId")
+		local friendly = crew ~= nil and owner and owner:GetAttribute("OrbitCrewId") == crew
 		if prompt.Name == "PlaceBrainrot" then
 			prompt.Enabled = own and carrying and prompt:GetAttribute("SocketOpen") == true
 		elseif prompt.Name == "StealCargo" then
-			prompt.Enabled = not own and not carrying
+			prompt.Enabled = not own and not friendly and not carrying
 		else
 			prompt.Enabled = own
 		end
@@ -160,10 +241,12 @@ local function filterDockPrompts(hud)
 		end)
 		for _, prompt in ipairs(CollectionService:GetTagged(tag)) do watch(prompt) end
 	end
+	local lastState
 	RunService.Heartbeat:Connect(function()
 		local state = hud.GetState()
 		local hasCargo = state and state.Carrying and true or false
-		if carrying == hasCargo then return end
+		if carrying == hasCargo and state == lastState then return end
+		lastState = state
 		carrying = hasCargo
 		for prompt in pairs(dockPrompts) do update(prompt) end
 	end)
@@ -173,6 +256,7 @@ end
 require(script.Parent:WaitForChild("BillboardFx")).Start()
 local hud = HudController.Start()
 filterDockPrompts(hud)
+startCrewPanel(hud)
 local input = InputController.Start(hud)
 local progression = require(script.Parent:WaitForChild("UpgradeRebirthContracts"))
 local upgrades = progression.StartUpgrades(hud, input)
