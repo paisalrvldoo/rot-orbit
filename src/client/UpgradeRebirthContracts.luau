@@ -120,7 +120,7 @@ function Progression.AddRebirth(hud, input, panel)
 	Style.Text(panel, "REBIRTH · PERMANENT REWARDS", 22, 313, 510, 24, 18, Config.Palette.Sun)
 	local detail = Style.Text(panel, "", 22, 337, 510, 26, 16)
 	local gate = Style.Text(panel, "", 22, 364, 307, 23, 15)
-	Style.Text(panel, "Reset cash/upgrades. Keep your best brainrot + index.", 22, 393, 516, 20, 13, Config.Palette.Muted)
+	local nextUnlock = Style.Text(panel, "", 22, 393, 516, 20, 13, Config.Palette.Muted)
 	local confirmUntil = 0
 	local button = Style.Button(panel, "REBIRTH", 336, 350, 202, 36, function()
 		local state = hud.GetState()
@@ -145,7 +145,10 @@ function Progression.AddRebirth(hud, input, panel)
 		if not state then return end
 		local maxed = state.Rebirths >= Config.Rebirth.MaxLevel
 		local nextMultiplier = Config.Rebirth.Multiplier(state.Rebirths + 1)
-		local slotReward = state.Rebirths < Config.Rebirth.BonusSlotCap and "  ·  +1 slot" or ""
+		local slots = Config.Rebirth.BonusSlots(state.Rebirths + 1) - Config.Rebirth.BonusSlots(state.Rebirths)
+		local slotReward = slots > 0 and ("  ·  +" .. slots .. " pods") or ""
+		nextUnlock.Text = (maxed and "" or ("Next: " .. Config.Rebirth.NextUnlock(state.Rebirths) .. " · "))
+			.. "Keep best + index; cash/upgrades reset."
 		detail.Text = maxed and ("Level " .. state.Rebirths .. " · x" .. state.Multiplier .. " income")
 			or ("x" .. state.Multiplier .. " → x" .. nextMultiplier .. " income  ·  +"
 				.. Config.Rebirth.LockSecondsPerLevel .. "s shield" .. slotReward)

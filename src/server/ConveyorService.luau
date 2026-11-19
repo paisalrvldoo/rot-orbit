@@ -50,7 +50,8 @@ function ConveyorService.new(world, economy)
 				if spawnCount % 3 == 0 then
 					record = surge and { Id = 1, Mutation = "Gold" } or { Id = self.Random:NextInteger(1, 4) }
 				else
-					record = Catalog.Roll(self.Random)
+					record = spawnCount % Config.Rebirth.SupplyEvery == 1 and self:RebirthSupply() or nil
+					record = record or Catalog.Roll(self.Random)
 					if surge then record.Mutation = Mutation.Roll(self.Random, true) end
 				end
 				self:Spawn(record, -math.pi / 2)
@@ -69,6 +70,17 @@ function ConveyorService.new(world, economy)
 		end
 	end)
 	return self
+end
+
+function ConveyorService:RebirthSupply()
+	for player, profile in pairs(self.Economy.Profiles) do
+		local state = self.Economy.Bases.Players[player]
+		if profile.Rebirths >= 3 and not profile.Demo and state and not state.Loading and not state.Closing then
+			local choices = Catalog.ByRarity.Mythic
+			return { Id = choices[self.Random:NextInteger(1, #choices)].Id, Mutation = Mutation.Roll(self.Random) }
+		end
+	end
+	return nil
 end
 
 function ConveyorService:Frame(angle)

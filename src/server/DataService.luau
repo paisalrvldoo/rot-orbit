@@ -155,6 +155,7 @@ function DataService:Load(player)
 		warn("ROT ORBIT saving unavailable; keeping this session playable without overwriting progress.")
 	end
 	state.Loading = false
+	self.Bases:ApplyRebirthLook(player)
 	self.Bases:SetSpeed(player)
 	self.Economy:ClaimIndexMilestones(player)
 	self.Economy:Send(player)

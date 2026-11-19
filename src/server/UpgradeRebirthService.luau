@@ -1,9 +1,30 @@
 local Config = require(game:GetService("ReplicatedStorage"):WaitForChild("Config"))
+local Debris = game:GetService("Debris")
 local UpgradeRebirthService = {}
 UpgradeRebirthService.__index = UpgradeRebirthService
 
 function UpgradeRebirthService.new(bases, economy)
 	return setmetatable({ Bases = bases, Economy = economy }, UpgradeRebirthService)
+end
+
+function UpgradeRebirthService:Celebrate(player)
+	local state = self.Bases.Players[player]
+	local attachment = Instance.new("Attachment")
+	attachment.Position = Vector3.new(0, 7, 0)
+	attachment.Parent = state.Bay.Floor
+	local sparks = Instance.new("ParticleEmitter")
+	sparks.Texture = "rbxasset://textures/particles/sparkles_main.dds"
+	sparks.Color = ColorSequence.new(Config.Palette.Sun, Config.Palette.Mint)
+	sparks.Rate = 0
+	sparks.Lifetime, sparks.Speed = NumberRange.new(1, 1.6), NumberRange.new(14, 22)
+	sparks.Acceleration = Vector3.new(0, -14, 0)
+	sparks.SpreadAngle = Vector2.new(70, 70)
+	sparks.Size = NumberSequence.new(0.45, 0)
+	sparks.Parent = attachment
+	sparks:Emit(48)
+	Debris:AddItem(attachment, 3)
+	self.Economy:PublishEvent({ Name = "Rebirth", Text = string.upper(player.DisplayName) .. " REBIRTHED!",
+		EndsAt = workspace:GetServerTimeNow() + 5, Priority = 1.25, Color = Config.Palette.Sun, HideCountdown = true })
 end
 
 function UpgradeRebirthService:Buy(player, name)
@@ -51,6 +72,8 @@ function UpgradeRebirthService:Perform(player)
 	self.Bases:Reset(player)
 	for _ = 1, Config.Rebirth.BonusSlots(profile.Rebirths) do self.Bases:AddSlot(player) end
 	if kept then self.Bases:Restore(player, kept, 1) end
+	self.Bases:ApplyRebirthLook(player)
+	self:Celebrate(player)
 	self.Economy.Network.Notice:FireClient(player, "REBIRTH! x" .. profile.Multiplier
 		.. " income · best brainrot kept and earning · index kept.")
 	self.Economy:Activity(player, "Rebirth")

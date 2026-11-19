@@ -522,7 +522,7 @@ function GremlinRaid:Skill(player, name, mode)
 	end
 	local blinkTarget
 	if name == "Blink" then
-		blinkTarget = self:BlinkTarget(player, root, state.Carry and skill.CarryDistance or skill.Distance)
+		blinkTarget = self:BlinkTarget(player, root, Config.Rebirth.BlinkDistance(profile.Rebirths or 0, state.Carry ~= nil))
 		if not blinkTarget then
 			self.Economy.Network.Notice:FireClient(player, "BLINK BLOCKED · TURN TOWARD OPEN DECK")
 			return

@@ -146,7 +146,9 @@ function InputController.Start(hud)
 		for _, known in pairs(state.Found) do if known then found += 1 end end
 		local cost = Config.Rebirth.Cost(state.Rebirths)
 		self.Buttons.Upgrades.Text = "UPGRADES [U]\n" .. levels .. "/" .. maxLevels .. " BUILT"
-		self.Buttons.Rebirth.Text = "REBIRTH [R]\n" .. (state.Rebirths >= Config.Rebirth.MaxLevel and "MAXED" or Format.Money(cost))
+		self.Buttons.Rebirth.TextSize = 13
+		self.Buttons.Rebirth.Text = state.Rebirths >= Config.Rebirth.MaxLevel and "REBIRTH [R]\nMAXED"
+			or ("REBIRTH [R] · " .. Format.Money(cost) .. "\nNEXT: " .. Config.Rebirth.NextUnlock(state.Rebirths))
 		self.Buttons.Index.Text = "INDEX [B]\n" .. found .. "/" .. #state.Catalog .. " FOUND"
 	end)
 	return self

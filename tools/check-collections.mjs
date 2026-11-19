@@ -21,6 +21,7 @@ local HttpService = { GenerateGUID = function() guid += 1; return tostring(guid)
 local BaseService = ${moduleBody('src/server/BaseService.luau', 'local BaseService =')}
 local EconomyService = ${moduleBody('src/server/EconomyService.luau', 'local EconomyService =')}
 local UpgradeRebirthService = ${moduleBody('src/server/UpgradeRebirthService.luau', 'local UpgradeRebirthService =')}
+local ConveyorService = ${moduleBody('src/server/ConveyorService.luau', 'local ConveyorService =')}
 local DataService = ${moduleBody('src/server/DataService.luau', 'local DataService =')}
 local ScreenshotService = ${moduleBody('src/server/ScreenshotService.luau', 'local ScreenshotService =')}
 local MeteorSolarEvents = ${moduleBody('src/server/MeteorSolarEvents.luau', 'local MeteorSolarEvents =')}
@@ -64,7 +65,9 @@ do
         assert(slot == 1 and record ~= kept and record.Guid == kept.Guid and record.Mutation == 'Supernova')
         s.Bay.Slots[slot] = occupied(record)
     end
+    b.ApplyRebirthLook = function() end
     local rebirth = UpgradeRebirthService.new(b, e)
+    rebirth.Celebrate = function() end
     p.Cash = 0; rebirth:Perform(user)
     assert(p.Rebirths == 0 and #s.Bay.Slots == 2, 'unaffordable rebirth must not clear cargo')
     p.Cash = Config.Rebirth.Cost(0)
@@ -80,6 +83,19 @@ do
         'kept cargo must earn immediately after rebirth with mutation and new multiplier')
     rebirth:Perform(user)
     assert(p.Rebirths == 1, 'repeated confirm cannot rebirth twice without the next cash gate')
+    assert(Config.Rebirth.BonusSlots(0) == 0 and Config.Rebirth.BonusSlots(1) == 2)
+    assert(Config.Rebirth.BonusSlots(15) == Config.Rebirth.BonusSlotCap)
+    assert(Config.Rebirth.BlinkDistance(0, false) == Config.Skills.Blink.Distance)
+    assert(Config.Rebirth.BlinkDistance(2, true) == Config.Skills.Blink.CarryDistance + Config.Rebirth.CarryBlinkBonus)
+    local supply = setmetatable({ Economy = e, Random = {
+        NextInteger = function(_, minimum) return minimum end, NextNumber = function() return 99 end } }, ConveyorService)
+    assert(supply:RebirthSupply() == nil, 'early orbit must keep its normal cargo odds')
+    p.Rebirths = 3
+    assert(Catalog.Get(supply:RebirthSupply().Id).Rarity == 'Mythic')
+    p.Demo = true
+    assert(supply:RebirthSupply() == nil, 'preview must not unlock live rare supply')
+    p.Demo = nil; s.Closing = true
+    assert(supply:RebirthSupply() == nil, 'departing players cannot keep rare supply active')
 end
 for id = 1, 10 do
     local fresh, variant = bases:Discover(state, { Id = id, Mutation = "Gold" })
@@ -141,7 +157,8 @@ local store = { UpdateAsync = function(_, _, callback)
     return updated
 end }
 local connections, loadedProfiles = {}, {}
-local saveBases = { Players = connections, SetSpeed = function() end, AddSlot = function() end }
+local saveBases = { Players = connections, SetSpeed = function() end, AddSlot = function() end,
+    ApplyRebirthLook = function() end }
 local saveEconomy = { Profiles = loadedProfiles, Send = function() end, ClaimIndexMilestones = function() end }
 local saves = setmetatable({ Bases = saveBases, Economy = saveEconomy, Sessions = {},
     Store = store, Token = "same-server" }, DataService)

@@ -95,6 +95,9 @@ local Config = {
 		IncomeBoost = { BaseCost = 10000, CostGrowth = 3, Step = 0.08, MaxLevel = 6 },
 	},
 	Rebirth = { BaseCost = 100000, CostGrowth = 5, MaxLevel = 15, BonusSlotCap = 4, LockSecondsPerLevel = 3,
+		BlinkBonus = 8, CarryBlinkBonus = 4, SupplyEvery = 8,
+		FloorColors = { [0] = Color3.fromRGB(207, 238, 240), Color3.fromRGB(204, 241, 218),
+			Color3.fromRGB(211, 226, 253), Color3.fromRGB(250, 227, 188), Color3.fromRGB(244, 213, 233) },
 		DockRanks = { 2, 3, 3, 4, 4, 5, 5, 6 },
 		Multipliers = { 1, 1.5, 2, 3, 4.5, 6, 8, 10 } },
 	IndexMilestones = { { Goal = 10, Reward = 5000 }, { Goal = 20, Reward = 50000 },
@@ -142,7 +145,18 @@ function Config.Rebirth.Multiplier(level)
 end
 
 function Config.Rebirth.BonusSlots(level)
-	return math.min(level, Config.Rebirth.BonusSlotCap)
+	return level == 0 and 0 or math.min(level + 1, Config.Rebirth.BonusSlotCap)
+end
+
+function Config.Rebirth.NextUnlock(level)
+	local rewards = { "2 pods + mint bay", "Blink+ + blue bay", "Mythic supply", "Orbit Ace aura" }
+	return rewards[level + 1] or "+3s shield + permanent income"
+end
+
+function Config.Rebirth.BlinkDistance(level, carrying)
+	local skill = Config.Skills.Blink
+	return (carrying and skill.CarryDistance or skill.Distance)
+		+ (level >= 2 and (carrying and Config.Rebirth.CarryBlinkBonus or Config.Rebirth.BlinkBonus) or 0)
 end
 
 function Config.Rebirth.RequiredRank(level)

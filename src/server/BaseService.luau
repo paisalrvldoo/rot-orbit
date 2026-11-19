@@ -96,6 +96,7 @@ function BaseService:Assign(player)
 		state.HasSpawned = true
 		character:PivotTo(destination)
 		self:SetSpeed(player)
+		self:ApplyRebirthLook(player)
 		humanoid.Died:Connect(function() self:Drop(player) end)
 	end
 	state.CharacterConnection = player.CharacterAdded:Connect(characterAdded)
@@ -167,6 +168,34 @@ function BaseService:BestDocked(player)
 	end
 	-- Keep the stable identity and mutation without retaining the destroyed model.
 	return best and table.clone(best) or nil
+end
+
+function BaseService:ApplyRebirthLook(player, level)
+	local state = self.Players[player]
+	local profile = self.Economy and self.Economy.Profiles[player]
+	if not state then return end
+	level = level or (profile and profile.Rebirths) or 0
+	state.Bay.Floor.Color = Config.Rebirth.FloorColors[math.min(level, 4)]
+	state.Bay.Label.Text = (level >= 4 and "ORBIT ACE · " or "")
+		.. string.upper(player.DisplayName) .. " · BAY " .. string.format("%02d", state.Bay.Index)
+	local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+	if not root then return end
+	for _, name in ipairs({ "RebirthOrbitAura", "OrbitAceTitle" }) do
+		local old = root:FindFirstChild(name)
+		if old then old:Destroy() end
+	end
+	if level >= 4 then
+		local aura = Instance.new("ParticleEmitter")
+		aura.Name = "RebirthOrbitAura"
+		aura.Texture = "rbxasset://textures/particles/sparkles_main.dds"
+		aura.Color = ColorSequence.new(Config.Palette.Sun)
+		aura.Rate, aura.Lifetime, aura.Speed = 4, NumberRange.new(0.8, 1.2), NumberRange.new(0.5, 1)
+		aura.SpreadAngle = Vector2.new(180, 180)
+		aura.Size = NumberSequence.new(0.16, 0)
+		aura.Parent = root
+		local title = WorldBuilder.Billboard(root, "ORBIT ACE", Config.Palette.Sun, Vector3.new(0, 6, 0), 140, 22)
+		title.Parent.Name, title.Parent.MaxDistance, title.TextSize = "OrbitAceTitle", 40, 14
+	end
 end
 
 function BaseService:CanCarry(player)
@@ -356,6 +385,7 @@ end
 function BaseService:Release(player)
 	local state = self.Players[player]
 	if not state then return end
+	self:ApplyRebirthLook(player, 0)
 	self:Reset(player)
 	state.CharacterConnection:Disconnect()
 	for _, pedestal in ipairs(state.Bay.Slots) do

@@ -20,6 +20,13 @@ Newest phone feedback takes precedence over extra features this pass:
   and stable ID), restores it to pod 1 and immediately includes it in income.
   Actual selection/orchestration/income regressions cover preview/loading/
   departure guards, insufficient cash, repeat confirmation and mutation value.
+- [x] Implement visible rebirth rewards: R1 grants two bonus pods and mint
+  bay; R2 extends Blink (including carrying) and blue bay; R3 starts periodic
+  shared Mythic supply and gold bay; R4 adds an Orbit Ace title/aura and rose
+  bay. Fireworks and a server announcement celebrate the reset. Rejoin and
+  respawn restore cosmetics. UI advertises next unlock and keeps cost/gates.
+  Existing saves inherit these perks. Rot King/R5 key is still queued, not
+  advertised as usable. Studio motion/colour and multiplayer checks pending.
 - [ ] Owner: 1024×460 phone render/playtest (Studio unavailable here), then
   publish and four genuine screenshots. Source checks cannot approve rendering.
 
