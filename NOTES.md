@@ -68,7 +68,9 @@ ScreenshotMode and an exact rules-format TOUR only when those features exist.
   server recomputes costs and enforces upgrade caps.
 - [x] Rebirth [R] opens the upgrade panel; a second click confirms resetting
   cash/upgrades/bay for permanent income. Found index entries survive resets.
-- [ ] Index; contracts; saving; final HUD polish.
+- [x] Index [B]: all 30 cast entries in a six-column grid; found count, seven
+  rarity counts and coloured found icons / dark undiscovered silhouettes.
+- [ ] Contracts; saving; final HUD polish.
 - [ ] ScreenshotMode/TOUR, README, genuine Studio pictures and published IDs.
 
 NPC stealing; meteor warnings/impacts and safe domes; solar flare; green gremlin

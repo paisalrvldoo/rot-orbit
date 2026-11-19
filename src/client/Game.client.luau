@@ -14,6 +14,8 @@ local input = InputController.Start(hud)
 local UpgradePanel = require(script.Parent:WaitForChild("UpgradePanel"))
 local upgradePanel = UpgradePanel.Start(hud, input)
 UpgradePanel.AddRebirth(hud, input, upgradePanel)
+local IndexPanel = require(script.Parent:WaitForChild("IndexPanel"))
+local indexPanel = IndexPanel.Start(hud, input)
 
 local ARENA_WIDTH = 640
 local ARENA_HEIGHT = 480
