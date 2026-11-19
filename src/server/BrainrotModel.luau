@@ -118,6 +118,7 @@ function BrainrotModel.Create(record, frame, parent, forSale)
 	make("Body", bodySize, Vector3.new(0, 1.8, 0), bodyColor,
 		rounded[kind] and Enum.PartType.Ball or nil)
 	for _, side in ipairs({ -1, 1 }) do
+		make("BootLeg", Vector3.new(0.42, 0.85, 0.5), Vector3.new(side * 0.62, 0.66, 0.05), accent)
 		make("MoonBoot", Vector3.new(0.75, 0.4, 0.95), Vector3.new(side * 0.62, 0.22, 0.05), accent)
 		make("Mitten", Vector3.new(0.5, 0.85, 0.6), Vector3.new(side * 1.3, 1.55, 0),
 			accent, Enum.PartType.Ball, CFrame.Angles(0, 0, side * 0.22))
@@ -158,6 +159,7 @@ function BrainrotModel.Create(record, frame, parent, forSale)
 		end
 	elseif kind == "Satellite" then
 		for _, side in ipairs({ -1, 1 }) do
+			make("PanelStrut", Vector3.new(1.4, 0.22, 0.32), Vector3.new(side * 1.25, 2.2, 0.2), accent)
 			make("SolarPanel", Vector3.new(1.7, 1.25, 0.2), Vector3.new(side * 2.2, 2.2, 0.2), Config.Palette.Ink)
 			for cell = 1, 3 do
 				make("SolarCell", Vector3.new(0.35, 1.0, 0.06), Vector3.new(side * 2.2 + (cell - 2) * 0.5, 2.2, 0.05), accent)
@@ -227,7 +229,7 @@ function BrainrotModel.Create(record, frame, parent, forSale)
 			if kind == "Supernova" then ray.Material = Enum.Material.Neon end
 		end
 		if kind == "Supernova" then
-			make("SupernovaCape", Vector3.new(2.5, 2.7, 0.2), Vector3.new(0, 1.6, 1.1), accent)
+			make("SupernovaCape", Vector3.new(2.5, 2.7, 0.2), Vector3.new(0, 1.6, 0.85), accent)
 			orbit(2.5, 2, glow, 0.28)
 		end
 	elseif kind == "Stracciatella" then
@@ -298,7 +300,8 @@ function BrainrotModel.Create(record, frame, parent, forSale)
 				nil, CFrame.Angles(0, 0, -side * 0.35))
 		end
 	elseif kind == "Emperor" then
-		make("ImperialCape", Vector3.new(3.1, 3.0, 0.3), Vector3.new(0, 1.7, 1), accent)
+		make("ImperialCape", Vector3.new(3.1, 3.0, 0.3), Vector3.new(0, 1.7, 0.85), accent)
+		make("SceptreGrip", Vector3.new(0.65, 0.27, 0.35), Vector3.new(1.55, 1.8, 0), accent)
 		make("Sceptre", Vector3.new(0.18, 3.8, 0.18), Vector3.new(1.8, 2.1, 0), glow)
 		make("SceptreStar", Vector3.one * 0.8, Vector3.new(1.8, 4.0, 0), glow, Enum.PartType.Ball)
 	elseif kind == "Bean" or kind == "Olive" then
@@ -325,9 +328,9 @@ function BrainrotModel.Create(record, frame, parent, forSale)
 		helmet.Transparency = 0.72
 		helmet.CastShadow = false
 	elseif entry.Id % 4 == 2 then
-		make("PilotCap", Vector3.new(2.3, 0.22, 1.95), Vector3.new(0, 3.4, -0.08), accent)
+		make("PilotCap", Vector3.new(2.3, 0.22, 1.95), Vector3.new(0, 3.1, -0.08), accent)
 	end
-	make("Antenna", Vector3.new(0.13, 0.68, 0.13), Vector3.new(0.62, 3.7, 0.14), accent)
+	make("Antenna", Vector3.new(0.13, 1.3, 0.13), Vector3.new(0.62, 3.4, 0.14), accent)
 	local beacon = make("AntennaBeacon", Vector3.one * 0.35, Vector3.new(0.62, 4.05, 0.14), glow, Enum.PartType.Ball)
 	beacon.Material = Enum.Material.Neon
 	if rarity.Rank >= 6 or record.Mutation == "Zero-G" then orbit(2.1, 1.3, glow, -0.18) end

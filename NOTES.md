@@ -142,8 +142,10 @@ and feed are implemented in source. Genuine captures and IDs remain pending.
 Visual order for this pass (compile/source checks here; Studio review pending):
 - [x] Save a three-quarter cover camera and restrained fill/rim lamps; freeze
   client idle poses in screenshot mode for repeatable captures.
-- [ ] Improve lighting depth without darkening the sunny station.
-- [ ] Review character connections/silhouettes, fix the worst geometry defects.
+- [x] Add light atmospheric depth and lower fill relative to the warm sunlight;
+  source-reviewed only, owner must confirm brightness in Studio.
+- [x] Fix detached boot/antenna/cap joins, add satellite struts and a sceptre
+  grip, bring capes onto the bodies. Clay/second-angle Studio review is pending.
 - [ ] Give controls focus, hover, press and honest unavailable states.
 - [ ] Choreograph income pops and recent-action entrances.
 - [ ] Review cover/title bounds and document Studio capture checks. No generated
