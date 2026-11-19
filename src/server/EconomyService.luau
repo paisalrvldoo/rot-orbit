@@ -14,7 +14,7 @@ function EconomyService.new(bases, network)
 			task.wait(Config.IncomeInterval)
 			for player, profile in pairs(self.Profiles) do
 				local income = self:Income(player)
-				profile.Cash = math.min(Config.MaxCash, profile.Cash + income)
+				if not profile.Demo then profile.Cash = math.min(Config.MaxCash, profile.Cash + income) end
 				local state = bases.Players[player]
 				if income > 0 and state then
 					network.CashPop:FireClient(player, state.Bay.Frame.Position + Vector3.new(0, 6, 0), income)

@@ -80,7 +80,10 @@ ScreenshotMode and an exact rules-format TOUR only when those features exist.
   rarity/mutation effects and idle bobbing (including cargo); Zero-G carries spin.
   Review fixed bay-slot cleanup between owners, unique restocked cargo IDs and
   releasing a save lease when someone leaves during loading.
-- [ ] ScreenshotMode/TOUR, README, genuine Studio pictures and published IDs.
+- [x] Studio-only ScreenshotMode Cover/Index/Raid/Upgrades and corresponding
+  TOUR presets: high-rarity bay, Diamond carry, exactly 23/30 found, staged raid
+  and paired progression panels. Preview changes never overwrite real progress.
+- [ ] README, genuine Studio pictures and published IDs.
 
 NPC stealing; meteor warnings/impacts and safe domes; solar flare; green gremlin
 raids with lock/zap; upgrades; rebirth; index; contracts; pcall-safe saving; final

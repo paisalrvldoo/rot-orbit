@@ -24,18 +24,18 @@ function EventBanner.Start(gui, network)
 		end
 	end)
 	network.Snapshot.OnClientEvent:Connect(function(snapshot)
-		for name, event in pairs(snapshot.Events or {}) do active[name] = event end
+		active = snapshot.Events or active
 	end)
 	RunService.RenderStepped:Connect(function()
 		local now = workspace:GetServerTimeNow()
 		local selected
 		for name, event in pairs(active) do
-			if event.EndsAt <= now then active[name] = nil
+			if event.EndsAt <= now and not event.FrozenSeconds then active[name] = nil
 			elseif not selected or (event.Priority or 0) > (selected.Priority or 0) then selected = event end
 		end
 		banner.Visible = selected ~= nil
 		if selected then
-			banner.Text = selected.Text .. "  ·  " .. math.ceil(selected.EndsAt - now) .. "s"
+			banner.Text = selected.Text .. "  ·  " .. (selected.FrozenSeconds or math.ceil(selected.EndsAt - now)) .. "s"
 			banner.TextColor3 = selected.Color or Config.Palette.Sun
 		end
 	end)

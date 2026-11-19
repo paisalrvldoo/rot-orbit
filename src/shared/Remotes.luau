@@ -10,6 +10,7 @@ local definitions = {
 	CashPop = "RemoteEvent",
 	Event = "RemoteEvent",
 	Action = "RemoteEvent",
+	Screenshot = "RemoteEvent",
 	RequestSnapshot = "RemoteFunction",
 }
 

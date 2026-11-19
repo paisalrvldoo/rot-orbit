@@ -71,7 +71,7 @@ function MeteorEvent:Impact(position)
 end
 
 function MeteorEvent:Start()
-	if self.Active then return end
+	if self.Active or self.World.Root:GetAttribute("ScreenshotFrozen") then return end
 	self.Active = true
 	local endsAt = workspace:GetServerTimeNow() + Config.Meteor.Duration
 	self.Economy:PublishEvent({ Name = "Meteor", Text = "METEOR SHOWER! GET UNDER THE SHIELD DOME",
@@ -80,7 +80,7 @@ function MeteorEvent:Start()
 	for player, state in pairs(self.Bases.Players) do
 		if state.Carry then holding[player] = state.Carry.Record.Guid end
 	end
-	while workspace:GetServerTimeNow() < endsAt - Config.Meteor.WarningSeconds do
+	while self.Active and workspace:GetServerTimeNow() < endsAt - Config.Meteor.WarningSeconds do
 		local targets = {}
 		for player, state in pairs(self.Bases.Players) do
 			local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")

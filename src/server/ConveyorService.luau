@@ -17,6 +17,7 @@ function ConveyorService.new(world, economy)
 	end
 	local elapsed = 0
 	RunService.Heartbeat:Connect(function(dt)
+		if world.Root:GetAttribute("ScreenshotFrozen") then return end
 		elapsed += dt
 		if elapsed < 1 / 30 then return end
 		local step = elapsed
@@ -37,7 +38,7 @@ function ConveyorService.new(world, economy)
 			task.wait(Config.Conveyor.SpawnInterval)
 			local count = 0
 			for _ in pairs(self.Capsules) do count += 1 end
-			if count < Config.Conveyor.MaxCapsules then
+			if count < Config.Conveyor.MaxCapsules and not world.Root:GetAttribute("ScreenshotFrozen") then
 				spawnCount += 1
 				-- Regular starter cargo prevents a run of unaffordable rolls stranding newcomers.
 				local record = spawnCount % 3 == 0 and { Id = self.Random:NextInteger(1, 4) }

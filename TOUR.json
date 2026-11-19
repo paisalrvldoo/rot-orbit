@@ -1,1 +1,9 @@
-{"tour": 1, "steps": [{"screenshot": "1-start.png"}, {"screenshot": "2-play.png", "keys": ["Right"], "wait_ms": 1000}, {"screenshot": "3-end.png", "keys": ["Down"], "wait_ms": 1000}]}
+{
+  "tour": 1,
+  "steps": [
+    { "screenshot": "01-cover.jpg", "keys": [], "wait_ms": 1000, "call": { "module": "ReplicatedStorage.ScreenshotMode", "fn": "Cover", "arg": 0, "on": "Server" } },
+    { "screenshot": "02-index.jpg", "keys": [], "wait_ms": 1000, "call": { "module": "ReplicatedStorage.ScreenshotMode", "fn": "Index", "arg": 0, "on": "Server" } },
+    { "screenshot": "03-raid.jpg", "keys": [], "wait_ms": 1000, "call": { "module": "ReplicatedStorage.ScreenshotMode", "fn": "Raid", "arg": 0, "on": "Server" } },
+    { "screenshot": "04-upgrades.jpg", "keys": [], "wait_ms": 1000, "call": { "module": "ReplicatedStorage.ScreenshotMode", "fn": "Upgrades", "arg": 0, "on": "Server" } }
+  ]
+}

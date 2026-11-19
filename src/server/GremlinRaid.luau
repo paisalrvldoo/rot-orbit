@@ -92,6 +92,7 @@ function GremlinRaid:Grab(state)
 end
 
 function GremlinRaid:Step(dt)
+	if self.World.Root:GetAttribute("ScreenshotFrozen") then return end
 	local now = workspace:GetServerTimeNow()
 	for _, state in pairs(self.Gremlins) do
 		if now >= state.ExpiresAt then
@@ -147,7 +148,7 @@ function GremlinRaid:Zap(player)
 end
 
 function GremlinRaid:Start()
-	if self.Active then return end
+	if self.Active or self.World.Root:GetAttribute("ScreenshotFrozen") then return end
 	local bays = {}
 	for _, state in pairs(self.Bases.Players) do table.insert(bays, state.Bay) end
 	if #bays == 0 then return end

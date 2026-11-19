@@ -14,6 +14,7 @@ local UpgradeService = require(script.Parent:WaitForChild("UpgradeService"))
 local RebirthService = require(script.Parent:WaitForChild("RebirthService"))
 local ContractService = require(script.Parent:WaitForChild("ContractService"))
 local DataService = require(script.Parent:WaitForChild("DataService"))
+local ScreenshotService = require(script.Parent:WaitForChild("ScreenshotService"))
 local Config = require(ReplicatedStorage:WaitForChild("Config"))
 local Players = game:GetService("Players")
 
@@ -32,10 +33,13 @@ local upgrades = UpgradeService.new(bases, economy)
 local rebirth = RebirthService.new(bases, economy)
 local contracts = ContractService.new(economy)
 local data = DataService.new(bases, economy)
+local screenshots = ScreenshotService.new({ Bases = bases, Economy = economy, Data = data,
+	Meteors = meteors, Gremlins = gremlins, Conveyor = conveyor })
 local actions = { Lock = function(player) locks:Activate(player) end,
 	Zap = function(player) gremlins:Zap(player) end,
 	Upgrade = function(player, name) upgrades:Buy(player, name) end,
-	Rebirth = function(player) rebirth:Perform(player) end }
+	Rebirth = function(player) rebirth:Perform(player) end,
+	Screenshot = function(player, shot) screenshots:Prepare(player, shot) end }
 local lastAction = {}
 network.Action.OnServerEvent:Connect(function(player, action, argument)
 	if type(action) ~= "string" or not actions[action] then return end

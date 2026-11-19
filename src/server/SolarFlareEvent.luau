@@ -14,7 +14,7 @@ function SolarFlareEvent.new(world, economy)
 end
 
 function SolarFlareEvent:Start()
-	if self.Active then return end
+	if self.Active or self.World.Root:GetAttribute("ScreenshotFrozen") then return end
 	self.Active = true
 	self.Economy.IncomeMultiplier = Config.SolarFlare.Multiplier
 	self.World.Root:SetAttribute("SolarFlareActive", true)
