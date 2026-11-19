@@ -125,6 +125,14 @@ assert(persistent:WriteCrew(1) and ledgerDocument.Total == 210 and orderedScore 
 orderedScore = 500
 persistent.Crews[1].Score = 60
 assert(persistent:WriteCrew(1) and orderedScore == 500, 'a stale publisher cannot lower another server score')
+local captainView = setmetatable({ Wave = 3, Gremlins = { { Boss = true, Health = 12, MaxHealth = 32 } } }, GremlinRaid)
+assert(captainView:BossView().Health == 12 and captainView:BossView().Wave == 3)
+captainView.Gremlins[1].Health = 0
+assert(captainView:BossView() == nil, 'defeated captain must leave the shared health bar')
+raid.Active, raid.Defeated, raid.Participants = true, raid.WaveCount, { [player] = true }
+raid:Finish()
+assert(players[player].RaidsDefended == 2 and players[other].RaidsDefended == 1,
+    'joining after the wave starts must not grant an unearned defence bonus')
 print('Global crew checks passed: combined servers, ambiguous ledger retry, ordered retry and monotonic publication.')
 print('Crew checks passed: friendly protection, nearby assist payout, outsider exclusion, once-per-crew raid score and membership guards.')
 print('Skill checks passed: invalid names, unlocks, upgrade/rebirth paths, cooldown spam and departure/preview guards.')

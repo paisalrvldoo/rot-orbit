@@ -172,7 +172,16 @@ local function startCrewPanel(hud)
 			UDim2.fromOffset(144, 54), function() hud.Network.Action:FireServer("Crew", id) end)
 		rows[index] = { Label = row, Button = join, SetId = function(value) id = value end }
 	end
-	local open = button(hud.Gui, "CrewButton", "CREWS [Y]", UDim2.fromOffset(24, 365), UDim2.fromOffset(220, 44), function() panel.Visible = not panel.Visible end)
+	local open = button(hud.Gui, "CrewButton", "CREWS [Y]", UDim2.fromOffset(16, 365), UDim2.fromOffset(236, 44), function() panel.Visible = not panel.Visible end)
+	open.TextSize = 14
+	panel:GetPropertyChangedSignal("Visible"):Connect(function()
+		if panel.Visible then
+			for _, name in ipairs({ "UpgradePanel", "ContractPanel", "IndexPanel" }) do
+				local other = hud.Gui:FindFirstChild(name)
+				if other then other.Visible = false end
+			end
+		end
+	end)
 	ContextActionService:BindAction("RotOrbitCrews", function(_, phase)
 		if UserInputService:GetFocusedTextBox() then return Enum.ContextActionResult.Pass end
 		if phase == Enum.UserInputState.Begin then panel.Visible = not panel.Visible end
@@ -182,6 +191,7 @@ local function startCrewPanel(hud)
 		local state = hud.GetState()
 		local view = state and state.Crew
 		if not view then return end
+		open:SetAttribute("Selected", panel.Visible)
 		open.Text = "CREWS [Y] · " .. (view.Current and Config.Crews.Teams[view.Current].Name or "JOIN A CREW")
 		if not panel.Visible then return end
 		serverTab:SetAttribute("Selected", not global)
@@ -208,6 +218,7 @@ local function startCrewPanel(hud)
 		end
 		footer.Text = global and (view.Status .. " · REFRESHES EVERY 60s") or "TEAM CARGO PROTECTED · NEARBY ALLIES SHARE COMBAT CASH · NO SWITCHING DURING RAIDS"
 	end)
+	return panel
 end
 
 local function filterDockPrompts(hud)
@@ -256,11 +267,17 @@ end
 require(script.Parent:WaitForChild("BillboardFx")).Start()
 local hud = HudController.Start()
 filterDockPrompts(hud)
-startCrewPanel(hud)
+local crewPanel = startCrewPanel(hud)
 local input = InputController.Start(hud)
 local progression = require(script.Parent:WaitForChild("UpgradeRebirthContracts"))
 local upgrades = progression.StartUpgrades(hud, input)
 progression.AddRebirth(hud, input, upgrades)
 require(script.Parent:WaitForChild("IndexPanel")).Start(hud, input)
 progression.StartContracts(hud, upgrades)
+for _, name in ipairs({ "UpgradePanel", "IndexPanel" }) do
+	local panel = hud.Gui:FindFirstChild(name)
+	if panel then panel:GetPropertyChangedSignal("Visible"):Connect(function()
+		if panel.Visible then crewPanel.Visible = false end
+	end) end
+end
 require(shared:WaitForChild("ScreenshotMode")).Listen(hud)

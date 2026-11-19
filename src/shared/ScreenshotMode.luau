@@ -33,6 +33,8 @@ function ScreenshotMode.Listen(hud)
 			camera.CFrame = scene.Camera
 			camera.FieldOfView = scene.FieldOfView
 		end
+		local crews = hud.Gui:FindFirstChild("CrewPanel")
+		if crews then crews.Visible = false end
 		for _, name in ipairs({ "UpgradePanel", "ContractPanel", "IndexPanel" }) do
 			local panel = hud.Gui:FindFirstChild(name)
 			if panel then panel.Visible = name == "IndexPanel" and scene.Shot == "Index"

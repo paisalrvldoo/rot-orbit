@@ -28,7 +28,11 @@ function CrewService.new(world, bases, economy, raids)
 			task.wait(Config.Crews.GlobalRefresh)
 		end
 	end)
-	game:BindToClose(function() self:SyncGlobal(true) end)
+	game:BindToClose(function()
+		local deadline = os.clock() + 24
+		while self.Syncing and os.clock() < deadline do task.wait(0.1) end
+		if not self.Syncing then self:SyncGlobal(true) end
+	end)
 	task.spawn(function()
 		while true do
 			task.wait(3)

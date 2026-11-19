@@ -355,3 +355,10 @@ Studio rendering and combat balance remain unverified.
   Joining an otherwise idle server schedules a raid within 75s of loading;
   only players present at wave start qualify for its defence bonus.
   Compile/actual-function checks pass; walking, aim and chase feel need Studio.
+
+- [x] Integration review: crew/index/upgrades close each other; compact quests
+  hide behind crew ranks, and screenshot presets close crew UI. Bay reset and
+  departure remove emergency bubbles as well as regular lock shields. Shutdown
+  waits for an in-flight crew sync before flushing newer score. Verify now
+  rejects known restricted runtime Workspace/Lighting assignments. Boss death
+  and late-join defence qualification have actual-function regressions.

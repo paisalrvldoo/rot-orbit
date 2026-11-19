@@ -236,7 +236,9 @@ function Progression.StartContracts(hud, upgrades)
 		local state = hud.GetState()
 		if not state then return end
 		local indexPanel = hud.Gui:FindFirstChild("IndexPanel")
+		local crewPanel = hud.Gui:FindFirstChild("CrewPanel")
 		quest.Visible = not panel.Visible and not (indexPanel and indexPanel.Visible)
+			and not (crewPanel and crewPanel.Visible)
 		local completed, available = 0, 0
 		for index, contract in ipairs(state.Contracts or {}) do
 			completed += contract.Completed

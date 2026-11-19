@@ -30,6 +30,13 @@ function scriptsIn(directory) {
 process.stdout.write(run('rojo', ['build', 'default.project.json', '--output', 'game.rbxl']));
 const scripts = scriptsIn(join(root, 'src'));
 run('luau-compile', ['--null', ...scripts]);
+// These settings require authoring capabilities; a successful compile cannot catch this.
+for (const script of scripts) {
+  const source = readFileSync(join(root, script), 'utf8');
+  if (/(?:Workspace|workspace)\.(?:FallenPartsDestroyHeight|StreamingEnabled|FilteringEnabled)\s*=|Lighting\.Technology\s*=/.test(source)) {
+    throw new Error(`Restricted runtime service assignment in ${script}; set it in default.project.json`);
+  }
+}
 rmSync(scratch, { recursive: true, force: true });
 mkdirSync(scratch, { recursive: true });
 run(process.execPath, ['main.ts'], { env: { ...process.env, MAKEFUN_OUTPUT_DIR: scratch } });
