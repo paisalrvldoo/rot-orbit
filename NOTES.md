@@ -423,3 +423,7 @@ The live boot check still takes first priority if a new Studio error arrives.
   sleds use fewer parts than before. Legendary and higher cargo has a beam,
   sparks and a spatial arrival ping during live play. Studio should check
   default-camera readability, mobile frame rate and audio.
+- Blink [Q] has a nine-second cooldown, shortens while carrying, and checks
+  solid geometry, the deck edge and shield entry on the server. Gravity Slam
+  moved to V. Touch gets the same cooldown and activation. Studio still needs
+  to check crossing thin walls, locked bays and domes from both sides.

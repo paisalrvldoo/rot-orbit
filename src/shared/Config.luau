@@ -71,12 +71,13 @@ local Config = {
 			{ Name = "Comet Cannoli", Color = Color3.fromRGB(255, 129, 172) },
 		} },
 	Skills = {
-		Order = { "Dash", "Slam", "Bubble" },
+		Order = { "Dash", "Slam", "Bubble", "Blink" },
 		Dash = { Name = "JET DASH", Key = "X", Cooldown = 7, Distance = 18, Unlock = "FREE" },
-		Slam = { Name = "GRAVITY SLAM", Key = "Q", Cooldown = 12, Radius = 24, Damage = 4,
+		Slam = { Name = "GRAVITY SLAM", Key = "V", Cooldown = 12, Radius = 24, Damage = 4,
 			Rebirth = 1, Upgrade = "CarrySpeed", Unlock = "CARRY UPGRADE 1 / REBIRTH 1" },
 		Bubble = { Name = "BAY BUBBLE", Key = "C", Cooldown = 45, Duration = 12, Radius = 38,
 			Rebirth = 2, Upgrade = "LockDuration", Unlock = "LOCK UPGRADE 1 / REBIRTH 2" },
+		Blink = { Name = "BLINK", Key = "Q", Cooldown = 9, Distance = 28, CarryDistance = 15, Unlock = "FREE" },
 	},
 	Lock = { Duration = 40, Cooldown = 65 },
 	Upgrades = {

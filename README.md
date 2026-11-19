@@ -19,7 +19,7 @@ docks earn a 25% offline haul for up to two hours away.
 WASD moves; E buys, steals, recovers and docks; L locks; F zaps; U opens upgrades
 and contracts; R opens rebirth (click again to confirm); B opens the index.
 Skills also have touch buttons and server-enforced cooldowns. X Jet Dash is
-free; Q Gravity Slam unlocks with Carry Speed 1 or rebirth 1; C Bay Bubble
+free; V Gravity Slam unlocks with Carry Speed 1 or rebirth 1; C Bay Bubble
 unlocks with Lock Duration 1 or rebirth 2. Bubble protects your nearby bay for
 12 seconds independently of the main lock recharge.
 Y opens crews and live server ranks. Join Solar Sporks, Lunar Linguini or Comet

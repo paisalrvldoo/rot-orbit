@@ -281,6 +281,51 @@ function GremlinRaid:Pulse(position, radius, color, name)
 	Debris:AddItem(pulse, 1)
 end
 
+-- Find where a path enters a shield, using the same shape as its visible part.
+local function shieldEntry(origin, move, shield)
+	local radii = shield.Size * 0.5 + Vector3.one
+	local start = shield.CFrame:PointToObjectSpace(origin) / radii
+	if start:Dot(start) < 1 then return nil end -- Players already inside can leave.
+	local direction = shield.CFrame:VectorToObjectSpace(move) / radii
+	local lengthSquared = direction:Dot(direction)
+	if lengthSquared < 1e-6 then return nil end
+	local ahead = start:Dot(direction)
+	local discriminant = ahead * ahead - lengthSquared * (start:Dot(start) - 1)
+	if ahead >= 0 or discriminant < 0 then return nil end
+	local entry = (-ahead - math.sqrt(discriminant)) / lengthSquared
+	return entry <= 1 and entry or nil
+end
+
+function GremlinRaid:BlinkTarget(player, root, distance)
+	local origin = root.Position
+	local direction = root.CFrame.LookVector * Vector3.new(1, 0, 1)
+	if direction.Magnitude < 0.01 then return nil end
+	local move = direction.Unit * distance
+	local fraction = 1
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Exclude
+	params.FilterDescendantsInstances = { player.Character }
+	params.RespectCanCollide = true
+	local hit = workspace:Spherecast(origin, 1, move, params)
+	if hit then fraction = math.min(fraction, (hit.Distance - 1) / distance) end
+	local function checkShield(shield)
+		local entry = shieldEntry(origin, move, shield)
+		if entry then fraction = math.min(fraction, entry - 0.5 / distance) end
+	end
+	for _, dome in ipairs(self.World.Domes) do checkShield(dome.Part) end
+	for _, bay in ipairs(self.World.PlayerBays) do
+		if self.Locks:IsLocked(bay) then
+			local shield = bay.Model:FindFirstChild("BayLockShield") or bay.Model:FindFirstChild("SkillBayBubble")
+			if shield then checkShield(shield) end
+		end
+	end
+	local position = origin + move * fraction
+	if fraction * distance < 2 or Vector3.new(position.X, 0, position.Z).Magnitude >= Config.World.DeckRadius - 4 then
+		return nil
+	end
+	return position
+end
+
 function GremlinRaid:Skill(player, name)
 	if type(name) ~= "string" or not table.find(Config.Skills.Order, name) then return end
 	local state, profile = self.Bases.Players[player], self.Economy.Profiles[player]
@@ -299,8 +344,21 @@ function GremlinRaid:Skill(player, name)
 		self.Economy.Network.Notice:FireClient(player, "BAY BUBBLE · GET CLOSER TO YOUR BAY")
 		return
 	end
+	local blinkTarget
+	if name == "Blink" then
+		blinkTarget = self:BlinkTarget(player, root, state.Carry and skill.CarryDistance or skill.Distance)
+		if not blinkTarget then
+			self.Economy.Network.Notice:FireClient(player, "BLINK BLOCKED · TURN TOWARD OPEN DECK")
+			return
+		end
+	end
 	state.SkillReadyAt[name] = now + skill.Cooldown
-	if name == "Dash" then
+	if name == "Blink" then
+		local violet = Color3.fromRGB(189, 125, 255)
+		self:Pulse(root.Position, 2.5, violet, "BlinkDeparture")
+		root.CFrame += blinkTarget - root.Position
+		self:Pulse(blinkTarget, 3, violet, "BlinkArrival")
+	elseif name == "Dash" then
 		local direction = root.CFrame.LookVector * Vector3.new(1, 0, 1)
 		if direction.Magnitude > 0.01 then
 			direction = direction.Unit * skill.Distance

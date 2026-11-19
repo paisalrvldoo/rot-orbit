@@ -103,8 +103,10 @@ function InputController:Register(name, label, key, callback)
 	for index, action in ipairs(self.Order) do
 		local skillIndex = table.find(Config.Skills.Order, action)
 		if skillIndex then
-			self.Buttons[action].Position = UDim2.new(0.5, (skillIndex - 2) * 254, 1, -168)
-			self.Buttons[action].Size = UDim2.fromOffset(244, 48)
+			local spacing = 1000 / #Config.Skills.Order
+			self.Buttons[action].Position = UDim2.new(0.5,
+				(skillIndex - (#Config.Skills.Order + 1) / 2) * spacing, 1, -168)
+			self.Buttons[action].Size = UDim2.fromOffset(spacing - 14, 48)
 			self.Buttons[action].TextSize = 13
 		else
 			self.Buttons[action].Position = UDim2.new(0.5, (index - 3) * 188, 1, -53)

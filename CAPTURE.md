@@ -72,7 +72,7 @@ Live recovery / combat smoke test (19 November continuation):
   portal, HP bars, F beam, stolen-cargo recovery and kill/defence cash. Third
   raid has a crowned captain and shared HUD health. Chase timing needs testing.
 - X dashes without passing through walls or leaving the deck. Buy Carry Speed
-  1 to unlock Q Slam; buy Lock Duration 1 to unlock C Bubble. Rebirths 1/2 are
+  1 to unlock V Slam; buy Lock Duration 1 to unlock C Bubble. Rebirths 1/2 are
   alternative unlocks. Test keys and touch buttons, cooldown badges, Slam
   knockback and Bubble's twelve-second protection; regular L still works.
 - With two clients, use Y or the coloured arrival pads to join the same crew.
