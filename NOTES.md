@@ -96,8 +96,9 @@ All tunable game numbers belong in Config; catalog data stays in one module.
 Core systems above are implemented; finish this checklist in small verified commits.
 The research is prose guidance, not source or reusable names. Rank is not guaranteed.
 
-1. Strengthen Cover: $250M–$2B, >$1M/s, rebirth 3, 18s meteor banner,
-   Diamond carry, five readable ascending-tier heroes, SECRET beam, planet and title.
+1. [x] Staged Cover at $867.5M, rebirth 3, 18s meteor, a Diamond carry and five
+   lined-up heroes around the Supernova SECRET. Title, planet and meteor streaks
+   frame the shot. Studio framing and readability checks remain.
 2. [x] Grow to 43 originals: 8 Common, 8 Rare, 7 Epic, 7 Legendary, 6 Mythic,
    5 Cosmic, 2 SECRET; distinct primitive silhouettes; update all count strings.
 3. Four genuine Studio shots: loop cover, 32/43 discovery grid with mutation legend,

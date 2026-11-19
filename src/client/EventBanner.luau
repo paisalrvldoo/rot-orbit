@@ -7,16 +7,19 @@ function EventBanner.Start(gui, network)
 	banner.Name = "EventBanner"
 	banner.AnchorPoint = Vector2.new(0.5, 0)
 	banner.Position = UDim2.new(0.5, 0, 0, 100)
-	banner.Size = UDim2.fromOffset(960, 32)
+	banner.Size = UDim2.fromOffset(1136, 49)
 	banner.BackgroundColor3 = Config.Palette.Ink
 	banner.BackgroundTransparency = 0.08
 	banner.BorderSizePixel = 0
 	banner.TextColor3 = Config.Palette.Sun
-	banner.TextSize = 19
-	banner.Font = Enum.Font.GothamBold
+	banner.TextScaled = true
+	banner.Font = Enum.Font.GothamBlack
 	banner.Visible = false
 	banner.Parent = gui
 	Instance.new("UICorner", banner).CornerRadius = UDim.new(0, 9)
+	local textLimit = Instance.new("UITextSizeConstraint", banner)
+	textLimit.MinTextSize = 18
+	textLimit.MaxTextSize = 40
 	local active = {}
 	network.Event.OnClientEvent:Connect(function(event)
 		if type(event) == "table" and type(event.Name) == "string" then

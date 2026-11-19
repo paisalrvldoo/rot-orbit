@@ -48,23 +48,23 @@ function HudController.Start()
 		local camera = workspace.CurrentCamera
 		if camera then scale.Scale = math.clamp(math.min(camera.ViewportSize.X / 1280, camera.ViewportSize.Y / 720), 0.4, 1.4) end
 	end
-	local cash = HudController.Text(gui, "Cash", "$400", UDim2.new(0.5, 0, 0, 12), UDim2.fromOffset(580, 49), 42, Config.Palette.Mint)
+	local cash = HudController.Text(gui, "Cash", "$400", UDim2.new(0.5, 0, 0, 4), UDim2.fromOffset(580, 65), 60, Config.Palette.Mint)
 	cash.Font = Enum.Font.GothamBlack
-	local detail = HudController.Text(gui, "Income", "ARRIVING AT YOUR DOCK...", UDim2.new(0.5, 0, 0, 63), UDim2.fromOffset(660, 26), 18)
+	local detail = HudController.Text(gui, "Income", "ARRIVING AT YOUR DOCK...", UDim2.new(0.5, 0, 0, 67), UDim2.fromOffset(720, 28), 21)
 	local logo = HudController.Text(gui, "Logo", "ROT\nORBIT", UDim2.new(1, -85, 0, 28), UDim2.fromOffset(140, 60), 23, Config.Palette.Mint)
 	logo.Font = Enum.Font.GothamBlack
 	local save = HudController.Text(gui, "SaveStatus", "", UDim2.new(1, -98, 0, 89),
 		UDim2.fromOffset(176, 18), 11, Config.Palette.Muted)
-	local carrying = HudController.Text(gui, "Carrying", "", UDim2.new(0.5, 0, 0, 140), UDim2.fromOffset(940, 34), 19, Config.Palette.Mint)
+	local carrying = HudController.Text(gui, "Carrying", "", UDim2.new(0.5, 0, 1, -91), UDim2.fromOffset(940, 33), 21, Config.Palette.Mint)
 	carrying.BackgroundColor3 = Config.Palette.Ink
 	carrying.BackgroundTransparency = 0.12
 	carrying.Visible = false
 	Instance.new("UICorner", carrying).CornerRadius = UDim.new(0, 9)
 	HudController.Text(gui, "Counts", Config.CatalogCount .. " BRAINROTS · " .. Config.RarityCount
 		.. " RARITIES · " .. Config.MutationCount .. " MUTATIONS · STEAL · LOCK · REBIRTH",
-		UDim2.new(0.5, 0, 1, -110), UDim2.fromOffset(930, 24), 15, Config.Palette.Mint)
+		UDim2.new(0.5, 0, 1, -120), UDim2.fromOffset(930, 24), 17, Config.Palette.Mint)
 	local hint = HudController.Text(gui, "Hint", "WASD MOVE  ·  E BUY CARGO  ·  E DOCK ON AN EMPTY PEDESTAL",
-		UDim2.new(0.5, 0, 1, -76), UDim2.fromOffset(940, 30), 17)
+		UDim2.new(0.5, 0, 1, -91), UDim2.fromOffset(940, 33), 17)
 	local notice = HudController.Text(gui, "Notice", "", UDim2.new(0.5, 0, 1, -156), UDim2.fromOffset(920, 30), 19, Config.Palette.Sun)
 	EventBanner.Start(gui, network)
 	local state
@@ -90,6 +90,7 @@ function HudController.Start()
 		detail.Text = Format.Money(snapshot.Income) .. "/s  ·  REBIRTH " .. snapshot.Rebirths
 			.. "  ·  x" .. snapshot.Multiplier .. " INCOME  ·  BAY " .. string.format("%02d", snapshot.BayIndex)
 		carrying.Visible = snapshot.Carrying ~= false
+		hint.Visible = not snapshot.Carrying
 		if snapshot.Carrying then carrying.Text = "CARRYING " .. snapshot.Carrying.Name .. " → RUN TO YOUR BAY" end
 		marker.Position = snapshot.BayPosition + Vector3.new(0, 11, 0)
 	end
@@ -126,8 +127,7 @@ function HudController.Start()
 		if state and root then
 			local distance = math.floor((root.Position - state.BayPosition).Magnitude)
 			home.Text = "YOUR BAY " .. string.format("%02d", state.BayIndex) .. " ↓  " .. distance .. "m"
-			hint.Text = state.Carrying and "FOLLOW YOUR MINT BAY BEACON  ·  E DOCK ON AN EMPTY PEDESTAL"
-				or "E BUY CARGO  ·  E STEAL FROM RIVAL BAYS  ·  E DOCK AT HOME"
+			hint.Text = "E BUY CARGO  ·  E STEAL FROM RIVAL BAYS  ·  E DOCK AT HOME"
 		end
 	end)
 	task.spawn(function()
