@@ -23,16 +23,6 @@ function InputController.Start(hud)
 			hud.Network.Action:FireServer("Skill", name)
 		end)
 	end
-	local utility = false
-	local more = Instance.new("TextButton")
-	more.Name = "SkillPage"
-	more.AnchorPoint = Vector2.new(0.5, 0)
-	more.TextColor3, more.BackgroundColor3 = Config.Palette.White, Config.Palette.Ink
-	more.Font, more.TextSize = Enum.Font.GothamBold, 14
-	more.Visible = false
-	more.Parent = hud.Gui
-	Instance.new("UICorner", more).CornerRadius = UDim.new(0, 10)
-	HudController.ButtonFeedback(more, function() utility = not utility end)
 	local menu = Instance.new("TextButton")
 	menu.Name, menu.Text = "MobileMenu", "MENU"
 	menu.AnchorPoint = Vector2.new(0.5, 0)
@@ -51,20 +41,6 @@ function InputController.Start(hud)
 			end
 		end
 	end)
-	local trap = Instance.new("TextButton")
-	trap.Name, trap.AnchorPoint = "PlaceTrap", Vector2.new(0.5, 0)
-	trap.BackgroundColor3, trap.TextColor3 = Config.Palette.Ink, Config.Palette.White
-	trap.Font, trap.TextSize = Enum.Font.GothamBold, 14
-	trap.Parent = hud.Gui
-	Instance.new("UICorner", trap).CornerRadius = UDim.new(0, 10)
-	local placeTrap = HudController.ButtonFeedback(trap, function()
-		hud.Network.Action:FireServer("Skill", "Bomb", "Trap")
-	end, 0.35)
-	ContextActionService:BindAction("RotOrbitTrap", function(_, phase)
-		if hud.InTitle or UserInputService:GetFocusedTextBox() then return Enum.ContextActionResult.Pass end
-		if phase == Enum.UserInputState.Begin then placeTrap() end
-		return Enum.ContextActionResult.Sink
-	end, false, Enum.KeyCode.T)
 	local lastLayout
 	local previous
 	RunService.RenderStepped:Connect(function()
@@ -72,12 +48,6 @@ function InputController.Start(hud)
 		if not state then return end
 		local now = workspace:GetServerTimeNow()
 		local compact = HudController.IsCompact() and state.SaveStatus ~= "STUDIO PREVIEW"
-		local bombLeft = math.max(0, ((state.SkillReadyAt or {}).Bomb or 0) - now)
-		trap.Visible = state.SaveStatus ~= "STUDIO PREVIEW" and (not compact or utility)
-		trap.Position = compact and UDim2.new(1, -300, 1, -320) or UDim2.new(1, -106, 1, -224)
-		trap.Size = compact and UDim2.fromOffset(128, 72) or UDim2.fromOffset(176, 48)
-		trap.Text = (compact and "TRAP" or "TRAP [T]") .. "\n" .. (bombLeft > 0 and (math.ceil(bombLeft) .. "s") or "READY")
-		trap:SetAttribute("Unavailable", bombLeft > 0)
 		for _, name in ipairs({ "UpgradePanel", "IndexPanel", "CrewPanel" }) do
 			local panel = hud.Gui:FindFirstChild(name)
 			if panel and panel.Visible then self.MenuOpen = false end
@@ -86,29 +56,17 @@ function InputController.Start(hud)
 		menu.Visible = compact
 		menu.Text = self.MenuOpen and "CLOSE MENU" or "MENU"
 		menu:SetAttribute("Selected", self.MenuOpen == true)
-		local layout = compact and ((utility and "utility" or "primary") .. tostring(self.MenuOpen)) or "all"
+		local layout = compact and ("phone" .. tostring(self.MenuOpen)) or "desktop"
 		if layout ~= lastLayout then
 			lastLayout = layout
-			local skills = not compact and Config.Skills.Order
-				or (utility and Config.Skills.TouchUtility or Config.Skills.TouchPrimary)
-			local spacing = 1000 / #skills
-			local arc = { Vector2.new(-274, -142), Vector2.new(-190, -226), Vector2.new(-84, -272) }
-			for _, name in ipairs(Config.Skills.Order) do
+			local skills = Config.Skills.Order
+			local arc = { Vector2.new(-198, -153), Vector2.new(-140, -258) }
+			for index, name in ipairs(skills) do
 				local button = self.Buttons[name]
-				local index = table.find(skills, name)
-				button.Visible = index ~= nil
-				if index then
-					button.TextSize = compact and 16 or 13
-					button.Position = compact and UDim2.new(1, arc[index].X, 1, arc[index].Y)
-						or UDim2.new(0.5, (index - (#skills + 1) / 2) * spacing, 1, -168)
-					button.Size = compact and UDim2.fromOffset(92, 72) or UDim2.fromOffset(spacing - 14, 48)
-				end
+				button.Position = compact and UDim2.new(1, arc[index].X, 1, arc[index].Y)
+					or UDim2.new(0.5, (index * 2 - 3) * 94, 1, -173)
+				button.Size = UDim2.fromOffset(compact and 92 or 176, compact and 72 or 48)
 			end
-			more.Visible = compact
-			more.Text = utility and "MAIN" or "MORE"
-			more.Size = UDim2.fromOffset(84, 72)
-			more.Position = UDim2.new(1, -292, 1, -224)
-			more:SetAttribute("Selected", utility)
 			for index, name in ipairs({ "Lock", "Upgrades", "Rebirth", "Index" }) do
 				local button = self.Buttons[name]
 				if button then
@@ -123,17 +81,14 @@ function InputController.Start(hud)
 		end
 		for _, name in ipairs(Config.Skills.Order) do
 			local skill, button = Config.Skills[name], self.Buttons[name]
-			local unlocked = Config.Skills.Unlocked(name, state)
 			local left = math.max(0, ((state.SkillReadyAt or {})[name] or 0) - now)
-			local short = ({ Slam = "SLAM", Dash = "DASH", Bubble = "SHIELD" })[name] or skill.Name
-			button.Text = (compact and short or (skill.Name .. " [" .. (skill.KeyLabel or skill.Key) .. "]"))
-				.. "\n" .. (not unlocked and (compact and "LOCKED" or skill.Unlock)
-				or (left > 0 and (math.ceil(left) .. "s") or "READY"))
-			button:SetAttribute("Unavailable", not unlocked or left > 0)
+			button.Text = (compact and skill.Name or (skill.Name .. " [" .. (skill.KeyLabel or skill.Key) .. "]"))
+				.. "\n" .. (left > 0 and (math.ceil(left) .. "s") or "READY")
+			button:SetAttribute("Unavailable", left > 0)
 			local ring = button:FindFirstChild("CooldownRing")
 			if ring then
 				ring.Visible = not compact
-				ring.Text = not unlocked and "-" or (left > 0 and tostring(math.ceil(left)) or "+")
+				ring.Text = left > 0 and tostring(math.ceil(left)) or "+"
 				ring.BackgroundTransparency = left > 0 and (0.15 + 0.65 * left / skill.Cooldown) or 0.15
 			end
 		end
@@ -205,9 +160,9 @@ function InputController:Register(name, label, key, callback)
 	for index, action in ipairs(self.Order) do
 		local skillIndex = table.find(Config.Skills.Order, action)
 		if skillIndex then
-			local spacing = 1000 / #Config.Skills.Order
+			local spacing = 188
 			self.Buttons[action].Position = UDim2.new(0.5,
-				(skillIndex - (#Config.Skills.Order + 1) / 2) * spacing, 1, -168)
+				(skillIndex - (#Config.Skills.Order + 1) / 2) * spacing, 1, -173)
 			self.Buttons[action].Size = UDim2.fromOffset(spacing - 14, 48)
 			self.Buttons[action].TextSize = 13
 		else

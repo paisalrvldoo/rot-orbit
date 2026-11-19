@@ -71,20 +71,13 @@ local Config = {
 			{ Name = "Comet Cannoli", Color = Color3.fromRGB(255, 129, 172) },
 		} },
 	Skills = {
-		Order = { "Dash", "Slam", "Bubble", "Blink", "Sprint", "Bomb" },
-		TouchPrimary = { "Blink", "Sprint", "Bomb" },
-		TouchUtility = { "Dash", "Slam", "Bubble" },
-		Dash = { Name = "JET DASH", Key = "X", Cooldown = 7, Distance = 18, Unlock = "FREE" },
-		Slam = { Name = "GRAVITY SLAM", Key = "V", Cooldown = 12, Radius = 24, Damage = 4,
-			Rebirth = 1, Upgrade = "CarrySpeed", Unlock = "CARRY UPGRADE 1 / REBIRTH 1" },
-		Bubble = { Name = "BAY BUBBLE", Key = "C", Cooldown = 45, Duration = 12, Radius = 38,
-			Rebirth = 2, Upgrade = "LockDuration", Unlock = "LOCK UPGRADE 1 / REBIRTH 2" },
-		Blink = { Name = "BLINK", Key = "Q", Cooldown = 9, Distance = 28, CarryDistance = 15, Unlock = "FREE" },
-		Sprint = { Name = "SPRINT", Key = "LeftShift", KeyLabel = "SHIFT", Cooldown = 11,
-			Duration = 4, Speed = 1.7, CarrySpeed = 1.35, Unlock = "FREE" },
+		Order = { "Blink", "Sprint" },
+		Blink = { Name = "BLINK", Key = "Q", Cooldown = 9, Distance = 28, CarryDistance = 15 },
+		Sprint = { Name = "RUN", Key = "LeftShift", KeyLabel = "SHIFT", Cooldown = 11,
+			Duration = 4, Speed = 1.7, CarrySpeed = 1.35 },
 		Bomb = { Name = "BOMB", Key = "G", Cooldown = 13, Radius = 13, Damage = 6,
 			Distance = 34, Arc = 9, Travel = 0.55, Fuse = 1.5, Arm = 0.65,
-			TrapLimit = 2, TrapLifetime = 30, TriggerRadius = 5, Stun = 0.9, Unlock = "FREE" },
+			TrapLimit = 2, TrapLifetime = 30, TriggerRadius = 5, Stun = 0.9 },
 	},
 	Lock = { Duration = 40, Cooldown = 65 },
 	Upgrades = {
@@ -162,12 +155,6 @@ end
 function Config.Rebirth.RequiredRank(level)
 	local ranks = Config.Rebirth.DockRanks
 	return ranks[math.min(level + 1, #ranks)]
-end
-
-function Config.Skills.Unlocked(name, profile)
-	local skill = Config.Skills[name]
-	return skill ~= nil and (not skill.Rebirth or (profile.Rebirths or 0) >= skill.Rebirth
-		or ((profile.Upgrades or {})[skill.Upgrade] or 0) >= 1)
 end
 
 return table.freeze(Config)

@@ -1,5 +1,23 @@
 # ROT ORBIT build notes
 
+## Current continuation
+
+- [x] Clean recovery checkpoint `0b6b79e`. Existing core gameplay passed verification.
+- [x] Applied the latest phone control override. Run, Blink and Zap are direct
+  controls. Removed the utility page and free bomb action, including server
+  dispatch. Gear will come from supply boxes. Phone layout checks pass.
+- [ ] Make the live cargo ring and its brainrots the visual focus. Stage the
+  four official shots around carry/dock, index, raid and next rebirth.
+- [ ] Owner Studio pass at 1024×460 and 1280×720, cover at 768×432 judge scale,
+  then latest publish and genuine captures.
+
+The ten top-10 priorities below remain the brief after reading owner research.
+Retain 43 originals, seven rarities, six mutations, the station title, readable
+hazards and rarity/value cards, staged late-game cover, four genuine pictures,
+live HUD states/quest card/feed, and earned progression. Aim for about 20–24
+purposeful scripts when a natural merge exists. Orbit visuals take precedence
+over additional systems once gameplay checks pass.
+
 ## Resume here
 
 Latest gameplay checkpoint: `b0611f1`, 19 November 23:13 WIB. All recovered and

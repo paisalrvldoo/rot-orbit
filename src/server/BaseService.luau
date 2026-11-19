@@ -362,7 +362,7 @@ function BaseService:Reset(player)
 	state.LockReadyAt = 0
 	state.Bay.Model:SetAttribute("LockedUntil", 0)
 	for _, shield in ipairs(state.Bay.Model:GetChildren()) do
-		if shield.Name == "BayLockShield" or shield.Name == "SkillBayBubble" then shield:Destroy() end
+		if shield.Name == "BayLockShield" then shield:Destroy() end
 	end
 	self:SetSpeed(player)
 end
@@ -395,7 +395,7 @@ function BaseService:Release(player)
 	state.Bay.Owner = nil
 	state.Bay.Model:SetAttribute("LockedUntil", 0)
 	for _, shield in ipairs(state.Bay.Model:GetChildren()) do
-		if shield.Name == "BayLockShield" or shield.Name == "SkillBayBubble" then shield:Destroy() end
+		if shield.Name == "BayLockShield" then shield:Destroy() end
 	end
 	state.Bay.Model:SetAttribute("OwnerUserId", 0)
 	state.Bay.Label.Text = state.Bay.CrewName

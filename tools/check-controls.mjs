@@ -62,10 +62,13 @@ for _, name in ipairs({ 'Upgrades', 'Rebirth', 'Index' }) do
 end
 local function frame() RunService.RenderStepped:Fire() end
 frame()
-local menu, more = hud.Gui:FindFirstChild('MobileMenu'), hud.Gui:FindFirstChild('SkillPage')
-assert(menu.Visible and more.Visible and not input.Buttons.Lock.Visible and not input.Buttons.Index.Visible)
-assert(input.Buttons.Blink.Visible and input.Buttons.Sprint.Visible and input.Buttons.Bomb.Visible)
-assert(not input.Buttons.Slam.Visible and not input.Buttons.Bubble.Visible)
+local menu = hud.Gui:FindFirstChild('MobileMenu')
+assert(menu.Visible and not input.Buttons.Lock.Visible and not input.Buttons.Index.Visible)
+assert(input.Buttons.Blink.Visible and input.Buttons.Sprint.Visible and input.Buttons.Zap.Visible)
+for _, name in ipairs({ 'Dash', 'Slam', 'Bubble', 'Bomb', 'Trap' }) do
+    assert(not input.Buttons[name] and not ContextActionService.Bindings['RotOrbit' .. name])
+end
+assert(not hud.Gui:FindFirstChild('SkillPage') and not hud.Gui:FindFirstChild('PlaceTrap'))
 local scale = 460 / 720 -- Actual HUD scale at the reported 1024x460 phone viewport.
 local function checkBounds()
  local rectangles = {}
@@ -85,17 +88,8 @@ local function checkBounds()
  end
 end
 checkBounds()
-more.Activate(); frame()
-checkBounds()
-assert(input.Buttons.Slam.Visible and input.Buttons.Bubble.Visible and input.Buttons.Dash.Visible and not input.Buttons.Blink.Visible)
-local trap = hud.Gui:FindFirstChild('PlaceTrap')
-assert(trap.Visible)
-trap.Activate()
-assert(sent[#sent][1] == 'Skill' and sent[#sent][2] == 'Bomb' and sent[#sent][3] == 'Trap')
-ContextActionService.Bindings.RotOrbitTrap(nil, Enum.UserInputState.Begin)
-assert(sent[#sent][3] == 'Trap', 'T and touch must place the same server-checked trap')
-state.SkillReadyAt = { Bomb = 110 }; frame()
-assert(trap:GetAttribute('Unavailable') and input.Buttons.Bomb:GetAttribute('Unavailable'), 'throw/trap must share cooldown UI')
+state.SkillReadyAt = { Sprint = 110 }; frame()
+assert(input.Buttons.Sprint:GetAttribute('Unavailable') and not input.Buttons.Blink:GetAttribute('Unavailable'))
 menu.Activate(); frame()
 checkBounds()
 assert(input.Buttons.Lock.Visible and input.Buttons.Rebirth.Visible and hud.Gui:GetAttribute('MobileMenuOpen'))
@@ -105,10 +99,10 @@ upgrades.Visible = false
 ContextActionService.Bindings.RotOrbitBlink(nil, Enum.UserInputState.Begin)
 assert(sent[#sent][1] == 'Skill' and sent[#sent][2] == 'Blink', 'keyboard must retain the same skill action')
 state.SaveStatus = 'STUDIO PREVIEW'; frame()
-assert(not menu.Visible and not more.Visible and not trap.Visible and input.Buttons.Lock.Visible and input.Buttons.Blink.Visible and input.Buttons.Bubble.Visible)
+assert(not menu.Visible and input.Buttons.Lock.Visible and input.Buttons.Blink.Visible and input.Buttons.Sprint.Visible)
 state.SaveStatus = 'SAVED'; compact = false; frame()
 assert(input.Buttons.Index.Visible and input.Buttons.Rebirth.Visible and not menu.Visible)
-print('Control checks passed: phone arc bounds/44px targets, no overlaps, menu, utility page, keyboard, panels and staged/desktop restoration.')
+print('Control checks passed: phone arc bounds/44px targets, no overlaps, menu, live cooldowns, keyboard, panels and staged/desktop restoration.')
 `;
 const directory = join(root, 'out', 'control-check');
 mkdirSync(directory, { recursive: true });

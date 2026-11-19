@@ -68,13 +68,8 @@ Live recovery / combat smoke test (19 November continuation):
   following the camera. Empty scores say No raids yet. The home marker should
   be small, respect world occlusion and hide inside 24 studs of home.
 - Phone Menu reveals lock/upgrades/rebirth/index/crew/contracts; closing it
-  clears the left side. Blink/Sprint/Bomb/Zap sit in a compact right-thumb arc;
-  More opens Dash/Slam/Bubble/Trap. Confirm taps, cooldowns and the Roblox jump
-  button do not compete. Local bounds tests pass; real Studio rendering is open.
-- G throws, T plants a trap. Check the arc against a wall, fuse flash, blast,
-  shared cooldown, two-trap cap and cleanup on leave. A rival stolen-cargo
-  carrier drops cargo; self, friendly crew and players with bought cargo do not.
-  Repeat across a lock bubble and a dome: no blast should cross their shield.
+  clears the left side. Blink, Run and Zap sit near the right thumb.
+  Confirm taps, cooldowns and the Roblox jump button do not compete.
 - Rebirth with several docked cargo, including a valuable mutation. Confirm
   exactly one best-income cargo survives, its original mutation remains, and
   $/s is nonzero immediately. Rejoin to check persistence. R1 has 10 base pods;
@@ -88,10 +83,8 @@ Live recovery / combat smoke test (19 November continuation):
   of loading and repeats every 135s. Check the six-second red warning, arrival
   portal, HP bars, F beam, stolen-cargo recovery and kill/defence cash. Third
   raid has a crowned captain and shared HUD health. Chase timing needs testing.
-- X dashes without passing through walls or leaving the deck. Buy Carry Speed
-  1 to unlock V Slam; buy Lock Duration 1 to unlock C Bubble. Rebirths 1/2 are
-  alternative unlocks. Test keys and touch buttons, cooldown badges, Slam
-  knockback and Bubble's twelve-second protection; regular L still works.
+- Q blinks across open deck. Check shorter range while carrying, wall and
+  shield blocking, and the cooldown. Shift gives a four-second running burst.
 - With two clients, use Y or the coloured arrival pads to join the same crew.
   Teammates must not steal cargo; outsiders still can when unlocked. Check
   crew nameplates, bay status, nearby assist cash, shared raid score and gold

@@ -275,7 +275,7 @@ function GremlinRaid:Pulse(position, radius, color, name)
 	sound.SoundId = "rbxasset://sounds/electronicpingshort.wav"
 	sound.Volume = 0.3
 	sound.RollOffMaxDistance = 65
-	sound.PlaybackSpeed = name == "GravitySlam" and 0.65 or 1.3
+	sound.PlaybackSpeed = 1.3
 	sound.Parent = pulse
 	sound:Play()
 	Debris:AddItem(pulse, 1)
@@ -315,7 +315,7 @@ function GremlinRaid:BlinkTarget(player, root, distance)
 	for _, dome in ipairs(self.World.Domes) do checkShield(dome.Part) end
 	for _, bay in ipairs(self.World.PlayerBays) do
 		if self.Locks:IsLocked(bay) then
-			local shield = bay.Model:FindFirstChild("BayLockShield") or bay.Model:FindFirstChild("SkillBayBubble")
+			local shield = bay.Model:FindFirstChild("BayLockShield")
 			if shield then checkShield(shield) end
 		end
 	end
@@ -361,7 +361,7 @@ function GremlinRaid:ShieldBlocks(origin, target)
 	end
 	for _, bay in ipairs(self.World.PlayerBays) do
 		if self.Locks:IsLocked(bay) then
-			local shield = bay.Model:FindFirstChild("BayLockShield") or bay.Model:FindFirstChild("SkillBayBubble")
+			local shield = bay.Model:FindFirstChild("BayLockShield")
 			if shield and blocks(shield) then return true end
 		end
 	end
@@ -501,25 +501,17 @@ function GremlinRaid:Bomb(player, state, root, trap, skill)
 	return true
 end
 
-function GremlinRaid:Skill(player, name, mode)
+function GremlinRaid:Skill(player, name)
 	if type(name) ~= "string" or not table.find(Config.Skills.Order, name) then return end
 	local state, profile = self.Bases.Players[player], self.Economy.Profiles[player]
 	local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
 	if not state or state.Loading or state.Closing or not profile or profile.Demo or not root
 		or not self.Bases:Near(player, root.Position) then return end
 	local skill = Config.Skills[name]
-	if not Config.Skills.Unlocked(name, profile) then
-		self.Economy.Network.Notice:FireClient(player, skill.Name .. " · NEED " .. skill.Unlock)
-		return
-	end
 	local now = workspace:GetServerTimeNow()
 	if (state.StunnedUntil or 0) > now then return end
 	state.SkillReadyAt = state.SkillReadyAt or {}
 	if now < (state.SkillReadyAt[name] or 0) then return end
-	if name == "Bubble" and (root.Position - state.Bay.Frame.Position).Magnitude > skill.Radius then
-		self.Economy.Network.Notice:FireClient(player, "BAY BUBBLE · GET CLOSER TO YOUR BAY")
-		return
-	end
 	local blinkTarget
 	if name == "Blink" then
 		blinkTarget = self:BlinkTarget(player, root, Config.Rebirth.BlinkDistance(profile.Rebirths or 0, state.Carry ~= nil))
@@ -527,25 +519,6 @@ function GremlinRaid:Skill(player, name, mode)
 			self.Economy.Network.Notice:FireClient(player, "BLINK BLOCKED · TURN TOWARD OPEN DECK")
 			return
 		end
-	end
-	if name == "Bomb" then
-		local trap = mode == "Trap"
-		if mode ~= nil and not trap then return end
-		if trap then
-			local traps = 0
-			for model in pairs(state.Traps or {}) do if model.Parent then traps += 1 end end
-			if traps >= skill.TrapLimit then
-				self.Economy.Network.Notice:FireClient(player, "BOMB · TWO TRAPS ALREADY ACTIVE")
-				return
-			end
-		end
-		if not self:Bomb(player, state, root, trap, skill) then
-			self.Economy.Network.Notice:FireClient(player, "BOMB BLOCKED · FIND OPEN DECK")
-			return
-		end
-		state.SkillReadyAt[name] = now + skill.Cooldown
-		self.Economy:Send(player)
-		return
 	end
 	state.SkillReadyAt[name] = now + skill.Cooldown
 	if name == "Blink" then
@@ -555,54 +528,6 @@ function GremlinRaid:Skill(player, name, mode)
 		self:Pulse(blinkTarget, 3, violet, "BlinkArrival")
 	elseif name == "Sprint" then
 		self:Sprint(player, state, root, now, skill)
-	elseif name == "Dash" then
-		local direction = root.CFrame.LookVector * Vector3.new(1, 0, 1)
-		if direction.Magnitude > 0.01 then
-			direction = direction.Unit * skill.Distance
-			local params = RaycastParams.new()
-			params.FilterType = Enum.RaycastFilterType.Exclude
-			params.FilterDescendantsInstances = { player.Character }
-			params.RespectCanCollide = true
-			local hit = workspace:Raycast(root.Position, direction, params)
-			if hit then direction = direction.Unit * math.max(0, hit.Distance - 3) end
-			local target = root.Position + direction
-			if Vector3.new(target.X, 0, target.Z).Magnitude < Config.World.DeckRadius - 4 then
-				self:Pulse(root.Position, 3, Config.Palette.Mint, "DashDeparture")
-				root.CFrame += direction
-				self:Pulse(target, 4, Config.Palette.Mint, "JetDash")
-			end
-		end
-	elseif name == "Slam" then
-		local hits = 0
-		for _, enemy in pairs(self.Gremlins) do
-			if (enemy.Position - root.Position).Magnitude <= skill.Radius then
-				hits += 1
-				self:Damage(enemy, player, skill.Damage)
-				if self.Gremlins[enemy.Model] then
-					local away = (enemy.Position - root.Position) * Vector3.new(1, 0, 1)
-					if away.Magnitude > 0.1 then enemy.Position += away.Unit * (enemy.Boss and 3 or 8) end
-				end
-			end
-		end
-		self:Pulse(root.Position, skill.Radius, Config.Palette.Sun, "GravitySlam")
-		self.Economy.Network.Notice:FireClient(player, "GRAVITY SLAM · " .. hits .. " ENEMIES HIT")
-	else
-		local bay = state.Bay
-		local untilTime = math.max(bay.Model:GetAttribute("LockedUntil") or 0, now + skill.Duration)
-		state.LockUntil = untilTime
-		bay.Model:SetAttribute("LockedUntil", untilTime)
-		local shield = WorldBuilder.Part("SkillBayBubble", Vector3.new(68, 56, 68),
-			bay.Frame * CFrame.new(0, 0, 12), Config.Palette.Sun, Enum.Material.ForceField,
-			bay.Model, Enum.PartType.Ball, false)
-		shield.Transparency = 0.8
-		shield.CanQuery = false
-		self:Pulse(root.Position, 6, Config.Palette.Sun, "BubbleActivate")
-		task.delay(skill.Duration, function()
-			shield:Destroy()
-			if bay.Owner == player and bay.Model:GetAttribute("LockedUntil") == untilTime
-				and workspace:GetServerTimeNow() >= untilTime then bay.Model:SetAttribute("LockedUntil", 0) end
-		end)
-		self.Economy.Network.Notice:FireClient(player, "BAY BUBBLE · 12s EMERGENCY SHIELD")
 	end
 	self.Economy:Send(player)
 end

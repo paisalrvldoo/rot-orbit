@@ -54,46 +54,22 @@ local uses = 0
 local skills = setmetatable({ Bases = { Players = { [user] = skillState }, Near = function() return true end },
     Economy = { Profiles = { [user] = skillProfile }, Network = { Notice = { FireClient = function() end } },
         Send = function() uses += 1 end }, Gremlins = {}, Pulse = function() end }, GremlinRaid)
-skills:Skill(user, 'Unknown')
+skills.Sprint = function() end
+for _, name in ipairs({ 'Unknown', 'Slam', 'Dash', 'Bubble', 'Bomb' }) do skills:Skill(user, name) end
 skills:Skill(user, {})
-skills:Skill(user, 'Slam')
-assert(uses == 0 and not skillState.SkillReadyAt.Slam, 'locked/malformed skills must be denied')
-skillProfile.Upgrades.CarrySpeed = 1
-skills:Skill(user, 'Slam')
-assert(uses == 1 and skillState.SkillReadyAt.Slam == 112, 'upgrade must unlock server-owned cooldown')
-skills:Skill(user, 'Slam')
+assert(uses == 0 and next(skillState.SkillReadyAt) == nil, 'removed/malformed skills must be denied')
+skills:Skill(user, 'Sprint')
+assert(uses == 1 and skillState.SkillReadyAt.Sprint == 111, 'run must start a server-owned cooldown')
+skills:Skill(user, 'Sprint')
 assert(uses == 1, 'spam must not bypass cooldown')
-skillState.SkillReadyAt.Slam = 0
+skillState.SkillReadyAt.Sprint = 0
 skillState.Closing = true
-skills:Skill(user, 'Slam')
+skills:Skill(user, 'Sprint')
 assert(uses == 1, 'departing profiles must not activate skills')
 skillState.Closing, skillProfile.Demo = false, true
-skills:Skill(user, 'Slam')
+skills:Skill(user, 'Sprint')
 assert(uses == 1, 'capture staging must not invoke live skills')
-assert(Config.Skills.Unlocked('Bubble', { Rebirths = 2 }))
-assert(not Config.Skills.Unlocked('Bubble', { Rebirths = 1 }))
-assert(Config.Skills.Unlocked('Dash', {}))
--- Exercise actual Bomb entry checks without relying on simulated projectile physics.
 do
-    skillProfile.Demo, skillState.Closing = false, false
-    skillState.SkillReadyAt = {}
-    local shots, canLand = 0, false
-    skills.Bomb = function(_, _, _, _, trap)
-        assert(trap, 'trap action must reach the trap branch'); shots += 1; return canLand
-    end
-    skills:Skill(user, 'Bomb', 'invalid')
-    assert(shots == 0 and not skillState.SkillReadyAt.Bomb)
-    skills:Skill(user, 'Bomb', 'Trap')
-    assert(shots == 1 and not skillState.SkillReadyAt.Bomb, 'failed placement must not spend cooldown')
-    skillState.Traps = { [{ Parent = true }] = true, [{ Parent = true }] = true }
-    skills:Skill(user, 'Bomb', 'Trap')
-    assert(shots == 1, 'two live traps must enforce the server limit')
-    skillState.Traps = { [{ Parent = nil }] = true }
-    canLand = true
-    skills:Skill(user, 'Bomb', 'Trap')
-    assert(shots == 2 and skillState.SkillReadyAt.Bomb == 113, 'expired traps must not block placement')
-    skills:Skill(user, 'Bomb')
-    assert(shots == 2, 'throw cannot bypass the shared trap cooldown')
     local friendly = {}
     skills.Crews = { Same = function(_, _, other) return other == friendly end }
     assert(not skills:TargetableThief(user, user, { Carry = { Stolen = true } }))
@@ -198,7 +174,7 @@ crews:Join(one, 1)
 assert(crewPlayers[one].CrewId == 2, 'switch cooldown cannot be bypassed')
 print('Global crew checks passed: combined servers, ambiguous ledger retry, ordered retry and monotonic publication.')
 print('Crew checks passed: friendly protection, nearby assist payout, outsider exclusion, once-per-crew raid score and membership guards.')
-print('Skill checks passed: invalid names, unlocks, upgrade/rebirth paths, cooldown spam and departure/preview guards.')
+print('Skill checks passed: removed and invalid names, Run cooldown, departure and preview guards.')
 print('Combat checks passed: damage, stun, death once, boss reward, cargo recovery, wave reward once, cash cap and profile guards.')
 `;
 mkdirSync('out/combat-check', { recursive: true });

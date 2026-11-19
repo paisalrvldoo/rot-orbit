@@ -19,14 +19,8 @@ docks earn a 25% offline haul for up to two hours away.
 WASD moves; E buys, steals, recovers and docks; L locks; F zaps; U opens upgrades
 and contracts; R opens rebirth (click again to confirm); B opens the index.
 Q Blink crosses open deck (shorter with cargo). Shift Sprint gives a four-second burst.
-G throws a cargo bomb; T places a proximity trap (at most two active). Bombs
-and traps share a cooldown, hit gremlins and knock cargo from rival thieves;
-crew allies are protected. On phones, Menu holds bay/progression/crew/contracts,
-and More opens utility skills and Trap beside the right-thumb controls.
-Skills also have touch buttons and server-enforced cooldowns. X Jet Dash is
-free; V Gravity Slam unlocks with Carry Speed 1 or rebirth 1; C Bay Bubble
-unlocks with Lock Duration 1 or rebirth 2. Bubble protects your nearby bay for
-12 seconds independently of the main lock recharge.
+On phones, Run, Blink and Zap sit near the jump button. Menu holds bay
+controls, upgrades, rebirth, crews, the index and contracts.
 Choose Solo or Squad on the title screen and press Play to enter the station hub. Squad opens the crew picker. Solo respawns at your own dock.
 Y opens crews and live server ranks. Join Solar Sporks, Lunar Linguini or Comet
 Cannoli from the panel or coloured arrival pads. Crewmates cannot steal each
@@ -77,12 +71,12 @@ to also check all four final JPEGs and their TOUR presets.
 `node tools/check-collections.mjs` checks one-time collection payouts, save
 snapshot isolation and per-connection save leases using the real server
 functions in the Luau interpreter.
-`node tools/check-combat.mjs` exercises actual combat, skill unlock/cooldown,
+`node tools/check-combat.mjs` exercises actual combat, skill cooldowns,
 crew membership/reward and retry-safe global-score functions with deterministic
 server stubs. Live physics and multiplayer still need the CAPTURE.md smoke test.
 `node tools/check-controls.mjs` runs the actual input/layout controller with a
 small GUI host, checking phone bounds, non-overlap, 44px targets at 1024×460,
-menu/skill paging, shared bomb/trap cooldown and desktop/preview restoration.
+menu, live cooldowns and desktop/preview restoration.
 It does not render Roblox or approve the final phone screenshot.
 
 Run it as the grader does, writing `out/` in place of `/output`:
