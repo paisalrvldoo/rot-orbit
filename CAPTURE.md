@@ -29,7 +29,9 @@ pixels wide. Keep the title and SECRET face clear of the HUD; confirm names,
 rarity cards, income, banner and bottom controls remain readable. The saved
 three-quarter camera gives the carry its own space left of the central SECRET.
 The showcase dock is inside the near arc of the actual cargo conveyor; its
-rails should read across the foreground. Exactly one cargo BUY card stays
+rails should read across the foreground. Look for the left Aurora SECRET,
+the right Diamond Cosmic and the moon between the title and the far gate.
+Exactly one cargo BUY card stays
 visible in the frozen cover, showing the Aurora SECRET's real price/income.
 The five dock cards spread below their models. Check that the BUY card clears
 the dock cards, the foreground ring clears the counts strip, and the crew rank
@@ -39,7 +41,10 @@ actual brightness, silhouettes, occlusion and text still need Studio approval.
 For the phone smoke pass, also confirm the dark station deck separates the
 teal/gold paths, a player with zero docked cargo sees a clear dock-a-brainrot
 hint instead of a misleading `$0/s`, and joining-crew signs stay legible without
-overlapping. Keep the gremlin event warning short enough to fit at 1024×460.
+overlapping. Check the title flyby and first spawn for a nearby moving pod,
+the pod buy prompt on both sides of the tilted track, and the gap between the
+world title and spinning core. Pan quickly to confirm cargo cards clear the
+cash and event HUD. Keep the gremlin warning short enough to fit at 1024×460.
 
 Run Cover → Index → Raid → Upgrades → Cover in the same Play session. Each
 should replace the prior preview: six cargo pods (not twelve), one BUY card
@@ -84,7 +89,9 @@ raids and carried-cargo drops until their bay is released.
 Live recovery / combat smoke test (19 November continuation):
 
 - At **1024×460**, confirm the physical CREW RANKS board faces the hub without
-  following the camera. Empty scores say No raids yet. The home marker should
+  following the camera. Empty scores say No raids yet. Earn defence points and
+  check the correct podium fills and the gold bar flashes on the update.
+  The home marker should
   be small, respect world occlusion and hide inside 24 studs of home.
 - Phone Menu reveals lock/upgrades/rebirth/index/crew/contracts; closing it
   clears the left side. Blink, Run and Zap sit near the right thumb.

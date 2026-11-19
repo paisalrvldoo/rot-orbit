@@ -30,9 +30,9 @@ function ScreenshotService:StageCargo(shot)
 		-- The enlarged SECRET sits left of the dock lineup, with its full
 		-- silhouette inside the saved camera instead of covering two heroes.
 		{ Id = 30, Mutation = "Aurora", Angle = math.pi * 0.80, Card = true },
-		{ Id = 40, Mutation = "Diamond", Angle = math.pi * 1.95 },
-		{ Id = 7, Angle = math.pi * 1.1 }, { Id = 18, Mutation = "Gold", Angle = math.pi * 1.3 },
-		{ Id = 23, Angle = math.pi * 1.6 }, { Id = 27, Mutation = "Gold", Angle = math.pi * 1.8 },
+		{ Id = 41, Mutation = "Diamond", Angle = math.pi * 0.035 },
+		{ Id = 7, Angle = math.pi * 1.09 }, { Id = 18, Mutation = "Gold", Angle = math.pi * 1.28 },
+		{ Id = 23, Angle = math.pi * 1.71 }, { Id = 27, Mutation = "Gold", Angle = math.pi * 1.90 },
 	} or {
 		{ Id = 7 }, { Id = 11, Mutation = "Gold" }, { Id = 15 },
 		{ Id = 18, Mutation = "Gold" }, { Id = 23 }, { Id = 27, Mutation = "Gold" },

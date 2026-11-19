@@ -470,11 +470,10 @@ local function startTitle(hud, crewPanel)
 		if camera then
 			local size = screen.AbsoluteSize
 			scale.Scale = math.clamp(math.min(size.X / 1280, size.Y / 720), 0.33, 1.4)
-			local angle = 0.20 + math.sin((os.clock() - started) * 0.21) * 0.36
-			local target = Vector3.new(-13, 9, -9)
+			local slide = math.sin((os.clock() - started) * 0.24)
+			local target = Vector3.new(-10, 6, 18)
 			camera.CameraType = Enum.CameraType.Scriptable
-			camera.CFrame = CFrame.lookAt(Vector3.new(math.sin(angle) * 102, 29, math.cos(angle) * 102),
-				target)
+			camera.CFrame = CFrame.lookAt(Vector3.new(-8 + slide * 10, 16.5, 67), target)
 			camera.Focus = CFrame.new(target)
 		end
 		local ready = hud.GetState() ~= nil

@@ -24,7 +24,10 @@ card and action feed, readable rarity and value cards, and earned progression.
   raise bloom slightly for the rails. Studio framing remains to be checked.
 - [x] Soften the hub panel contrast, add paired lane lights and chevrons
   toward docks, and layer rarity-coloured underglow below the socket rings.
-- [ ] Refine the cover parade.
+- [x] Frame the cover dock with the Aurora SECRET on the left and Diamond
+  Cosmic on the right, with shorter pods farther back. Move the title camera
+  closer to the ring and start the live cargo rotation with a Common ahead of
+  spawn. Updated CAPTURE.md with the orbit and podium review points.
 - [ ] Studio review at 1024×460 and 1280×720, with four genuine captures.
 
 ## Current 25-minute orbit continuation

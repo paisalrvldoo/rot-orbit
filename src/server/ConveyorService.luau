@@ -16,13 +16,14 @@ ConveyorService.__index = ConveyorService
 
 function ConveyorService.new(world, economy)
 	local self = setmetatable({ World = world, Economy = economy, Capsules = {}, Random = Random.new() }, ConveyorService)
+	local nearArc = math.pi / 2
 	for index = 1, Config.Conveyor.PreviewAffordableCount do
-		self:Spawn({ Id = index }, (index - 1) * math.pi / 3)
+		self:Spawn({ Id = index }, nearArc + (index - 1) * math.pi / 3)
 	end
 	-- Stock the far half too, so the first title/hub view already shows a
 	-- complete cargo orbit. These are ordinary purchasable, expiring cargo.
 	for index, id in ipairs(Config.Conveyor.PreviewDisplayIds) do
-		self:Spawn({ Id = id }, (Config.Conveyor.PreviewAffordableCount + index - 1) * math.pi / 3)
+		self:Spawn({ Id = id }, nearArc + (Config.Conveyor.PreviewAffordableCount + index - 1) * math.pi / 3)
 	end
 	local elapsed = 0
 	RunService.Heartbeat:Connect(function(dt)
