@@ -2,6 +2,7 @@
 local shared = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local HttpService = game:GetService("HttpService")
+local Debris = game:GetService("Debris")
 local Config = require(shared:WaitForChild("Config"))
 local Traits = require(shared:WaitForChild("BrainrotTraits"))
 local Format = Traits.Format
@@ -72,7 +73,7 @@ end
 
 function ConveyorService:Frame(angle)
 	local position = Vector3.new(math.cos(angle) * Config.World.RailRadius,
-		Config.Conveyor.Height, math.sin(angle) * Config.World.RailRadius)
+		Config.Conveyor.Height + math.sin(angle * 7) * 0.12, math.sin(angle) * Config.World.RailRadius)
 	return CFrame.lookAt(position, Vector3.new(0, position.Y, 0))
 end
 
@@ -86,15 +87,45 @@ function ConveyorService:Spawn(record, angle)
 	pivot.Transparency = 1
 	pivot.CanQuery = false
 	capsule.PrimaryPart = pivot
-	local pad = WorldBuilder.Part("HoverSled", Vector3.new(0.45, 5.4, 5.4),
+	local rarity = Rarity.ByName[Catalog.Get(record.Id).Rarity]
+	local pad = WorldBuilder.Part("HoverSled", Vector3.new(0.68, 5.6, 5.6),
 		CFrame.new(0, -0.3, 0) * CFrame.Angles(0, 0, math.pi / 2), Config.Palette.Ink,
-		Enum.Material.SmoothPlastic, capsule, Enum.PartType.Cylinder, false)
-	WorldBuilder.Ring("CapsuleHalo", 2.65, 0.16, 0.12, CFrame.identity,
-		Rarity.ByName[Catalog.Get(record.Id).Rarity].Color, Enum.Material.Neon, capsule, 20, false)
+		Enum.Material.Metal, capsule, Enum.PartType.Cylinder, false)
+	WorldBuilder.Part("SledRarityBand", Vector3.new(0.18, 5.8, 5.8),
+		CFrame.new(0, -0.34, 0) * CFrame.Angles(0, 0, math.pi / 2), rarity.Color,
+		Enum.Material.Neon, capsule, Enum.PartType.Cylinder, false)
+	for _, side in ipairs({ -1, 1 }) do
+		WorldBuilder.Part("SledClamp", Vector3.new(0.64, 0.48, 2.6),
+			CFrame.new(side * 2.58, -0.02, 0), Config.Palette.White,
+			Enum.Material.SmoothPlastic, capsule, nil, false)
+	end
+	if rarity.Rank >= 4 then
+		local source = Instance.new("Attachment", pivot)
+		local top = Instance.new("Attachment", pivot)
+		top.Position = Vector3.new(0, rarity.Rank >= 6 and 10 or 7, 0)
+		local beam = Instance.new("Beam")
+		beam.Attachment0, beam.Attachment1 = source, top
+		beam.Width0, beam.Width1 = 1.8, 0.18
+		beam.FaceCamera, beam.LightEmission = true, 0.75
+		beam.Color = ColorSequence.new(rarity.Color)
+		beam.Transparency = NumberSequence.new(0.81, 1)
+		beam.Parent = pivot
+	end
 	local brainrot = BrainrotModel.Create(record, CFrame.identity, capsule, true)
 	brainrot:SetAttribute("VisualState", "Cargo")
 	capsule:PivotTo(frame)
 	capsule.Parent = self.World.Cargo
+	if rarity.Rank >= 4 and not self.World.Root:GetAttribute("ScreenshotFrozen") then
+		local sound = Instance.new("Sound")
+		sound.Name = "RareCargoArrival"
+		sound.SoundId = "rbxasset://sounds/electronicpingshort.wav"
+		sound.RollOffMaxDistance = 48
+		sound.Volume = 0.19
+		sound.PlaybackSpeed = 0.85 + rarity.Rank * 0.08
+		sound.Parent = pad
+		sound:Play()
+		Debris:AddItem(sound, 2)
+	end
 	local state = { Record = record, Angle = angle, Travel = 0, Sold = false }
 	self.Capsules[capsule] = state
 	local prompt = Instance.new("ProximityPrompt")

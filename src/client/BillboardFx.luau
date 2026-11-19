@@ -60,6 +60,15 @@ function BillboardFx.Start()
 	if started then return end
 	started = true
 	local visuals, reveals, quieted = {}, {}, {}
+	local function tagged(tag)
+		local items = {}
+		for _, item in ipairs(CollectionService:GetTagged(tag)) do items[item] = true end
+		CollectionService:GetInstanceAddedSignal(tag):Connect(function(item) items[item] = true end)
+		CollectionService:GetInstanceRemovedSignal(tag):Connect(function(item) items[item] = nil end)
+		return items
+	end
+	local chasers = tagged("OrbitRailChaser")
+	local relays = tagged("OrbitCargoRelay")
 	local function restore(model)
 		if reveals[model] and model.Parent then model:ScaleTo(1) end
 		reveals[model] = nil
@@ -77,10 +86,29 @@ function BillboardFx.Start()
 		visuals[model] = nil
 	end)
 	local cardElapsed = math.huge
+	local railFrozen
 	RunService.RenderStepped:Connect(function(dt)
 		local time = workspace:GetServerTimeNow()
 		local world = workspace:FindFirstChild("ROT_ORBIT")
 		local frozen = world and world:GetAttribute("ScreenshotFrozen")
+		if not frozen or not railFrozen then
+			for tracer in pairs(chasers) do
+				local phase = tracer:GetAttribute("OrbitPhase")
+				if phase then
+					local angle = phase + (frozen and 0 or time * 0.64)
+					tracer.CFrame = CFrame.Angles(0, -angle, 0)
+						* CFrame.new(Config.World.RailRadius + 3.55, Config.World.RailHeight + 0.18, 0)
+				end
+			end
+			for relay in pairs(relays) do
+				local frame, phase = relay:GetAttribute("RelayFrame"), relay:GetAttribute("RelayPhase")
+				if frame and phase then
+					local bob = frozen and 0 or math.sin(time * 1.1 + phase) * 0.45
+					relay:PivotTo(frame * CFrame.new(0, bob, 0))
+				end
+			end
+		end
+		railFrozen = frozen
 		cardElapsed += dt
 		if cardElapsed >= 0.07 then
 			updateCargoCards(visuals, frozen)

@@ -400,7 +400,7 @@ function BrainrotModel.Create(record, frame, parent, forSale)
 	light.Brightness = 0.2 + rarity.Rank * 0.08
 	light.Range = 6 + rarity.Rank
 	light.Parent = beacon
-	if mutation or rarity.Rank >= 5 then
+	if mutation or rarity.Rank >= 5 or (forSale and rarity.Rank >= 4) then
 		local attachment = Instance.new("Attachment")
 		attachment.Position = Vector3.new(0, 1.8 * scale, 0)
 		attachment.Parent = root

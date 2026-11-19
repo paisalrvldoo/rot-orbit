@@ -1,7 +1,10 @@
 -- Every world instance is authored here at runtime; the Rojo place holds code only.
 local Lighting = game:GetService("Lighting")
 local Workspace = game:GetService("Workspace")
-local Config = require(game:GetService("ReplicatedStorage"):WaitForChild("Config"))
+local CollectionService = game:GetService("CollectionService")
+local shared = game:GetService("ReplicatedStorage")
+local Config = require(shared:WaitForChild("Config"))
+local Rarity = require(shared:WaitForChild("BrainrotTraits")).Rarity
 local WorldBuilder = {}
 local built
 local palette = Config.Palette
@@ -287,12 +290,54 @@ end
 local function buildCargoRing(world)
 	local radius = Config.World.RailRadius
 	local y = Config.World.RailHeight
-	WorldBuilder.Ring("CargoTrack", radius, 6.5, 0.18, CFrame.new(0, 0.14, 0),
-		palette.Ink, Enum.Material.SmoothPlastic, world.Geometry, Config.World.RailSegments, false)
+	local track = folder("CargoTrack", world.Geometry)
+	WorldBuilder.Ring("TrackChassis", radius, 8.6, 0.56, CFrame.new(0, 0.23, 0),
+		palette.Ink, Enum.Material.Metal, track, Config.World.RailSegments, false)
 	for _, side in ipairs({ -1, 1 }) do
-		WorldBuilder.Ring("NeonRail", radius + side * 2.7, 0.4, 0.22, CFrame.new(0, y, 0),
-			side == 1 and palette.Mint or palette.Teal, Enum.Material.Neon,
-			world.Geometry, Config.World.RailSegments, false)
+		local rail = WorldBuilder.Ring("GuideRail", radius + side * 3.55, 0.58, 0.22,
+			CFrame.new(0, y, 0), side == 1 and palette.Mint or palette.Teal, Enum.Material.Neon,
+			track, Config.World.RailSegments, false)
+		if side == 1 then
+			for index, segment in ipairs(rail:GetChildren()) do
+				local sector = math.floor((index - 1) * #Rarity.Order / Config.World.RailSegments) + 1
+				segment.Color = Rarity.ByName[Rarity.Order[sector]].Color:Lerp(palette.Teal, 0.36)
+			end
+		end
+	end
+	for index = 1, 28 do
+		local angle = (index - 1) * math.pi * 2 / 28
+		local frame = CFrame.Angles(0, -angle, 0) * CFrame.new(radius, 0.53, 0)
+		WorldBuilder.Part("TrackSleeper", Vector3.new(8.4, 0.2, 0.58), frame, palette.Teal,
+			Enum.Material.Metal, track, nil, false)
+	end
+	for index = 1, 7 do
+		local phase = (index - 1) * math.pi * 2 / 7
+		local frame = CFrame.Angles(0, -phase, 0) * CFrame.new(radius + 3.55, y + 0.18, 0)
+		local color = Rarity.ByName[Rarity.Order[index]].Color
+		local tracer = WorldBuilder.Part("RailChaser", Vector3.new(0.8, 0.22, 3.2), frame, color,
+			Enum.Material.Neon, track, nil, false)
+		tracer.CanQuery = false
+		tracer:SetAttribute("OrbitPhase", phase)
+		CollectionService:AddTag(tracer, "OrbitRailChaser")
+	end
+	for index = 1, 3 do
+		local angle = (index - 1) * math.pi * 2 / 3 + 0.36
+		local frame = CFrame.Angles(0, -angle, 0) * CFrame.new(radius - 8.4, 3.4, 0)
+		local drone = Instance.new("Model")
+		drone.Name = "CargoRelay"
+		local core = WorldBuilder.Part("RelayCore", Vector3.new(1.25, 1.1, 1.35), frame,
+			palette.White, Enum.Material.SmoothPlastic, drone, nil, false)
+		for _, side in ipairs({ -1, 1 }) do
+			WorldBuilder.Part("SolarWing", Vector3.new(0.9, 0.18, 1.42), frame * CFrame.new(side * 1.04, 0, 0),
+				palette.Teal, Enum.Material.Metal, drone, nil, false)
+		end
+		WorldBuilder.Part("RelayLens", Vector3.new(0.46, 0.46, 0.33), frame * CFrame.new(0, 0, 0.69),
+			palette.Mint, Enum.Material.Neon, drone, Enum.PartType.Ball, false)
+		drone.PrimaryPart = core
+		drone:SetAttribute("RelayFrame", frame)
+		drone:SetAttribute("RelayPhase", angle)
+		drone.Parent = track
+		CollectionService:AddTag(drone, "OrbitCargoRelay")
 	end
 	WorldBuilder.Ring("HubTrim", 13, 1.5, 0.25, CFrame.new(0, 0.17, 0),
 		palette.Teal, Enum.Material.SmoothPlastic, world.Geometry, 48, false)

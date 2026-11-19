@@ -418,3 +418,8 @@ The live boot check still takes first priority if a new Studio error arrives.
   with its live completion count. First-dock and full-bay hints each use one
   short line. Desktop and staging keep the fuller HUD. Check taps and spacing
   in Studio's phone emulator before approving captures.
+- Cargo ring now has a dark metal chassis, raised guide rails, rarity sectors,
+  seven client-side light chasers and three floating relay drones. Chunkier
+  sleds use fewer parts than before. Legendary and higher cargo has a beam,
+  sparks and a spatial arrival ping during live play. Studio should check
+  default-camera readability, mobile frame rate and audio.
