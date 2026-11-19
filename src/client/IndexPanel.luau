@@ -2,20 +2,31 @@ local RunService = game:GetService("RunService")
 local shared = game:GetService("ReplicatedStorage")
 local Config = require(shared:WaitForChild("Config"))
 local Rarity = require(shared:WaitForChild("Rarity"))
+local Mutation = require(shared:WaitForChild("Mutation"))
 local Style = require(script.Parent:WaitForChild("PanelStyle"))
 local IndexPanel = {}
 
 function IndexPanel.Start(hud, input)
-	local panel = Style.Create(hud, "IndexPanel", "INDEX · 0/30 FOUND", 980, 458)
+	local panel = Style.Create(hud, "IndexPanel", "INDEX · 0/" .. Config.CatalogCount .. " FOUND", 1198, 446)
+	panel.Position = UDim2.new(0.5, 0, 0, 159)
 	local header = panel:FindFirstChildOfClass("TextLabel")
+	header.Size = UDim2.fromOffset(1100, 49)
+	header.TextSize = 43
+	header.Font = Enum.Font.GothamBlack
 	local cells, counts = {}, {}
 	for index, rarity in ipairs(Rarity.Order) do
-		counts[rarity] = Style.Text(panel, rarity .. " 0/0", 22 + (index - 1) * 134, 57, 134, 28,
-			14, Rarity.ByName[rarity].Color)
+		counts[rarity] = Style.Text(panel, rarity .. " 0/0", 21 + (index - 1) * 167, 61, 165, 27,
+			19, Rarity.ByName[rarity].Color)
+	end
+	Style.Text(panel, "MUTATIONS", 21, 404, 135, 33, 19, Config.Palette.Muted)
+	for index, name in ipairs(Mutation.Order) do
+		local mutation = Mutation.ByName[name]
+		Style.Text(panel, string.upper(name) .. " ×" .. mutation.Multiplier,
+			164 + (index - 1) * 170, 404, 166, 33, 19, mutation.Color)
 	end
 	local function silhouette(parent, color)
 		local parts = {}
-		for _, shape in ipairs({ { 13, 8, 18, 18 }, { 9, 25, 26, 22 }, { 8, 43, 11, 7 }, { 25, 43, 11, 7 } }) do
+		for _, shape in ipairs({ { 10, 9, 14, 14 }, { 7, 22, 20, 18 }, { 6, 36, 9, 7 }, { 19, 36, 9, 7 } }) do
 			local piece = Instance.new("Frame")
 			piece.Position = UDim2.fromOffset(shape[1], shape[2])
 			piece.Size = UDim2.fromOffset(shape[3], shape[4])
@@ -34,7 +45,7 @@ function IndexPanel.Start(hud, input)
 		if elapsed < 0.3 then return end
 		elapsed = 0
 		local state = hud.GetState()
-		if not state then return end
+		if not state or not panel.Visible then return end
 		local found, total = {}, {}
 		local discovered = 0
 		for index, entry in ipairs(state.Catalog) do
@@ -48,8 +59,8 @@ function IndexPanel.Start(hud, input)
 			local cell = cells[entry.Id]
 			if not cell then
 				local frame = Instance.new("Frame")
-				frame.Position = UDim2.fromOffset(22 + (index - 1) % 6 * 157, 100 + math.floor((index - 1) / 6) * 68)
-				frame.Size = UDim2.fromOffset(150, 62)
+				frame.Position = UDim2.fromOffset(21 + (index - 1) % 9 * 129, 93 + math.floor((index - 1) / 9) * 61)
+				frame.Size = UDim2.fromOffset(124, 55)
 				frame.BackgroundColor3 = Color3.fromRGB(23, 46, 66)
 				frame.BorderSizePixel = 0
 				frame.ZIndex = 11
@@ -57,9 +68,9 @@ function IndexPanel.Start(hud, input)
 				Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 9)
 				local stroke = Instance.new("UIStroke", frame)
 				stroke.Thickness = 1.2
-				local name = Style.Text(frame, "", 42, 5, 102, 33, 13)
+				local name = Style.Text(frame, "", 32, 3, 89, 34, 13)
 				name.TextWrapped = true
-				cell = { Name = name, Rarity = Style.Text(frame, "", 42, 42, 104, 15, 10),
+				cell = { Name = name, Rarity = Style.Text(frame, "", 32, 37, 89, 15, 10),
 					Stroke = stroke, Parts = silhouette(frame, rarity.Color) }
 				cells[entry.Id] = cell
 			end

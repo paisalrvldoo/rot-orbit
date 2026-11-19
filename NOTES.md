@@ -101,8 +101,9 @@ The research is prose guidance, not source or reusable names. Rank is not guaran
    frame the shot. Studio framing and readability checks remain.
 2. [x] Grow to 43 originals: 8 Common, 8 Rare, 7 Epic, 7 Legendary, 6 Mythic,
    5 Cosmic, 2 SECRET; distinct primitive silhouettes; update all count strings.
-3. Four genuine Studio shots: loop cover, 32/43 discovery grid with mutation legend,
-   raid with recovery feedback, combined upgrades/rebirth/contracts. Owner captures.
+3. Four genuine Studio shots. The loop cover and 32/43 discovery grid with a
+   six-mutation legend are staged. Raid recovery feedback and progression polish
+   are next. The owner captures all four in Studio.
 4. Consolidate tiny shared helpers and related UI/service helpers toward 20–24
    well-named scripts; preserve visible system names and runtime behaviour.
 5. [x] Built a two-sided 40-stud lit station title and player dock signs with live
