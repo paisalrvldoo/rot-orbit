@@ -1,4 +1,4 @@
--- A square that moves with the arrow keys inside a grey box.
+-- ROT ORBIT client. The starter preview is disabled while the 3D HUD is added.
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -15,6 +15,7 @@ local gui = Instance.new("ScreenGui")
 gui.Name = "GameGui"
 gui.ResetOnSpawn = false
 gui.IgnoreGuiInset = true
+gui.Enabled = false
 
 local background = Instance.new("Frame")
 background.Name = "Background"
@@ -65,6 +66,9 @@ place()
 gui.Parent = player:WaitForChild("PlayerGui")
 
 RunService.RenderStepped:Connect(function(dt)
+	if not gui.Enabled then
+		return
+	end
 	local dx = 0
 	local dy = 0
 	if UserInputService:IsKeyDown(Enum.KeyCode.Left) then

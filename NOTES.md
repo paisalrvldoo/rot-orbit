@@ -53,6 +53,13 @@ All tunable game numbers belong in Config; catalog data stays in one module.
 
 ## Decisions and open issues
 
+- Station milestone: avatars enabled; all scenery is built by WorldBuilder;
+  six player docks, three rival crew docks, 72 initial pedestals, four safe domes,
+  a two-rail cargo orbit, an orange striped planet, and a seeded starfield.
+- Local kit check on the starter: license, entrypoint, snapshot and opening
+  checks pass; only `play_link` fails for the expected zero IDs. Description
+  code 0 is `makefun-puddle-flask-sparrow`.
+
 - Use anchored primitive geometry and client-side visual animation to keep the
   runtime world simple and the binary place small.
 - Purchase/placement/cash decisions are server-authoritative. Clients receive
