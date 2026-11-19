@@ -16,8 +16,13 @@ Latest owner orbit/mobile corrections take precedence over new side systems.
   Cargo models are 1.5× their previous size, sleds 1.35×; track is 2.1 studs
   high and spawn faces the near arc (19 studs away). Spawn pad is invisible.
   All source/gameplay/preset checks pass; phone/cover rendering is pending.
-- [ ] Give Run/Blink/Zap chunky round controls, original geometric icons,
+- [x] Give Run/Blink/Zap chunky round controls, original geometric icons,
   visible cooldown progress and seconds; check phone bounds and jump clearance.
+  Phone actions now have 100/112px circular targets, distinct fills, stroke-built
+  icons and twelve cooldown marks. Desktop keeps key hints. Actual-controller
+  regressions cover the 44px minimum, reserved jump area, cooldown expiry,
+  keyboard/menu/panels and staged/desktop restoration. Studio touch approval
+  remains pending, including non-default Roblox jump sizes.
 - [ ] Update Studio capture handoff; verify and commit every working piece.
 - [ ] Owner Studio render/playtest and four genuine captures remain required.
   This machine has no Roblox renderer; source checks cannot approve the look.

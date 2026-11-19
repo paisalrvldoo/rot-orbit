@@ -28,6 +28,9 @@ function Instance.new(class, parent)
     function object:FindFirstChild(name)
         for _, child in ipairs(self.Children or {}) do if child.Name == name then return child end end
     end
+    function object:FindFirstChildOfClass(class)
+        for _, child in ipairs(self.Children or {}) do if child.ClassName == class then return child end end
+    end
     setmetatable(object, { __newindex = function(t, key, value)
         rawset(t, key, value)
         if key == 'Parent' and value then
@@ -79,6 +82,10 @@ local function checkBounds()
         local p, s, a = button.Position, button.Size, button.AnchorPoint
         local x, y = 1280 * p.X.Scale + p.X.Offset - s.X.Offset * a.X, 720 * p.Y.Scale + p.Y.Offset - s.Y.Offset * a.Y
         assert(x >= 0 and y >= 0 and x + s.X.Offset <= 1280 and y + s.Y.Offset <= 720, button.Name .. ' is clipped')
+        -- Conservative default jump envelope on a 16:9 phone canvas. At the
+        -- reported wider viewport the HUD letterbox adds more clearance.
+        assert(x + s.X.Offset <= 1140 or y + s.Y.Offset <= 550,
+            button.Name .. ' overlaps the reserved Roblox jump area')
         for _, r in ipairs(rectangles) do
             assert(x + s.X.Offset <= r.x or r.x + r.w <= x or y + s.Y.Offset <= r.y or r.y + r.h <= y,
                 button.Name .. ' overlaps ' .. r.name)
@@ -90,6 +97,16 @@ end
 checkBounds()
 state.SkillReadyAt = { Sprint = 110 }; frame()
 assert(input.Buttons.Sprint:GetAttribute('Unavailable') and not input.Buttons.Blink:GetAttribute('Unavailable'))
+assert(input.Buttons.Sprint:FindFirstChild('ActionCaption').Text == 'RUN\\n10s')
+assert(input.Buttons.Sprint:GetAttribute('CooldownFraction') == 10 / Config.Skills.Sprint.Cooldown)
+assert(input.Buttons.Blink:GetAttribute('CooldownFraction') == 0)
+assert(input.Buttons.Blink:FindFirstChild('ActionIcon') and input.Buttons.Zap:FindFirstChild('ActionIcon'))
+assert(input.Buttons.Sprint:FindFirstChild('CooldownProgress').Visible)
+state.SkillReadyAt = {}; state.ZapReadyAt = 102; frame()
+assert(not input.Buttons.Sprint:GetAttribute('Unavailable'))
+assert(input.Buttons.Sprint:FindFirstChild('ActionCaption').Text == 'RUN\\nREADY')
+assert(input.Buttons.Sprint:GetAttribute('CooldownFraction') == 0)
+assert(input.Buttons.Zap:GetAttribute('Unavailable') and input.Buttons.Zap:GetAttribute('CooldownFraction') == 2 / 3)
 menu.Activate(); frame()
 checkBounds()
 assert(input.Buttons.Lock.Visible and input.Buttons.Rebirth.Visible and hud.Gui:GetAttribute('MobileMenuOpen'))
@@ -100,9 +117,10 @@ ContextActionService.Bindings.RotOrbitBlink(nil, Enum.UserInputState.Begin)
 assert(sent[#sent][1] == 'Skill' and sent[#sent][2] == 'Blink', 'keyboard must retain the same skill action')
 state.SaveStatus = 'STUDIO PREVIEW'; frame()
 assert(not menu.Visible and input.Buttons.Lock.Visible and input.Buttons.Blink.Visible and input.Buttons.Sprint.Visible)
+assert(not input.Buttons.Sprint:FindFirstChild('CooldownProgress').Visible)
 state.SaveStatus = 'SAVED'; compact = false; frame()
 assert(input.Buttons.Index.Visible and input.Buttons.Rebirth.Visible and not menu.Visible)
-print('Control checks passed: phone arc bounds/44px targets, no overlaps, menu, live cooldowns, keyboard, panels and staged/desktop restoration.')
+print('Control checks passed: round skill icons, phone arc/44px targets, jump clearance, cooldown/recovery, menu, keyboard, panels and staged/desktop restoration.')
 `;
 const directory = join(root, 'out', 'control-check');
 mkdirSync(directory, { recursive: true });

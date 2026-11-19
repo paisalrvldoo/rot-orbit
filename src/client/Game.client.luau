@@ -13,6 +13,77 @@ local HudController = require(script.Parent:WaitForChild("HudController"))
 local InputController = {}
 InputController.__index = InputController
 
+-- Original glyphs drawn with GUI strokes: no uploaded art or font symbols.
+local actionColors = {
+	Sprint = { Color3.fromRGB(17, 111, 96), Config.Palette.Mint },
+	Blink = { Color3.fromRGB(100, 52, 160), Color3.fromRGB(209, 175, 255) },
+	Zap = { Color3.fromRGB(146, 85, 19), Config.Palette.Sun },
+}
+local actionGlyphs = {
+	Sprint = { { 3, 11, 16, 3, 0 }, { 0, 20, 21, 3, 0 }, { 5, 29, 14, 3, 0 },
+		{ 23, 14, 15, 4, 42 }, { 23, 25, 15, 4, -42 } },
+	Blink = { { 11, 10, 17, 3, -45 }, { 27, 10, 17, 3, 45 },
+		{ 11, 30, 17, 3, 45 }, { 27, 30, 17, 3, -45 }, { 20, 20, 5, 16, 18 } },
+	Zap = { { 23, 10, 23, 5, -55 }, { 20, 20, 18, 5, 0 }, { 17, 30, 23, 5, -55 } },
+}
+
+local function styleAction(button, name)
+	local colors = actionColors[name]
+	button.BackgroundColor3 = colors[1]
+	button:SetAttribute("AccentColor", colors[2])
+	local icon = Instance.new("Frame")
+	icon.Name = "ActionIcon"
+	icon.AnchorPoint = Vector2.new(0.5, 0)
+	icon.Position, icon.Size = UDim2.new(0.5, 0, 0, 8), UDim2.fromOffset(40, 40)
+	icon.BackgroundTransparency = 1
+	icon.Parent = button
+	for _, shape in ipairs(actionGlyphs[name]) do
+		local line = Instance.new("Frame")
+		line.AnchorPoint = Vector2.new(0.5, 0.5)
+		line.Position = UDim2.fromOffset(shape[1], shape[2])
+		line.Size = UDim2.fromOffset(shape[3], shape[4])
+		line.Rotation = shape[5]
+		line.BackgroundColor3 = Config.Palette.White
+		line.BorderSizePixel = 0
+		line.Parent = icon
+		Instance.new("UICorner", line).CornerRadius = UDim.new(1, 0)
+	end
+	local caption = Instance.new("TextLabel")
+	caption.Name = "ActionCaption"
+	caption.BackgroundTransparency = 1
+	caption.TextColor3, caption.Font = Config.Palette.White, Enum.Font.GothamBold
+	caption.TextSize = 18
+	caption.Parent = button
+	local progress = Instance.new("Frame")
+	progress.Name, progress.BackgroundTransparency = "CooldownProgress", 1
+	progress.Size = UDim2.new(1, 0, 1, 0)
+	progress.Parent = button
+	for index = 1, 12 do
+		local angle = (index - 1) * math.pi / 6 - math.pi / 2
+		local tick = Instance.new("Frame")
+		tick.Name = "Tick" .. index
+		tick.AnchorPoint = Vector2.new(0.5, 0.5)
+		tick.Position = UDim2.new(0.5 + math.cos(angle) * 0.45, 0, 0.5 + math.sin(angle) * 0.45, 0)
+		tick.Size, tick.Rotation = UDim2.fromOffset(7, 3), math.deg(angle) + 90
+		tick.BackgroundColor3, tick.BorderSizePixel = colors[2], 0
+		tick.Parent = progress
+	end
+end
+
+local function updateAction(button, remaining, duration)
+	local caption = button:FindFirstChild("ActionCaption")
+	caption.Text = button.Text
+	button.Text = ""
+	caption.TextTransparency = remaining > 0 and 0.2 or 0
+	local progress = button:FindFirstChild("CooldownProgress")
+	for index = 1, 12 do
+		progress:FindFirstChild("Tick" .. index).BackgroundTransparency =
+			remaining > 0 and (index <= math.ceil(12 * remaining / duration) and 0.08 or 0.88) or 0.15
+	end
+	-- The first ready frame restores all twelve perimeter marks.
+	button:SetAttribute("CooldownFraction", math.clamp(remaining / duration, 0, 1))
+end
+
 function InputController.Start(hud)
 	local self = setmetatable({ Hud = hud, Buttons = {}, Order = {} }, InputController)
 	self:Register("Lock", "LOCK [L]", Enum.KeyCode.L, function() hud.Network.Action:FireServer("Lock") end)
@@ -60,12 +131,12 @@ function InputController.Start(hud)
 		if layout ~= lastLayout then
 			lastLayout = layout
 			local skills = Config.Skills.Order
-			local arc = { Vector2.new(-198, -153), Vector2.new(-140, -258) }
+			local arc = { Vector2.new(-198, -156), Vector2.new(-212, -286) }
 			for index, name in ipairs(skills) do
 				local button = self.Buttons[name]
 				button.Position = compact and UDim2.new(1, arc[index].X, 1, arc[index].Y)
 					or UDim2.new(0.5, (index * 2 - 3) * 94, 1, -173)
-				button.Size = UDim2.fromOffset(compact and 92 or 176, compact and 72 or 48)
+				button.Size = UDim2.fromOffset(compact and 100 or 176, compact and 100 or 64)
 			end
 			for index, name in ipairs({ "Lock", "Upgrades", "Rebirth", "Index" }) do
 				local button = self.Buttons[name]
@@ -76,8 +147,20 @@ function InputController.Start(hud)
 					button.Size = UDim2.fromOffset(compact and 240 or 176, compact and 72 or 48)
 				end
 			end
-			self.Buttons.Zap.Position = compact and UDim2.new(1, -80, 1, -172) or UDim2.new(0.5, 376, 1, -53)
-			self.Buttons.Zap.Size = compact and UDim2.fromOffset(100, 76) or UDim2.fromOffset(176, 48)
+			self.Buttons.Zap.Position = compact and UDim2.new(1, -80, 1, -292) or UDim2.new(0.5, 376, 1, -69)
+			self.Buttons.Zap.Size = compact and UDim2.fromOffset(112, 112) or UDim2.fromOffset(176, 64)
+			for name in pairs(actionColors) do
+				local button = self.Buttons[name]
+				button:FindFirstChildOfClass("UICorner").CornerRadius = UDim.new(compact and 1 or 0, compact and 0 or 16)
+				local icon = button:FindFirstChild("ActionIcon")
+				icon.Position = compact and UDim2.new(0.5, 0, 0, name == "Zap" and 16 or 10)
+					or UDim2.fromOffset(27, 12)
+				local caption = button:FindFirstChild("ActionCaption")
+				caption.Position = compact and UDim2.new(0, 5, 1, -48) or UDim2.fromOffset(49, 6)
+				caption.Size = compact and UDim2.new(1, -10, 0, 40) or UDim2.fromOffset(122, 50)
+				caption.TextSize = compact and 18 or 16
+				button:FindFirstChild("CooldownProgress").Visible = compact
+			end
 		end
 		for _, name in ipairs(Config.Skills.Order) do
 			local skill, button = Config.Skills[name], self.Buttons[name]
@@ -87,10 +170,11 @@ function InputController.Start(hud)
 			button:SetAttribute("Unavailable", left > 0)
 			local ring = button:FindFirstChild("CooldownRing")
 			if ring then
-				ring.Visible = not compact
+				ring.Visible = false
 				ring.Text = left > 0 and tostring(math.ceil(left)) or "+"
 				ring.BackgroundTransparency = left > 0 and (0.15 + 0.65 * left / skill.Cooldown) or 0.15
 			end
+			updateAction(button, left, skill.Cooldown)
 		end
 		local lock = self.Buttons.Lock
 		if (state.LockUntil or 0) > now then
@@ -107,6 +191,7 @@ function InputController.Start(hud)
 			and ((compact and "" or "RECHARGE · ") .. math.ceil(state.ZapReadyAt - now) .. "s") or "READY")
 		lock:SetAttribute("Unavailable", (state.LockReadyAt or 0) > now)
 		self.Buttons.Zap:SetAttribute("Unavailable", (state.ZapReadyAt or 0) > now)
+		updateAction(self.Buttons.Zap, math.max(0, (state.ZapReadyAt or 0) - now), Config.Gremlin.ZapCooldown)
 		for action, panelName in pairs({ Upgrades = "UpgradePanel", Rebirth = "UpgradePanel", Index = "IndexPanel" }) do
 			local button = self.Buttons[action]
 			local panel = hud.Gui:FindFirstChild(panelName)
@@ -148,6 +233,7 @@ function InputController:Register(name, label, key, callback)
 	stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	stroke.Color = Config.Palette.Teal
 	stroke.Thickness = 2
+	if actionColors[name] then styleAction(button, name) end
 	local activate = HudController.ButtonFeedback(button, function()
 		callback()
 		if name ~= "Zap" and not Config.Skills[name] then self.MenuOpen = false end

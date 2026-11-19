@@ -31,7 +31,7 @@ function HudController.ButtonFeedback(button, callback, pendingSeconds)
 		button.TextTransparency = blocked and 0.35 or 0
 		local selected = button:GetAttribute("Selected")
 		stroke.Color = (focused or selected) and Config.Palette.Sun
-			or (hovered and not blocked and Config.Palette.Mint or Config.Palette.Teal)
+			or (hovered and not blocked and Config.Palette.Mint or button:GetAttribute("AccentColor") or Config.Palette.Teal)
 		stroke.Transparency = blocked and 0.65 or 0.15
 		stroke.Thickness = (focused or selected) and 3 or 2
 		if tween then tween:Cancel() end
