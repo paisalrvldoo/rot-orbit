@@ -151,7 +151,9 @@ Visual order for this pass (compile/source checks here; Studio review pending):
   the same guarded activation. Upgrade/rebirth/close controls share this feedback;
   unavailable purchases say NEED or MAXED and cannot submit. Rebirth confirmation
   has a gold selected border. Server notices remain the success/error feedback.
-- [ ] Choreograph income pops and recent-action entrances.
+- [x] Income pops spring in, drift upward and fade after a readable hold; action
+  rows enter with a tight stagger, panels slide in with Quad Out. Repeated
+  entrances cancel the prior tween. Screenshot feeds appear without animation.
 - [ ] Review cover/title bounds and document Studio capture checks. No generated
   image can replace a genuine Studio screenshot.
 

@@ -1,4 +1,5 @@
 local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
 local shared = game:GetService("ReplicatedStorage")
 local Config = require(shared:WaitForChild("Config"))
 local Traits = require(shared:WaitForChild("BrainrotTraits"))
@@ -57,6 +58,17 @@ function Style.Create(hud, name, title, width, height, x)
 	stroke.Thickness = 2
 	Style.Text(panel, title, 22, 13, width - 70, 36, 26, Config.Palette.Mint)
 	Style.Button(panel, "×", width - 48, 14, 32, 32, function() panel.Visible = false end)
+	local resting, entrance
+	panel:GetPropertyChangedSignal("Visible"):Connect(function()
+		if entrance then entrance:Cancel() end
+		if panel.Visible then
+			resting = panel.Position
+			panel.Position = resting + UDim2.fromOffset(0, 14)
+			entrance = TweenService:Create(panel, TweenInfo.new(0.25, Enum.EasingStyle.Quad,
+				Enum.EasingDirection.Out), { Position = resting })
+			entrance:Play()
+		elseif resting then panel.Position = resting end
+	end)
 	return panel
 end
 

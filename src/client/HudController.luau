@@ -50,6 +50,7 @@ function HudController.ButtonFeedback(button, callback, pendingSeconds)
 	end
 	local function activate()
 		if button:GetAttribute("Unavailable") or button:GetAttribute("Pending") then return end
+		pressed = false
 		if pendingSeconds then
 			button:SetAttribute("Pending", true)
 			task.delay(pendingSeconds, function()
@@ -169,6 +170,7 @@ function HudController.Start()
 		UDim2.new(0.5, 0, 1, -91), UDim2.fromOffset(940, 33), 17)
 	local feed = {}
 	local feedLabels = {}
+	local feedTweens = {}
 	local feedGeneration = 0
 	for index = 1, 3 do
 		local row = HudController.Text(gui, "Action" .. index, "", UDim2.fromOffset(134, 168 + (index - 1) * 50),
@@ -182,10 +184,20 @@ function HudController.Start()
 		padding.PaddingLeft, padding.PaddingRight = UDim.new(0, 8), UDim.new(0, 8)
 		feedLabels[index] = row
 	end
-	local function renderFeed()
+	local function renderFeed(animate)
 		for index, label in ipairs(feedLabels) do
+			if feedTweens[index] then feedTweens[index]:Cancel() end
+			local resting = UDim2.fromOffset(134, 168 + (index - 1) * 50)
+			label.Position = resting
 			label.Text = feed[index] or ""
 			label.Visible = feed[index] ~= nil
+			if animate and label.Visible then
+				label.Position = resting - UDim2.fromOffset(index == 1 and 18 or 8, 0)
+				local tween = TweenService:Create(label, TweenInfo.new(0.25, Enum.EasingStyle.Quad,
+					Enum.EasingDirection.Out, 0, false, (index - 1) * 0.04), { Position = resting })
+				feedTweens[index] = tween
+				tween:Play()
+			end
 		end
 	end
 	startEventBanner(gui, network)
@@ -222,7 +234,7 @@ function HudController.Start()
 		feed[4] = nil
 		feedGeneration += 1
 		local generation = feedGeneration
-		renderFeed()
+		renderFeed(true)
 		task.delay(12, function()
 			if generation ~= feedGeneration then return end
 			table.clear(feed)
@@ -249,8 +261,14 @@ function HudController.Start()
 		pop.MaxDistance = 52
 		pop.Parent = anchor
 		local text = HudController.Text(pop, "IncomePop", "+" .. Format.Money(amount), UDim2.fromScale(0.5, 0), UDim2.fromScale(1, 1), 18, Config.Palette.Mint)
-		TweenService:Create(anchor, TweenInfo.new(0.9), { Position = position + Vector3.new(0, 3, 0) }):Play()
-		TweenService:Create(text, TweenInfo.new(0.9), { TextTransparency = 1, TextStrokeTransparency = 1 }):Play()
+		local popScale = Instance.new("UIScale", text)
+		popScale.Scale = 0.65
+		TweenService:Create(popScale, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+			{ Scale = 1 }):Play()
+		TweenService:Create(anchor, TweenInfo.new(0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+			{ Position = position + Vector3.new(0.35, 2.5, 0) }):Play()
+		TweenService:Create(text, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.In,
+			0, false, 0.6), { TextTransparency = 1, TextStrokeTransparency = 1 }):Play()
 		Debris:AddItem(anchor, 1)
 	end
 	network.CashPop.OnClientEvent:Connect(function(pops)
