@@ -3,6 +3,7 @@ local shared = game:GetService("ReplicatedStorage")
 local Config = require(shared:WaitForChild("Config"))
 local Traits = require(shared:WaitForChild("BrainrotTraits"))
 local Format = Traits.Format
+local HudController = require(script.Parent:WaitForChild("HudController"))
 local Style = {}
 local Progression = { Style = Style }
 
@@ -21,7 +22,7 @@ function Style.Text(parent, text, x, y, width, height, size, color)
 	return label
 end
 
-function Style.Button(parent, text, x, y, width, height, callback)
+function Style.Button(parent, text, x, y, width, height, callback, pendingSeconds)
 	local button = Instance.new("TextButton")
 	button.Position = UDim2.fromOffset(x, y)
 	button.Size = UDim2.fromOffset(width, height)
@@ -34,7 +35,7 @@ function Style.Button(parent, text, x, y, width, height, callback)
 	button.ZIndex = 12
 	button.Parent = parent
 	Instance.new("UICorner", button).CornerRadius = UDim.new(0, 8)
-	button.Activated:Connect(callback)
+	HudController.ButtonFeedback(button, callback, pendingSeconds)
 	return button
 end
 
@@ -75,7 +76,8 @@ function Progression.StartUpgrades(hud, input)
 		local title = Style.Text(panel, definition[2], 22, y, 310, 25, 18)
 		Style.Text(panel, definition[3], 22, y + 24, 310, 23, 14, Config.Palette.Muted)
 		local button = Style.Button(panel, "BUY", 354, y + 4, 184, 40,
-			function() hud.Network.Action:FireServer("Upgrade", name) end)
+			function() hud.Network.Action:FireServer("Upgrade", name) end, 0.6)
+		button:SetAttribute("Unavailable", true)
 		rows[name] = { Title = title, Button = button, Name = definition[2] }
 	end
 	input:Register("Upgrades", "UPGRADES [U]", Enum.KeyCode.U, function() panel.Visible = not panel.Visible end)
@@ -91,7 +93,10 @@ function Progression.StartUpgrades(hud, input)
 			local level = state.Upgrades[name] or 0
 			row.Title.Text = row.Name .. "  " .. level .. "/" .. config.MaxLevel
 			local cost = math.floor(config.BaseCost * config.CostGrowth ^ level)
-			row.Button.Text = level >= config.MaxLevel and "MAXED" or ("BUY · " .. Format.Money(cost))
+			local affordable = state.Cash >= cost
+			row.Button.Text = level >= config.MaxLevel and "MAXED"
+				or ((affordable and "BUY · " or "NEED · ") .. Format.Money(cost))
+			row.Button:SetAttribute("Unavailable", level >= config.MaxLevel or not affordable)
 			row.Button.BackgroundColor3 = level < config.MaxLevel and state.Cash >= cost
 				and Config.Palette.Teal or Color3.fromRGB(43, 67, 83)
 		end
@@ -115,6 +120,7 @@ function Progression.AddRebirth(hud, input, panel)
 		else confirmUntil = now + 4 end
 	end)
 	button.TextSize = 14
+	button:SetAttribute("Unavailable", true)
 	input:Register("Rebirth", "REBIRTH [R]", Enum.KeyCode.R, function() panel.Visible = true end)
 	local elapsed = 0
 	RunService.Heartbeat:Connect(function(dt)
@@ -128,9 +134,11 @@ function Progression.AddRebirth(hud, input, panel)
 		detail.Text = maxed and ("LEVEL " .. state.Rebirths .. " · x" .. state.Multiplier)
 			or ("LEVEL " .. state.Rebirths .. "  ·  x" .. state.Multiplier .. " → x" .. nextMultiplier)
 		local cost = Config.Rebirth.Cost(state.Rebirths)
+		button:SetAttribute("Unavailable", maxed or state.Cash < cost)
+		button:SetAttribute("Selected", os.clock() < confirmUntil)
 		button.Text = maxed and "MAX REBIRTH"
 			or (os.clock() < confirmUntil and "RESET BAY? CONFIRM"
-				or ("REBIRTH · " .. Format.Money(cost)))
+				or ((state.Cash >= cost and "REBIRTH · " or "NEED · ") .. Format.Money(cost)))
 		button.BackgroundColor3 = not maxed and state.Cash >= cost and Config.Palette.Teal or Color3.fromRGB(43, 67, 83)
 	end)
 end

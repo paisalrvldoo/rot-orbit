@@ -148,7 +148,9 @@ Visual order for this pass (compile/source checks here; Studio review pending):
   grip, bring capes onto the bodies. Clay/second-angle Studio review is pending.
 - [x] Bottom controls share mouse/touch/gamepad hover, gold focus/selected border,
   press scale, short pending guard and real lock/zap cooldown disabling; keys use
-  the same guarded activation. Upgrade panel controls are next.
+  the same guarded activation. Upgrade/rebirth/close controls share this feedback;
+  unavailable purchases say NEED or MAXED and cannot submit. Rebirth confirmation
+  has a gold selected border. Server notices remain the success/error feedback.
 - [ ] Choreograph income pops and recent-action entrances.
 - [ ] Review cover/title bounds and document Studio capture checks. No generated
   image can replace a genuine Studio screenshot.
