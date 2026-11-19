@@ -62,7 +62,7 @@ function GremlinRaid:Remove(state, recover)
 	state.Model:Destroy()
 end
 
-function GremlinRaid:Grab(state)
+function GremlinRaid:Grab(state, slotIndex)
 	local bay = state.Bay
 	state.Mode = "Escape"
 	state.Destination = state.Start
@@ -75,7 +75,8 @@ function GremlinRaid:Grab(state)
 		if pedestal.Occupant then table.insert(choices, pedestal) end
 	end
 	if #choices == 0 then return end
-	local pedestal = choices[self.Random:NextInteger(1, #choices)]
+	local pedestal = slotIndex and bay.Slots[slotIndex] or choices[self.Random:NextInteger(1, #choices)]
+	if not pedestal or not pedestal.Occupant then return end
 	local occupant = pedestal.Occupant
 	state.Loot = occupant.Record
 	occupant.Model:Destroy()
@@ -114,6 +115,18 @@ function GremlinRaid:Step(dt)
 	end
 end
 
+function GremlinRaid:Stun(gremlin, now)
+	gremlin.StunnedUntil = now + Config.Gremlin.StunDuration
+	gremlin.Mode = "Escape"
+	gremlin.Destination = gremlin.Start
+	if not gremlin.Loot then return nil end
+	local dropped = self.Bases:SpawnDrop(gremlin.Loot, gremlin.Position)
+	gremlin.LootModel:Destroy()
+	gremlin.LootModel = nil
+	gremlin.Loot = nil
+	return dropped
+end
+
 function GremlinRaid:Zap(player)
 	local state = self.Bases.Players[player]
 	local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
@@ -122,18 +135,11 @@ function GremlinRaid:Zap(player)
 	if now < (state.ZapReadyAt or 0) then return end
 	state.ZapReadyAt = now + Config.Gremlin.ZapCooldown
 	local count = 0
+	local recovered = 0
 	for _, gremlin in pairs(self.Gremlins) do
 		if (gremlin.Position - root.Position).Magnitude <= Config.Gremlin.ZapRadius then
 			count += 1
-			gremlin.StunnedUntil = now + Config.Gremlin.StunDuration
-			if gremlin.Loot then
-				self.Bases:SpawnDrop(gremlin.Loot, gremlin.Position)
-				gremlin.LootModel:Destroy()
-				gremlin.LootModel = nil
-				gremlin.Loot = nil
-			end
-			gremlin.Mode = "Escape"
-			gremlin.Destination = gremlin.Start
+			if self:Stun(gremlin, now) then recovered += 1 end
 		end
 	end
 	local pulse = WorldBuilder.Part("ZapPulse", Vector3.one * 2, root.CFrame,
@@ -142,7 +148,9 @@ function GremlinRaid:Zap(player)
 	TweenService:Create(pulse, TweenInfo.new(0.35),
 		{ Size = Vector3.one * Config.Gremlin.ZapRadius * 2, Transparency = 1 }):Play()
 	Debris:AddItem(pulse, 0.4)
-	self.Economy.Network.Notice:FireClient(player, "ZAP! " .. count .. " gremlins stunned. Recover dropped cargo with E.")
+	local message = count > 0 and ("ZAPPED · " .. count .. " GREMLINS STUNNED") or "ZAP MISSED · MOVE CLOSER"
+	if recovered > 0 then message ..= " · E TO RECOVER " .. recovered end
+	self.Economy.Network.Notice:FireClient(player, message)
 	self.Economy:Send(player)
 	if count > 0 then self.Economy:Activity(player, "Zap") end
 end

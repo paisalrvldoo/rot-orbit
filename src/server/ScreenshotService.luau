@@ -113,6 +113,7 @@ function ScreenshotService:Prepare(player, shot)
 	local cameraPosition = (state.Bay.Frame * CFrame.new(12, 18, 38)).Position
 	local target = (state.Bay.Frame * CFrame.new(0, 6, 2)).Position
 	local camera, fieldOfView = CFrame.lookAt(cameraPosition, target), 64
+	local actions
 	if shot == "Cover" then
 		camera, fieldOfView = stageCover(state, root, self.Meteors)
 		self.Economy:PublishEvent({ Name = "Meteor", Text = "METEOR SHOWER! GET UNDER THE SHIELD DOME",
@@ -121,19 +122,40 @@ function ScreenshotService:Prepare(player, shot)
 		self.Economy:PublishEvent({ Name = "Gremlin", Text = "GREMLIN RAID! LOCK [L] OR ZAP [F]",
 			EndsAt = workspace:GetServerTimeNow() + 60, FrozenSeconds = 27, Priority = 2,
 			Color = Color3.fromRGB(155, 255, 105) })
-		for _, offset in ipairs({ Vector3.new(-7, 1, 5), Vector3.new(5, 1, 11) }) do
-			self.Gremlins:Grab(self.Gremlins:Spawn(state.Bay, (state.Bay.Frame * CFrame.new(offset)).Position))
+		local frame = state.Bay.Frame
+		root.CFrame = frame * CFrame.new(1, 3.8, 15) * CFrame.Angles(0, math.rad(38), 0)
+		local left = self.Gremlins:Spawn(state.Bay, (frame * CFrame.new(-6.5, 0.86, 8)).Position)
+		local right = self.Gremlins:Spawn(state.Bay, (frame * CFrame.new(8, 0.86, 11)).Position)
+		for _, gremlin in ipairs({ left, right }) do
+			gremlin.Model:PivotTo(CFrame.lookAt(gremlin.Position, gremlin.Position - frame.LookVector))
 		end
+		self.Gremlins:Grab(left, 4)
+		self.Gremlins:Grab(right, 2)
+		left.Label.Text = "THIEF ESCAPING · ZAP [F]"
+		right.Label.Text = "ZAPPED!"
+		right.Label.TextColor3 = Config.Palette.Mint
+		local dropped = self.Gremlins:Stun(right, workspace:GetServerTimeNow())
+		if dropped then
+			local dropFrame = frame * CFrame.new(10, 1, 15) * CFrame.Angles(0, math.pi, 0)
+			dropped:SetAttribute("RestFrame", dropFrame)
+			dropped:PivotTo(dropFrame)
+			dropped.Parent = self.Meteors.Effects
+			WorldBuilder.Ring("ZapRecovery", 3.4, 0.2, 0.12, frame * CFrame.new(10, 0.79, 15),
+				Config.Palette.Mint, Enum.Material.Neon, self.Meteors.Effects, 22, false)
+		end
+		actions = { "ZAPPED! · E TO RECOVER THE CARGO", "A GREMLIN IS STILL ESCAPING" }
+		camera = CFrame.lookAt((frame * CFrame.new(0.3, 9.2, 31)).Position, (frame * CFrame.new(0.4, 4.3, 9)).Position)
+		fieldOfView = 55
 	end
 	if shot == "Cover" then
 		self.Bases:Carry(player, { Id = 11, Mutation = "Diamond", Guid = HttpService:GenerateGUID(false) })
 		if state.Carry then state.Carry.Model.PrimaryPart.BrainrotBillboard.Enabled = false end
-		self.Economy.Network.Notice:FireClient(player, "INDEX · 32/43 DISCOVERED")
-		self.Economy.Network.Notice:FireClient(player, "DOCKED Supernova Il Supremo Supernova")
-		self.Economy.Network.Notice:FireClient(player, "CARGO IN HAND · HEAD FOR YOUR DOCK")
+		actions = { "CARGO IN HAND · HEAD FOR YOUR DOCK",
+			"DOCKED Supernova Il Supremo Supernova", "INDEX · 32/43 DISCOVERED" }
 	end
 	self.Economy:Send(player)
-	self.Economy.Network.Screenshot:FireClient(player, { Shot = shot, Camera = camera, FieldOfView = fieldOfView })
+	self.Economy.Network.Screenshot:FireClient(player, {
+		Shot = shot, Camera = camera, FieldOfView = fieldOfView, Actions = actions })
 	return true
 end
 

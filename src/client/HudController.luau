@@ -176,6 +176,11 @@ function HudController.Start()
 			renderFeed()
 		end)
 	end)
+	network.Screenshot.OnClientEvent:Connect(function(scene)
+		feedGeneration += 1
+		feed = scene.Actions or {}
+		renderFeed()
+	end)
 	local function incomePop(position, amount)
 		local anchor = Instance.new("Part")
 		anchor.Anchored = true

@@ -101,9 +101,10 @@ The research is prose guidance, not source or reusable names. Rank is not guaran
    frame the shot. Studio framing and readability checks remain.
 2. [x] Grow to 43 originals: 8 Common, 8 Rare, 7 Epic, 7 Legendary, 6 Mythic,
    5 Cosmic, 2 SECRET; distinct primitive silhouettes; update all count strings.
-3. Four genuine Studio shots. The loop cover and 32/43 discovery grid with a
-   six-mutation legend are staged. Raid recovery feedback and progression polish
-   are next. The owner captures all four in Studio.
+3. Four genuine Studio shots. The cover and 32/43 discovery grid are staged.
+   Raid shows one thief escaping with cargo and another zapped with recoverable
+   loot. The progression preset opens upgrades, rebirth and contracts together.
+   The owner captures all four in Studio.
 4. [x] 24 scripts. BrainrotTraits groups rarity, mutation and number formatting.
    The client groups HUD/banner, progression panels and input/bootstrap. Server
    progression and orbital events are grouped by purpose. The disabled starter
