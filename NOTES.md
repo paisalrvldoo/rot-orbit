@@ -229,4 +229,9 @@ Core systems precede more spectacle. This pass's remaining order:
   left and tightened the lineup/widened FOV to leave the right quest card clear.
   Source projection is not a render approval. All four real captures remain
   pending Studio, as do approved icon/thumbnail and publishing the latest place.
+- [x] Solar flare now warms the atmosphere gold; Aurora Surge turns it mint
+  with a lilac distance tint. Meteor orange takes priority, matching HUD event
+  ordering. Ending an event restores the remaining active event rather than
+  wiping its look. Screenshot presets reset positive-event state. The Luau
+  checks cover all overlapping-event priorities; Studio color review pending.
 - [ ] Reverify, retry the Public link check, and leave a clean committed tree.

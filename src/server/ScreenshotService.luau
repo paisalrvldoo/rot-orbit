@@ -102,6 +102,9 @@ function ScreenshotService:Prepare(player, shot)
 	local world = self.Bases.World
 	world.Root:SetAttribute("ScreenshotFrozen", true)
 	self.Meteors.Active = false
+	self.Meteors.SolarActive, self.Meteors.AuroraActive = false, false
+	world.Root:SetAttribute("SolarFlareActive", false)
+	world.Root:SetAttribute("AuroraSurgeUntil", 0)
 	self.Meteors.Effects:ClearAllChildren()
 	self.Meteors:SetShowerLook(shot == "Cover", true)
 	for _, gremlin in pairs(self.Gremlins.Gremlins) do self.Gremlins:Remove(gremlin, false) end

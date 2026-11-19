@@ -17,6 +17,21 @@ local BaseService = ${moduleBody('src/server/BaseService.luau', 'local BaseServi
 local EconomyService = ${moduleBody('src/server/EconomyService.luau', 'local EconomyService =')}
 local DataService = ${moduleBody('src/server/DataService.luau', 'local DataService =')}
 local ScreenshotService = ${moduleBody('src/server/ScreenshotService.luau', 'local ScreenshotService =')}
+local MeteorSolarEvents = ${moduleBody('src/server/MeteorSolarEvents.luau', 'local MeteorSolarEvents =')}
+local events = setmetatable({}, MeteorSolarEvents)
+assert(events:EventLook() == Config.EventLooks.Calm)
+events.SolarActive = true
+assert(events:EventLook() == Config.EventLooks.Solar)
+events.AuroraActive = true
+assert(events:EventLook() == Config.EventLooks.Aurora)
+events.ShowerLook = true
+assert(events:EventLook() == Config.EventLooks.Meteor)
+events.ShowerLook = false
+assert(events:EventLook() == Config.EventLooks.Aurora, "meteor end must restore ongoing Aurora")
+events.AuroraActive = false
+assert(events:EventLook() == Config.EventLooks.Solar, "Aurora end must restore ongoing solar flare")
+events.SolarActive = false
+assert(events:EventLook() == Config.EventLooks.Calm)
 local player, notices = {}, {}
 local state = { Found = {}, Variants = {}, Bay = { Slots = {} } }
 local profile = { Cash = 0, IndexMilestone = 0, MutationMilestones = {}, Upgrades = {},

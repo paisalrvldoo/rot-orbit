@@ -33,8 +33,14 @@ function MeteorSolarEvents.new(world, bases, economy)
 			if not world.Root:GetAttribute("ScreenshotFrozen") then
 				local endsAt = workspace:GetServerTimeNow() + Config.AuroraSurge.Duration
 				world.Root:SetAttribute("AuroraSurgeUntil", endsAt)
+				self.AuroraActive = true
+				self:RefreshEventLook()
 				economy:PublishEvent({ Name = "AuroraSurge", Text = "AURORA SURGE! NEW CARGO MUTATES",
 					EndsAt = endsAt, Priority = 1.5, Color = Config.Palette.Mint })
+				task.delay(Config.AuroraSurge.Duration, function()
+					self.AuroraActive = false
+					self:RefreshEventLook()
+				end)
 			end
 		end
 	end)
@@ -48,13 +54,27 @@ function MeteorSolarEvents:IsProtected(position)
 	return false
 end
 
+function MeteorSolarEvents:EventLook()
+	-- Match banner priority when events overlap, then restore the surviving event.
+	return Config.EventLooks[self.ShowerLook and "Meteor" or self.AuroraActive and "Aurora"
+		or self.SolarActive and "Solar" or "Calm"]
+end
+
+function MeteorSolarEvents:RefreshEventLook()
+	local look = self:EventLook()
+	local grade = Lighting:FindFirstChild("SunnyOrbit")
+	if grade then grade.TintColor = look.Tint end
+	local depth = Lighting:FindFirstChild("OrbitalDepth")
+	if depth then
+		depth.Color, depth.Decay = look.Sky, look.Decay
+	end
+end
+
 function MeteorSolarEvents:SetShowerLook(active, still)
+	self.ShowerLook = active
+	self:RefreshEventLook()
 	for _, tween in ipairs(self.DomePulses or {}) do tween:Cancel() end
 	self.DomePulses = {}
-	local grade = Lighting:FindFirstChild("SunnyOrbit")
-	if grade then
-		grade.TintColor = active and Color3.fromRGB(255, 230, 214) or Color3.fromRGB(255, 249, 237)
-	end
 	for _, dome in ipairs(self.World.Domes) do
 		dome.Part.Transparency = active and 0.71 or 0.84
 		if active and not still then
@@ -176,6 +196,7 @@ end
 function MeteorSolarEvents:StartSolarFlare()
 	if self.SolarActive or self.World.Root:GetAttribute("ScreenshotFrozen") then return end
 	self.SolarActive = true
+	self:RefreshEventLook()
 	self.Economy.IncomeMultiplier = Config.SolarFlare.Multiplier
 	self.World.Root:SetAttribute("SolarFlareActive", true)
 	self.Economy:PublishEvent({ Name = "SolarFlare", Text = "SOLAR FLARE! ALL BAYS PAY x2",
@@ -186,6 +207,7 @@ function MeteorSolarEvents:StartSolarFlare()
 	self.Economy.IncomeMultiplier = 1
 	self.World.Root:SetAttribute("SolarFlareActive", false)
 	self.SolarActive = false
+	self:RefreshEventLook()
 	for player in pairs(self.Economy.Profiles) do self.Economy:Send(player) end
 end
 
