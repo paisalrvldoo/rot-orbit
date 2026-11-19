@@ -46,6 +46,7 @@ local Config = {
 		ModelScale = 1.5,
 		PodScale = 1.35,
 		PreviewAffordableCount = 3,
+		PreviewDisplayIds = { 8, 13, 18 },
 		RareNoticeSeconds = 5,
 	},
 	Meteor = { Interval = 90, Duration = 20, WarningSeconds = 2.5, ImpactRadius = 9,

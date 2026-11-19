@@ -19,6 +19,11 @@ function ConveyorService.new(world, economy)
 	for index = 1, Config.Conveyor.PreviewAffordableCount do
 		self:Spawn({ Id = index }, (index - 1) * math.pi / 3)
 	end
+	-- Stock the far half too, so the first title/hub view already shows a
+	-- complete cargo orbit. These are ordinary purchasable, expiring cargo.
+	for index, id in ipairs(Config.Conveyor.PreviewDisplayIds) do
+		self:Spawn({ Id = id }, (Config.Conveyor.PreviewAffordableCount + index - 1) * math.pi / 3)
+	end
 	local elapsed = 0
 	RunService.Heartbeat:Connect(function(dt)
 		if world.Root:GetAttribute("ScreenshotFrozen") then return end

@@ -339,11 +339,11 @@ local function buildCargoRing(world)
 	-- sightline. Non-solid scenery cannot trap a carrier or block a purchase.
 	for index, angle in ipairs({ -math.pi / 2, -math.pi / 6 }) do
 		local gate = folder("CargoWarpGate_" .. index, track)
-		local frame = CFrame.Angles(0, -angle, 0) * CFrame.new(radius, y + 7.8, 0)
+		local frame = CFrame.Angles(0, -angle, 0) * CFrame.new(radius, y + 8.6, 0)
 			* CFrame.Angles(math.pi / 2, 0, 0)
-		WorldBuilder.Ring("GateHousing", 9.4, 0.8, 1.1, frame,
+		WorldBuilder.Ring("GateHousing", 10.2, 0.8, 1.1, frame,
 			palette.Ink, Enum.Material.Metal, gate, 28, false)
-		WorldBuilder.Ring("WarpAperture", 8.8, 0.24, 0.28, frame,
+		WorldBuilder.Ring("WarpAperture", 9.6, 0.24, 0.28, frame,
 			index == 1 and palette.Mint or palette.Sun, Enum.Material.Neon, gate, 28, false)
 	end
 	for index = 1, 3 do

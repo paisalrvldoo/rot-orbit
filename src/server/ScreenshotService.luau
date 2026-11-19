@@ -27,7 +27,9 @@ function ScreenshotService:StageCargo(shot)
 		capsule:Destroy()
 	end
 	local records = shot == "Cover" and {
-		{ Id = 30, Mutation = "Aurora", Angle = math.pi * 0.65, Card = true },
+		-- The enlarged SECRET sits left of the dock lineup, with its full
+		-- silhouette inside the saved camera instead of covering two heroes.
+		{ Id = 30, Mutation = "Aurora", Angle = math.pi * 0.80, Card = true },
 		{ Id = 40, Mutation = "Diamond", Angle = math.pi * 1.95 },
 		{ Id = 7, Angle = math.pi * 1.1 }, { Id = 18, Mutation = "Gold", Angle = math.pi * 1.3 },
 		{ Id = 23, Angle = math.pi * 1.6 }, { Id = 27, Mutation = "Gold", Angle = math.pi * 1.8 },

@@ -23,6 +23,12 @@ Latest owner orbit/mobile corrections take precedence over new side systems.
   regressions cover the 44px minimum, reserved jump area, cooldown expiry,
   keyboard/menu/panels and staged/desktop restoration. Studio touch approval
   remains pending, including non-default Roblox jump sizes.
+- [x] First boot stocks the full circle with six genuine purchasable pods,
+  retaining three affordable starters and adding Rare/Epic/Legendary targets.
+  Give enlarged SECRET cargo headroom through both warp arches. Move the
+  Cover's Aurora SECRET to the left near arc: conservative source projection
+  puts its silhouette near x20–270 at 1280×720, away from the first dock face
+  near x341 and carry near x436. This is a framing estimate, not a render.
 - [ ] Update Studio capture handoff; verify and commit every working piece.
 - [ ] Owner Studio render/playtest and four genuine captures remain required.
   This machine has no Roblox renderer; source checks cannot approve the look.
