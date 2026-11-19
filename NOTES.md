@@ -83,12 +83,40 @@ ScreenshotMode and an exact rules-format TOUR only when those features exist.
 - [x] Studio-only ScreenshotMode Cover/Index/Raid/Upgrades and corresponding
   TOUR presets: high-rarity bay, Diamond carry, exactly 23/30 found, staged raid
   and paired progression panels. Preview changes never overwrite real progress.
-- [ ] README, genuine Studio pictures and published IDs.
+- [x] README describes the implemented game, controls, verification and Studio presets.
+- [ ] Genuine Studio pictures and published IDs (owner laptop; no Studio here).
 
 NPC stealing; meteor warnings/impacts and safe domes; solar flare; green gremlin
 raids with lock/zap; upgrades; rebirth; index; contracts; pcall-safe saving; final
 HUD/effects; ScreenshotMode/TOUR; genuine captures and approved icon/thumbnail.
 All tunable game numbers belong in Config; catalog data stays in one module.
+
+## Top-10 polish plan (owner research read 19 November, 19:43 WIB)
+
+Core systems above are implemented; finish this checklist in small verified commits.
+The research is prose guidance, not source or reusable names. Rank is not guaranteed.
+
+1. Strengthen Cover: $250M–$2B, >$1M/s, rebirth 3, 18s meteor banner,
+   Diamond carry, five readable ascending-tier heroes, SECRET beam, planet and title.
+2. Grow to 43 originals: 8 Common, 8 Rare, 7 Epic, 7 Legendary, 6 Mythic,
+   5 Cosmic, 2 SECRET; distinct primitive silhouettes; update all count strings.
+3. Four genuine Studio shots: loop cover, 32/43 discovery grid with mutation legend,
+   raid with recovery feedback, combined upgrades/rebirth/contracts. Owner captures.
+4. Consolidate tiny shared helpers and related UI/service helpers toward 20–24
+   well-named scripts; preserve visible system names and runtime behaviour.
+5. Add a ~40-stud lit in-world title pylon above cargo; owner and OPEN/LOCKED bay signs.
+6. Strengthen meteor streaks/warnings, dome glow, drop feedback and between-event timer.
+7. Add sixth mutation at x7, then a short positive mutation-spawn event.
+8. Denser edge HUD: live upgrade/found/cost/cooldown buttons, right quest progress
+   card with done total, left three-action feed, readable money and event text.
+9. Larger billboards, BUY price, Cosmic beam and SECRET crown/light pillar;
+   preserve idle bob/spin and per-character silhouette details.
+10. Later deepen progression: 25–30 upgrade levels, index milestones and 15+
+    rotating contracts. Only show rewards the server actually grants.
+
+This continuation is capped at ~25 minutes, ending near 20:09 WIB. Verify and
+commit each working piece, at most 10 minutes between commits. Next: content
+growth and sixth mutation, then title/cover and HUD; consolidation if time permits.
 
 ## Decisions and open issues
 
