@@ -88,7 +88,10 @@ function BaseService:Assign(player)
 		local humanoid = character:WaitForChild("Humanoid", 10)
 		if not root or not humanoid or self.Players[player] ~= state then return end
 		state.SprintUntil = nil
-		character:PivotTo(bay.SpawnFrame)
+		local destination = state.HasSpawned and state.Bay.SpawnFrame
+			or self.World.Spawn.CFrame * CFrame.new(0, 4, 0)
+		state.HasSpawned = true
+		character:PivotTo(destination)
 		self:SetSpeed(player)
 		humanoid.Died:Connect(function() self:Drop(player) end)
 	end

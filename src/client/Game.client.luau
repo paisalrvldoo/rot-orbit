@@ -2,6 +2,7 @@
 local ContextActionService = game:GetService("ContextActionService")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
 local CollectionService = game:GetService("CollectionService")
 local localPlayer = game:GetService("Players").LocalPlayer
 local shared = game:GetService("ReplicatedStorage")
@@ -164,7 +165,7 @@ function InputController:Register(name, label, key, callback)
 		rim.Thickness = 2
 	end
 	ContextActionService:BindAction("RotOrbit" .. name, function(_, inputState)
-		if UserInputService:GetFocusedTextBox() then return Enum.ContextActionResult.Pass end
+		if self.Hud.InTitle or UserInputService:GetFocusedTextBox() then return Enum.ContextActionResult.Pass end
 		if inputState == Enum.UserInputState.Begin then activate() end
 		return Enum.ContextActionResult.Sink
 	end, false, key)
@@ -220,7 +221,7 @@ local function startCrewPanel(hud)
 		end
 	end)
 	ContextActionService:BindAction("RotOrbitCrews", function(_, phase)
-		if UserInputService:GetFocusedTextBox() then return Enum.ContextActionResult.Pass end
+		if hud.InTitle or UserInputService:GetFocusedTextBox() then return Enum.ContextActionResult.Pass end
 		if phase == Enum.UserInputState.Begin then panel.Visible = not panel.Visible end
 		return Enum.ContextActionResult.Sink
 	end, false, Enum.KeyCode.Y)
@@ -256,6 +257,116 @@ local function startCrewPanel(hud)
 		footer.Text = global and (view.Status .. " · REFRESHES EVERY 60s") or "TEAM CARGO PROTECTED · NEARBY ALLIES SHARE COMBAT CASH · NO SWITCHING DURING RAIDS"
 	end)
 	return panel
+end
+
+local function startTitle(hud, crewPanel)
+	local screen = Instance.new("ScreenGui")
+	screen.Name = "RotOrbitTitle"
+	screen.DisplayOrder = 20
+	screen.ResetOnSpawn = false
+	screen.ScreenInsets = Enum.ScreenInsets.DeviceSafeInsets
+	screen.Parent = hud.Gui.Parent.Parent
+	local canvas = Instance.new("CanvasGroup")
+	canvas.Name = "ArrivalTitle"
+	canvas.AnchorPoint = Vector2.new(0.5, 0.5)
+	canvas.Position = UDim2.fromScale(0.5, 0.5)
+	canvas.Size = UDim2.fromOffset(1280, 720)
+	canvas.BackgroundTransparency = 1
+	canvas.Parent = screen
+	local scale = Instance.new("UIScale", canvas)
+	local panel = Instance.new("Frame")
+	panel.Position = UDim2.fromOffset(46, 153)
+	panel.Size = UDim2.fromOffset(410, 402)
+	panel.BackgroundColor3 = Config.Palette.Ink
+	panel.BackgroundTransparency = 0.07
+	panel.Parent = canvas
+	Instance.new("UICorner", panel).CornerRadius = UDim.new(0, 20)
+	local title = HudController.Text(panel, "Title", Config.Title, UDim2.fromOffset(205, 20),
+		UDim2.fromOffset(380, 72), 59, Config.Palette.White)
+	title.Font = Enum.Font.GothamBlack
+	local help = HudController.Text(panel, "HowTo", "Buy or steal brainrots.\nDock them to earn cash.\nLock your bay and use skills to defend it.",
+		UDim2.fromOffset(205, 278), UDim2.fromOffset(358, 86), 19)
+	help.TextWrapped = true
+	help.TextXAlignment = Enum.TextXAlignment.Left
+	local status = HudController.Text(panel, "Status", "Preparing your dock…", UDim2.fromOffset(205, 92),
+		UDim2.fromOffset(360, 30), 17, Config.Palette.Muted)
+	local squad = false
+	local function action(name, text, x, y, width, height)
+		local button = Instance.new("TextButton")
+		button.Name, button.Text = name, text
+		button.Position, button.Size = UDim2.fromOffset(x, y), UDim2.fromOffset(width, height)
+		button.BackgroundColor3, button.TextColor3 = Config.Palette.Teal, Config.Palette.White
+		button.TextSize, button.Font = 23, Enum.Font.GothamBold
+		button.Parent = panel
+		Instance.new("UICorner", button).CornerRadius = UDim.new(0, 12)
+		return button
+	end
+	local soloButton = action("Solo", "SOLO", 26, 128, 172, 50)
+	local squadButton = action("Squad", "SQUAD", 212, 128, 172, 50)
+	local play = action("Play", "PLAY", 26, 194, 358, 68)
+	play.Font, play.TextSize = Enum.Font.GothamBlack, 35
+	play.BackgroundColor3, play.TextColor3 = Config.Palette.Mint, Config.Palette.Ink
+	play:SetAttribute("Unavailable", true)
+	local function mode(isSquad)
+		squad = isSquad
+		soloButton:SetAttribute("Selected", not squad)
+		squadButton:SetAttribute("Selected", squad)
+	end
+	HudController.ButtonFeedback(soloButton, function() mode(false) end)
+	HudController.ButtonFeedback(squadButton, function() mode(true) end)
+	mode(false)
+	local screenHud = hud.Gui.Parent
+	screenHud.Enabled = false
+	hud.InTitle = true
+	local started = os.clock()
+	local function close(forScreenshot)
+		if not hud.InTitle then
+			if forScreenshot and screen.Parent then screen:Destroy() end
+			return
+		end
+		hud.InTitle = false
+		RunService:UnbindFromRenderStep("OrbitTitleCamera")
+		ContextActionService:UnbindAction("OrbitTitlePlay")
+		screenHud.Enabled = true
+		if forScreenshot then screen:Destroy(); return end
+		local camera = workspace.CurrentCamera
+		local character = localPlayer.Character
+		local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+		if camera then
+			if humanoid then camera.CameraSubject = humanoid end
+			camera.CameraType = Enum.CameraType.Custom
+		end
+		if squad then crewPanel.Visible = true end
+		local fade = TweenService:Create(canvas, TweenInfo.new(0.24, Enum.EasingStyle.Quad), { GroupTransparency = 1 })
+		fade.Completed:Once(function() if screen.Parent then screen:Destroy() end end)
+		fade:Play()
+	end
+	local activate = HudController.ButtonFeedback(play, function() close(false) end)
+	ContextActionService:BindAction("OrbitTitlePlay", function(_, phase)
+		if phase == Enum.UserInputState.Begin then activate() end
+		return Enum.ContextActionResult.Sink
+	end, false, Enum.KeyCode.Return)
+	local screenshotConnection
+	screenshotConnection = hud.Network.Screenshot.OnClientEvent:Connect(function()
+		screenshotConnection:Disconnect()
+		close(true)
+	end)
+	RunService:BindToRenderStep("OrbitTitleCamera", Enum.RenderPriority.Camera.Value + 1, function()
+		local camera = workspace.CurrentCamera
+		if camera then
+			local size = screen.AbsoluteSize
+			scale.Scale = math.clamp(math.min(size.X / 1280, size.Y / 720), 0.33, 1.4)
+			local angle = 0.20 + math.sin((os.clock() - started) * 0.21) * 0.36
+			local target = Vector3.new(-13, 9, -9)
+			camera.CameraType = Enum.CameraType.Scriptable
+			camera.CFrame = CFrame.lookAt(Vector3.new(math.sin(angle) * 102, 29, math.cos(angle) * 102),
+				target)
+			camera.Focus = CFrame.new(target)
+		end
+		local ready = hud.GetState() ~= nil
+		play:SetAttribute("Unavailable", not ready)
+		status.Visible = not ready
+	end)
 end
 
 local function filterDockPrompts(hud)
@@ -317,4 +428,5 @@ for _, name in ipairs({ "UpgradePanel", "IndexPanel" }) do
 		if panel.Visible then crewPanel.Visible = false end
 	end) end
 end
+startTitle(hud, crewPanel)
 require(shared:WaitForChild("ScreenshotMode")).Listen(hud)

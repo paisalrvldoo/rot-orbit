@@ -431,3 +431,7 @@ The live boot check still takes first priority if a new Studio error arrives.
   and an ion trail. Docking or dropping cargo during the boost recalculates
   speed; respawning clears it. Phone skill pages keep the main combat and
   movement actions visible and move Dash/Bubble to More Skills.
+- First spawn arrives at the central hub. The title screen has a slow station
+  camera, Solo/Squad choice, one Play button and quick instructions. Squad
+  opens the crew picker. Screenshot presets dismiss the title automatically.
+  Studio should check camera handoff and a first-time join with a phone client.
