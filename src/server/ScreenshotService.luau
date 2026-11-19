@@ -114,7 +114,9 @@ function ScreenshotService:Prepare(player, shot)
 		local card = pose(pedestal, pedestal.Frame * CFrame.Angles(0, math.pi, 0))
 		card.Enabled = shot ~= "Cover" and (index <= 4 or index == 6)
 	end
-	for id = 1, 23 do state.Found[tostring(id)] = true end
+	-- Keep the staged late-game cover and the Index preset honest: 32 of the
+	-- 43 catalog entries are discovered, with the remaining silhouettes visible.
+	for id = 1, 29 do state.Found[tostring(id)] = true end
 	for _, id in ipairs({ 31, 33, 35 }) do state.Found[tostring(id)] = true end
 	root.Anchored = true
 	root.CFrame = state.Bay.Frame * CFrame.new(9, 3.8, -6) * CFrame.Angles(0, math.pi, 0)

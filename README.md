@@ -26,7 +26,11 @@ and contracts; R opens rebirth (click again to confirm); B opens the index.
   `require(game.ReplicatedStorage.ScreenshotMode).Cover(0)` (replace Cover with
   another preset name). These previews disable saving of staged progress. Stop
   and restart the playtest to return to normal play. Capture the client viewport
-  at 1280x720; save each JPEG under 256 KiB with the filename in the tour.
+  at 1280x720; save each JPEG under 256 KiB with the filename in the tour. Before
+  keeping a shot, check that the title sign is inside the frame, the orange planet
+  is visible behind the deck, hero billboards are readable, and the top-left Roblox
+  menu area stays clear. The Cover preset stages 32/43 found and a Diamond Cosmo
+  Cornetto carry; Index should visibly read 32/43 FOUND.
 
 `node tools/verify.mjs` rebuilds the place, compiles every Luau script and checks
 the exported dossier. Roblox Studio playtesting remains necessary: this machine

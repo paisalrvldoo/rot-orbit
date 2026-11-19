@@ -154,8 +154,12 @@ Visual order for this pass (compile/source checks here; Studio review pending):
 - [x] Income pops spring in, drift upward and fade after a readable hold; action
   rows enter with a tight stagger, panels slide in with Quad Out. Repeated
   entrances cancel the prior tween. Screenshot feeds appear without animation.
-- [ ] Review cover/title bounds and document Studio capture checks. No generated
-  image can replace a genuine Studio screenshot.
+- [x] Review cover/title bounds in source: the three-quarter camera targets the
+  lit title sign, orange planet and five-hero showcase; the preset now stages a
+  truthful 32/43 index. README documents the Studio framing checks (1280x720,
+  title and planet in frame, readable cards, clear top-left menu area).
+- [ ] Capture genuine Studio pictures and verify the title, silhouettes and HUD
+  at the owner's 1280x720 viewport. No generated image can replace that check.
 
 ## Decisions and open issues (continued)
 
