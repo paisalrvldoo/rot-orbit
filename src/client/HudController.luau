@@ -60,7 +60,8 @@ function HudController.Start()
 	carrying.BackgroundTransparency = 0.12
 	carrying.Visible = false
 	Instance.new("UICorner", carrying).CornerRadius = UDim.new(0, 9)
-	HudController.Text(gui, "Counts", Config.CatalogCount .. " BRAINROTS · 7 RARITIES · 5 MUTATIONS · STEAL · LOCK · REBIRTH",
+	HudController.Text(gui, "Counts", Config.CatalogCount .. " BRAINROTS · " .. Config.RarityCount
+		.. " RARITIES · " .. Config.MutationCount .. " MUTATIONS · STEAL · LOCK · REBIRTH",
 		UDim2.new(0.5, 0, 1, -110), UDim2.fromOffset(930, 24), 15, Config.Palette.Mint)
 	local hint = HudController.Text(gui, "Hint", "WASD MOVE  ·  E BUY CARGO  ·  E DOCK ON AN EMPTY PEDESTAL",
 		UDim2.new(0.5, 0, 1, -76), UDim2.fromOffset(940, 30), 17)

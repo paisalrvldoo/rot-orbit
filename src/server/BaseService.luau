@@ -20,7 +20,9 @@ function BaseService.new(world, network)
 			local carry = state.Carry
 			local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
 			if carry and root then
-				carry.Model:PivotTo(root.CFrame * CFrame.new(0, Config.CarryHeight, 0))
+				local zeroG = carry.Record.Mutation == "Zero-G"
+				carry.Model:PivotTo(root.CFrame * CFrame.new(0, Config.CarryHeight + (zeroG and 0.8 or 0), 0)
+					* CFrame.Angles(0, zeroG and workspace:GetServerTimeNow() * 0.6 or 0, 0))
 			end
 		end
 	end)
@@ -243,7 +245,7 @@ end
 function BaseService:Release(player)
 	local state = self.Players[player]
 	if not state then return end
-	if state.Carry then state.Carry.Model:Destroy() end
+	self:Reset(player)
 	state.CharacterConnection:Disconnect()
 	for _, pedestal in ipairs(state.Bay.Slots) do
 		if pedestal.Occupant then pedestal.Occupant.Model:Destroy() end
@@ -267,7 +269,7 @@ function BaseService:SeedRivals()
 		for index, pedestal in ipairs(bay.Slots) do
 			if not pedestal.Occupant then
 				local record = { Id = lineup[index] + crewIndex - 1,
-					Guid = "rival_" .. crewIndex .. "_" .. index }
+					Guid = HttpService:GenerateGUID(false) }
 				if crewIndex == 2 and index == 8 then record.Mutation = "Gold" end
 				if crewIndex == 3 and index == 6 then record.Mutation = "Diamond" end
 				pedestal.Occupant = { Record = record,

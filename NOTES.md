@@ -76,7 +76,10 @@ ScreenshotMode and an exact rules-format TOUR only when those features exist.
   contracts; autosave/leave/shutdown, validated loads and renewable server leases.
   API-disabled Studio sessions play without saving; failed loads cannot overwrite
   real saves. Reconnecting docks owned carried cargo into a free home slot.
-- [ ] Final HUD polish.
+- [x] HUD edges, event/carry strips, five ordered stateful buttons, income pops,
+  rarity/mutation effects and idle bobbing (including cargo); Zero-G carries spin.
+  Review fixed bay-slot cleanup between owners, unique restocked cargo IDs and
+  releasing a save lease when someone leaves during loading.
 - [ ] ScreenshotMode/TOUR, README, genuine Studio pictures and published IDs.
 
 NPC stealing; meteor warnings/impacts and safe domes; solar flare; green gremlin

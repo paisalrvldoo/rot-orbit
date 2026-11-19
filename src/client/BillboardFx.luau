@@ -20,7 +20,11 @@ function BillboardFx.Start()
 		local time = workspace:GetServerTimeNow()
 		for model in pairs(visuals) do
 			local frame = model:GetAttribute("RestFrame")
-			if model.Parent and model.PrimaryPart and frame and model:GetAttribute("VisualState") == "Pedestal" then
+			local state = model:GetAttribute("VisualState")
+			if state == "Cargo" and model.Parent and model.Parent:IsA("Model") and model.Parent.PrimaryPart then
+				frame = model.Parent:GetPivot()
+			end
+			if model.Parent and model.PrimaryPart and frame and (state == "Pedestal" or state == "Cargo") then
 				local seed = model:GetAttribute("BrainrotId") or 0
 				local zeroG = model:GetAttribute("Mutation") == "Zero-G"
 				local bob = math.sin(time * 2 + seed) * 0.16 + (zeroG and 0.65 or 0)

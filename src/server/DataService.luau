@@ -68,7 +68,18 @@ function DataService:Load(player)
 			return previous
 		end)
 	end)
-	if self.Bases.Players[player] ~= state or not player.Parent then return end
+	if self.Bases.Players[player] ~= state or not player.Parent then
+		if ok and type(saved) == "table" then
+			pcall(function()
+				self.Store:UpdateAsync(session.Key, function(previous)
+					if type(previous) == "table" and type(previous.Session) == "table"
+						and previous.Session.Token == self.Token then previous.Session = nil; return previous end
+					return nil
+				end)
+			end)
+		end
+		return
+	end
 	if ok and not saved and reason then player:Kick(reason); return end
 	if ok and type(saved) == "table" then
 		session.CanSave = true

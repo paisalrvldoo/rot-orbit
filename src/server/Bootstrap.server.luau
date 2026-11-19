@@ -47,7 +47,9 @@ network.Action.OnServerEvent:Connect(function(player, action, argument)
 end)
 
 local function joined(player)
-	if bases:Assign(player) then
+	local state = bases:Assign(player)
+	if state then
+		state.Loading = true
 		economy:AddPlayer(player)
 		contracts:AddPlayer(player)
 		data:Load(player)
