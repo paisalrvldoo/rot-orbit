@@ -121,8 +121,8 @@ The research is prose guidance, not source or reusable names. Rank is not guaran
    separate income pops above occupied pedestals.
 9. [x] Large income and rarity cards, BUY prices on cargo, Cosmic beams and
    SECRET crowns/light pillars. Cover cards sit beneath the hero models.
-10. Progression now has 15 rotating contracts and saved first completions.
-    Next are 25–30 upgrade levels and index milestones. Show real rewards.
+10. Progression has 15 rotating contracts, saved first completions, 25 upgrade
+    levels and a visible multiplier step on rebirth. Index rewards are next.
 
 This continuation is capped at ~25 minutes, starting near 19:50 WIB. The owner
 research was reread at the start. Verify and commit each working piece, at most

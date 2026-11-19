@@ -6,7 +6,6 @@ local Config = require(shared:WaitForChild("Config"))
 local Traits = require(shared:WaitForChild("BrainrotTraits"))
 local Mutation = Traits.Mutation
 local Catalog = require(script.Parent:WaitForChild("BrainrotCatalog"))
-local UpgradeRebirthService = require(script.Parent:WaitForChild("UpgradeRebirthService"))
 local DataService = {}
 DataService.__index = DataService
 
@@ -86,7 +85,7 @@ function DataService:Load(player)
 		session.CanSave = true
 		profile.Cash = integer(saved.Cash, Config.StartingCash, 0, Config.MaxCash)
 		profile.Rebirths = integer(saved.Rebirths, 0, 0, Config.Rebirth.MaxLevel)
-		profile.Multiplier = UpgradeRebirthService.Multiplier(profile.Rebirths)
+		profile.Multiplier = Config.Rebirth.Multiplier(profile.Rebirths)
 		for name, config in pairs(Config.Upgrades) do
 			profile.Upgrades[name] = integer(type(saved.Upgrades) == "table" and saved.Upgrades[name], 0, 0, config.MaxLevel)
 		end

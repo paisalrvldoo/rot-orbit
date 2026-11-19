@@ -55,6 +55,7 @@ local Config = {
 		CarrySpeed = { BaseCost = 1600, CostGrowth = 2.3, Step = 2, MaxLevel = 5 },
 		LockDuration = { BaseCost = 2500, CostGrowth = 2.5, Step = 8, MaxLevel = 5 },
 		BaySlots = { BaseCost = 4000, CostGrowth = 3, Step = 2, MaxLevel = 4 },
+		IncomeBoost = { BaseCost = 10000, CostGrowth = 3, Step = 0.08, MaxLevel = 6 },
 	},
 	Rebirth = { BaseCost = 100000, CostGrowth = 5, MaxLevel = 15,
 		Multipliers = { 1, 1.5, 2, 3, 4.5, 6, 8, 10 } },
@@ -87,5 +88,14 @@ local Config = {
 		White = Color3.fromRGB(250, 253, 255),
 	},
 }
+
+function Config.Rebirth.Cost(level)
+	return Config.Rebirth.BaseCost * Config.Rebirth.CostGrowth ^ level
+end
+
+function Config.Rebirth.Multiplier(level)
+	local multipliers = Config.Rebirth.Multipliers
+	return multipliers[level + 1] or (multipliers[#multipliers] + (level + 1 - #multipliers) * 2)
+end
 
 return table.freeze(Config)

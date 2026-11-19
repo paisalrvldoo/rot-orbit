@@ -84,14 +84,14 @@ function ScreenshotService:Prepare(player, shot)
 	for _, gremlin in pairs(self.Gremlins.Gremlins) do self.Gremlins:Remove(gremlin, false) end
 	self.Economy.Events = {}
 	self.Economy.IncomeMultiplier = 1
-	profile.Upgrades = { WalkSpeed = 2, CarrySpeed = 3, LockDuration = 2, BaySlots = 1 }
+	profile.Upgrades = { WalkSpeed = 2, CarrySpeed = 3, LockDuration = 2, BaySlots = 1, IncomeBoost = 3 }
 	self.Bases:Reset(player)
 	state.Found = {}
 	self.Bases:AddSlot(player)
 	self.Bases:AddSlot(player)
 	profile.Cash = 867500000
 	profile.Rebirths = 3
-	profile.Multiplier = 3
+	profile.Multiplier = Config.Rebirth.Multiplier(profile.Rebirths)
 	profile.SaveStatus = "STUDIO PREVIEW"
 	profile.Contracts = { { Stage = 2, Progress = 3, Completed = 1 },
 		{ Stage = 2, Progress = 4, Completed = 1 }, { Stage = 3, Progress = 0, Completed = 2 } }

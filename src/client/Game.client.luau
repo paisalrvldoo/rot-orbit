@@ -39,7 +39,7 @@ function InputController.Start(hud)
 			maxLevels += definition.MaxLevel
 		end
 		for _, known in pairs(state.Found) do if known then found += 1 end end
-		local cost = Config.Rebirth.BaseCost * Config.Rebirth.CostGrowth ^ state.Rebirths
+		local cost = Config.Rebirth.Cost(state.Rebirths)
 		self.Buttons.Upgrades.Text = "UPGRADES [U]\n" .. levels .. "/" .. maxLevels .. " BUILT"
 		self.Buttons.Rebirth.Text = "REBIRTH [R]\n" .. (state.Rebirths >= Config.Rebirth.MaxLevel and "MAXED" or Format.Money(cost))
 		self.Buttons.Index.Text = "INDEX [B]\n" .. found .. "/" .. #state.Catalog .. " FOUND"

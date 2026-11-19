@@ -67,12 +67,13 @@ function Progression.StartUpgrades(hud, input)
 		{ "CarrySpeed", "CARRY SPEED", "+2 speed while carrying cargo" },
 		{ "LockDuration", "LOCK DURATION", "+8 seconds of bay protection" },
 		{ "BaySlots", "BAY SLOTS", "+2 earning pedestals" },
+		{ "IncomeBoost", "INCOME BOOST", "+8% pedestal income per level" },
 	}
 	for index, definition in ipairs(definitions) do
 		local name = definition[1]
-		local y = 58 + (index - 1) * 65
+		local y = 58 + (index - 1) * 51
 		local title = Style.Text(panel, definition[2], 22, y, 310, 25, 18)
-		Style.Text(panel, definition[3], 22, y + 26, 310, 23, 14, Config.Palette.Muted)
+		Style.Text(panel, definition[3], 22, y + 24, 310, 23, 14, Config.Palette.Muted)
 		local button = Style.Button(panel, "BUY", 354, y + 4, 184, 40,
 			function() hud.Network.Action:FireServer("Upgrade", name) end)
 		rows[name] = { Title = title, Button = button, Name = definition[2] }
@@ -106,6 +107,7 @@ function Progression.AddRebirth(hud, input, panel)
 	local button = Style.Button(panel, "REBIRTH", 336, 350, 202, 36, function()
 		local state = hud.GetState()
 		if not state or state.Rebirths >= Config.Rebirth.MaxLevel then return end
+		if state.Cash < Config.Rebirth.Cost(state.Rebirths) then return end
 		local now = os.clock()
 		if now < confirmUntil then
 			confirmUntil = 0
@@ -121,13 +123,15 @@ function Progression.AddRebirth(hud, input, panel)
 		elapsed = 0
 		local state = hud.GetState()
 		if not state then return end
-		local nextLevel = state.Rebirths + 1
-		local multipliers = Config.Rebirth.Multipliers
-		local multiplier = multipliers[nextLevel + 1] or (multipliers[#multipliers] + (nextLevel + 1 - #multipliers) * 2)
-		detail.Text = "LEVEL " .. state.Rebirths .. " → " .. nextLevel .. " · x" .. multiplier
-		button.Text = state.Rebirths >= Config.Rebirth.MaxLevel and "MAX REBIRTH"
+		local maxed = state.Rebirths >= Config.Rebirth.MaxLevel
+		local nextMultiplier = Config.Rebirth.Multiplier(state.Rebirths + 1)
+		detail.Text = maxed and ("LEVEL " .. state.Rebirths .. " · x" .. state.Multiplier)
+			or ("LEVEL " .. state.Rebirths .. "  ·  x" .. state.Multiplier .. " → x" .. nextMultiplier)
+		local cost = Config.Rebirth.Cost(state.Rebirths)
+		button.Text = maxed and "MAX REBIRTH"
 			or (os.clock() < confirmUntil and "RESET BAY? CONFIRM"
-				or ("REBIRTH · " .. Format.Money(Config.Rebirth.BaseCost * Config.Rebirth.CostGrowth ^ state.Rebirths)))
+				or ("REBIRTH · " .. Format.Money(cost)))
+		button.BackgroundColor3 = not maxed and state.Cash >= cost and Config.Palette.Teal or Color3.fromRGB(43, 67, 83)
 	end)
 end
 

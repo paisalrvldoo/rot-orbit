@@ -28,21 +28,16 @@ function UpgradeRebirthService:Buy(player, name)
 	self.Economy:Send(player)
 end
 
-function UpgradeRebirthService.Multiplier(level)
-	local multipliers = Config.Rebirth.Multipliers
-	return multipliers[level + 1] or (multipliers[#multipliers] + (level + 1 - #multipliers) * 2)
-end
-
 function UpgradeRebirthService:Perform(player)
 	local profile = self.Economy.Profiles[player]
 	if not profile or profile.Rebirths >= Config.Rebirth.MaxLevel then return end
-	local cost = Config.Rebirth.BaseCost * Config.Rebirth.CostGrowth ^ profile.Rebirths
+	local cost = Config.Rebirth.Cost(profile.Rebirths)
 	if profile.Cash < cost then
 		self.Economy.Network.Notice:FireClient(player, "You need more cash before rebirthing.")
 		return
 	end
 	profile.Rebirths += 1
-	profile.Multiplier = UpgradeRebirthService.Multiplier(profile.Rebirths)
+	profile.Multiplier = Config.Rebirth.Multiplier(profile.Rebirths)
 	profile.Cash = Config.StartingCash
 	profile.Upgrades = {}
 	self.Bases:Reset(player)

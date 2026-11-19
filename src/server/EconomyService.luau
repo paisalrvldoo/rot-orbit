@@ -34,7 +34,8 @@ function EconomyService:Income(player, showPops)
 	if not state or not profile or state.Loading then return 0 end
 	local income = 0
 	local pops = showPops and {} or nil
-	local multiplier = profile.Multiplier * self.IncomeMultiplier
+	local boost = 1 + (profile.Upgrades.IncomeBoost or 0) * Config.Upgrades.IncomeBoost.Step
+	local multiplier = profile.Multiplier * self.IncomeMultiplier * boost
 	for _, pedestal in ipairs(state.Bay.Slots) do
 		local occupant = pedestal.Occupant
 		if occupant then
