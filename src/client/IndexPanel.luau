@@ -4,7 +4,7 @@ local Config = require(shared:WaitForChild("Config"))
 local Traits = require(shared:WaitForChild("BrainrotTraits"))
 local Rarity = Traits.Rarity
 local Mutation = Traits.Mutation
-local Style = require(script.Parent:WaitForChild("PanelStyle"))
+local Style = require(script.Parent:WaitForChild("UpgradeRebirthContracts")).Style
 local IndexPanel = {}
 
 function IndexPanel.Start(hud, input)

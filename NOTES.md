@@ -105,7 +105,8 @@ The research is prose guidance, not source or reusable names. Rank is not guaran
    six-mutation legend are staged. Raid recovery feedback and progression polish
    are next. The owner captures all four in Studio.
 4. Shared rarity, mutation and number formatting are together in BrainrotTraits
-   (30 scripts). Group related UI and services next, aiming for 24 scripts.
+   and the client groups HUD/banner, panel styling/progression and input/bootstrap
+   (26 scripts). The old disabled starter screen is gone. Group server services next.
 5. [x] Built a two-sided 40-stud lit station title and player dock signs with live
    OPEN/LOCKED badges beside the owner's name.
 6. Strengthen meteor streaks/warnings, dome glow, drop feedback and between-event timer.

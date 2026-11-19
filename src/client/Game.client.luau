@@ -1,106 +1,92 @@
--- ROT ORBIT client. The starter preview is disabled while the 3D HUD is added.
-
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
+-- One binding per action, with matching clickable controls for touch and mouse.
+local ContextActionService = game:GetService("ContextActionService")
 local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local shared = game:GetService("ReplicatedStorage")
+local Config = require(shared:WaitForChild("Config"))
+local Traits = require(shared:WaitForChild("BrainrotTraits"))
+local Format = Traits.Format
+local InputController = {}
+InputController.__index = InputController
 
-local player = Players.LocalPlayer
-local BillboardFx = require(script.Parent:WaitForChild("BillboardFx"))
-BillboardFx.Start()
-local HudController = require(script.Parent:WaitForChild("HudController"))
-local hud = HudController.Start()
-local InputController = require(script.Parent:WaitForChild("InputController"))
-local input = InputController.Start(hud)
-local UpgradePanel = require(script.Parent:WaitForChild("UpgradePanel"))
-local upgradePanel = UpgradePanel.Start(hud, input)
-UpgradePanel.AddRebirth(hud, input, upgradePanel)
-local IndexPanel = require(script.Parent:WaitForChild("IndexPanel"))
-local indexPanel = IndexPanel.Start(hud, input)
-local ContractPanel = require(script.Parent:WaitForChild("ContractPanel"))
-local contractPanel = ContractPanel.Start(hud, upgradePanel)
-require(game:GetService("ReplicatedStorage"):WaitForChild("ScreenshotMode")).Listen(hud)
-
-local ARENA_WIDTH = 640
-local ARENA_HEIGHT = 480
-local SQUARE_SIZE = 48
-local SPEED = 320 -- pixels per second
-
-local gui = Instance.new("ScreenGui")
-gui.Name = "GameGui"
-gui.ResetOnSpawn = false
-gui.IgnoreGuiInset = true
-gui.Enabled = false
-
-local background = Instance.new("Frame")
-background.Name = "Background"
-background.Size = UDim2.fromScale(1, 1)
-background.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-background.BorderSizePixel = 0
-background.Parent = gui
-
-local title = Instance.new("TextLabel")
-title.Name = "Hint"
-title.AnchorPoint = Vector2.new(0.5, 0)
-title.Position = UDim2.new(0.5, 0, 0.5, -ARENA_HEIGHT / 2 - 56)
-title.Size = UDim2.fromOffset(ARENA_WIDTH, 40)
-title.BackgroundTransparency = 1
-title.Text = "Use the arrow keys to move the square"
-title.TextColor3 = Color3.fromRGB(230, 230, 230)
-title.TextSize = 24
-title.Font = Enum.Font.SourceSans
-title.Parent = background
-
-local arena = Instance.new("Frame")
-arena.Name = "Arena"
-arena.AnchorPoint = Vector2.new(0.5, 0.5)
-arena.Position = UDim2.fromScale(0.5, 0.5)
-arena.Size = UDim2.fromOffset(ARENA_WIDTH, ARENA_HEIGHT)
-arena.BackgroundColor3 = Color3.fromRGB(110, 110, 110)
-arena.BorderColor3 = Color3.fromRGB(30, 30, 30)
-arena.BorderSizePixel = 2
-arena.Parent = background
-
-local square = Instance.new("Frame")
-square.Name = "Square"
-square.Size = UDim2.fromOffset(SQUARE_SIZE, SQUARE_SIZE)
-square.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
-square.BorderColor3 = Color3.fromRGB(30, 30, 30)
-square.BorderSizePixel = 2
-square.Parent = arena
-
--- The square's top-left corner inside the arena, starting in the middle.
-local x = (ARENA_WIDTH - SQUARE_SIZE) / 2
-local y = (ARENA_HEIGHT - SQUARE_SIZE) / 2
-
-local function place()
-	square.Position = UDim2.fromOffset(math.floor(x + 0.5), math.floor(y + 0.5))
+function InputController.Start(hud)
+	local self = setmetatable({ Hud = hud, Buttons = {}, Order = {} }, InputController)
+	self:Register("Lock", "LOCK [L]", Enum.KeyCode.L, function() hud.Network.Action:FireServer("Lock") end)
+	self:Register("Zap", "ZAP [F]", Enum.KeyCode.F, function() hud.Network.Action:FireServer("Zap") end)
+	local previous
+	RunService.RenderStepped:Connect(function()
+		local state = hud.GetState()
+		if not state then return end
+		local now = workspace:GetServerTimeNow()
+		local lock = self.Buttons.Lock
+		if (state.LockUntil or 0) > now then
+			lock.Text = "LOCK [L]\nLOCKED · " .. math.ceil(state.LockUntil - now) .. "s"
+			lock.BackgroundColor3 = Config.Palette.Teal
+		elseif (state.LockReadyAt or 0) > now then
+			lock.Text = "LOCK [L]\nRECHARGE · " .. math.ceil(state.LockReadyAt - now) .. "s"
+			lock.BackgroundColor3 = Config.Palette.Ink
+		else
+			lock.Text = "LOCK [L]\nREADY"
+			lock.BackgroundColor3 = Config.Palette.Ink
+		end
+		self.Buttons.Zap.Text = "ZAP [F]\n" .. ((state.ZapReadyAt or 0) > now
+			and ("RECHARGE · " .. math.ceil(state.ZapReadyAt - now) .. "s") or "READY")
+		if state == previous then return end
+		previous = state
+		local levels, maxLevels, found = 0, 0, 0
+		for name, definition in pairs(Config.Upgrades) do
+			levels += state.Upgrades[name] or 0
+			maxLevels += definition.MaxLevel
+		end
+		for _, known in pairs(state.Found) do if known then found += 1 end end
+		local cost = Config.Rebirth.BaseCost * Config.Rebirth.CostGrowth ^ state.Rebirths
+		self.Buttons.Upgrades.Text = "UPGRADES [U]\n" .. levels .. "/" .. maxLevels .. " BUILT"
+		self.Buttons.Rebirth.Text = "REBIRTH [R]\n" .. (state.Rebirths >= Config.Rebirth.MaxLevel and "MAXED" or Format.Money(cost))
+		self.Buttons.Index.Text = "INDEX [B]\n" .. found .. "/" .. #state.Catalog .. " FOUND"
+	end)
+	return self
 end
 
-place()
-gui.Parent = player:WaitForChild("PlayerGui")
+function InputController:Register(name, label, key, callback)
+	if self.Buttons[name] then return end
+	local button = Instance.new("TextButton")
+	button.Name = name
+	button.Text = label
+	button.AnchorPoint = Vector2.new(0.5, 0)
+	button.Size = UDim2.fromOffset(176, 48)
+	button.BackgroundColor3 = Config.Palette.Ink
+	button.TextColor3 = Config.Palette.White
+	button.Font = Enum.Font.GothamBold
+	button.TextSize = 17
+	button.BorderSizePixel = 0
+	button.Parent = self.Hud.Gui
+	Instance.new("UICorner", button).CornerRadius = UDim.new(0, 10)
+	local stroke = Instance.new("UIStroke", button)
+	stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	stroke.Color = Config.Palette.Teal
+	stroke.Thickness = 2
+	button.Activated:Connect(callback)
+	self.Buttons[name] = button
+	table.insert(self.Order, name)
+	local priority = { Lock = 1, Upgrades = 2, Rebirth = 3, Index = 4, Zap = 5 }
+	table.sort(self.Order, function(a, b) return (priority[a] or 9) < (priority[b] or 9) end)
+	for index, action in ipairs(self.Order) do
+		self.Buttons[action].Position = UDim2.new(0.5, (index - (#self.Order + 1) / 2) * 188, 1, -53)
+	end
+	ContextActionService:BindAction("RotOrbit" .. name, function(_, inputState)
+		if UserInputService:GetFocusedTextBox() then return Enum.ContextActionResult.Pass end
+		if inputState == Enum.UserInputState.Begin then callback() end
+		return Enum.ContextActionResult.Sink
+	end, false, key)
+end
 
-RunService.RenderStepped:Connect(function(dt)
-	if not gui.Enabled then
-		return
-	end
-	local dx = 0
-	local dy = 0
-	if UserInputService:IsKeyDown(Enum.KeyCode.Left) then
-		dx -= 1
-	end
-	if UserInputService:IsKeyDown(Enum.KeyCode.Right) then
-		dx += 1
-	end
-	if UserInputService:IsKeyDown(Enum.KeyCode.Up) then
-		dy -= 1
-	end
-	if UserInputService:IsKeyDown(Enum.KeyCode.Down) then
-		dy += 1
-	end
-	if dx == 0 and dy == 0 then
-		return
-	end
-	x = math.clamp(x + dx * SPEED * dt, 0, ARENA_WIDTH - SQUARE_SIZE)
-	y = math.clamp(y + dy * SPEED * dt, 0, ARENA_HEIGHT - SQUARE_SIZE)
-	place()
-end)
+-- Start the controls and panels after creating the HUD.
+require(script.Parent:WaitForChild("BillboardFx")).Start()
+local hud = require(script.Parent:WaitForChild("HudController")).Start()
+local input = InputController.Start(hud)
+local progression = require(script.Parent:WaitForChild("UpgradeRebirthContracts"))
+local upgrades = progression.StartUpgrades(hud, input)
+progression.AddRebirth(hud, input, upgrades)
+require(script.Parent:WaitForChild("IndexPanel")).Start(hud, input)
+progression.StartContracts(hud, upgrades)
+require(shared:WaitForChild("ScreenshotMode")).Listen(hud)
