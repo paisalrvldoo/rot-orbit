@@ -12,7 +12,10 @@ Newest phone feedback takes precedence over extra features this pass:
 - [x] Implement physical, hub-facing crew rank panel away from spawn; no
   camera-facing ranks, empty rows or overlapping global status lines.
 - [x] Shrink home beacon, respect world occlusion and hide when already home.
-- [ ] Collapse mobile controls into Menu and a compact combat/movement cluster.
+- [x] Implement mobile Menu for lock/upgrades/rebirth/index/crew/contracts;
+  compact right-thumb arc for Blink/Sprint/Bomb/Zap, secondary skills behind
+  More. Preserve keyboard bindings, cooldowns and full staged/desktop controls.
+  Phone rendering/touch approval remains pending; no Studio exists here.
 - [ ] Keep the best cargo earning after rebirth; verify actual reset/income.
 - [ ] Owner: 1024×460 phone render/playtest (Studio unavailable here), then
   publish and four genuine screenshots. Source checks cannot approve rendering.

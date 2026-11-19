@@ -316,6 +316,11 @@ function HudController.Start()
 	RunService.RenderStepped:Connect(function()
 		resize()
 		local compact = HudController.IsCompact() and (not state or state.SaveStatus ~= "STUDIO PREVIEW")
+		carrying.Position = compact and UDim2.new(0.45, 0, 1, -59) or UDim2.new(0.5, 0, 1, -91)
+		carrying.Size = UDim2.fromOffset(compact and 600 or 940, 33)
+		carrying.TextScaled = compact
+		hint.Position = carrying.Position
+		hint.Size = carrying.Size
 		counts.Visible = not compact
 		logo.Visible = not compact
 		save.Visible = not compact

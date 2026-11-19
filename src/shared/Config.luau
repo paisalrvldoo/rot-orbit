@@ -72,8 +72,8 @@ local Config = {
 		} },
 	Skills = {
 		Order = { "Dash", "Slam", "Bubble", "Blink", "Sprint", "Bomb" },
-		TouchPrimary = { "Slam", "Blink", "Sprint", "Bomb" },
-		TouchUtility = { "Dash", "Bubble" },
+		TouchPrimary = { "Blink", "Sprint", "Bomb" },
+		TouchUtility = { "Dash", "Slam", "Bubble" },
 		Dash = { Name = "JET DASH", Key = "X", Cooldown = 7, Distance = 18, Unlock = "FREE" },
 		Slam = { Name = "GRAVITY SLAM", Key = "V", Cooldown = 12, Radius = 24, Damage = 4,
 			Rebirth = 1, Upgrade = "CarrySpeed", Unlock = "CARRY UPGRADE 1 / REBIRTH 1" },

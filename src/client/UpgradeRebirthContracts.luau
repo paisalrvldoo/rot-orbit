@@ -257,7 +257,9 @@ function Progression.StartContracts(hud, upgrades)
 		local show = not panel.Visible and not (indexPanel and indexPanel.Visible)
 			and not (crewPanel and crewPanel.Visible)
 		local compact = HudController.IsCompact() and state.SaveStatus ~= "STUDIO PREVIEW"
-		questTab.Visible = show and compact
+		questTab.Visible = show and compact and hud.Gui:GetAttribute("MobileMenuOpen") == true
+		questTab.Position = UDim2.fromOffset(24, 548)
+		questTab.Size = UDim2.fromOffset(240, 58)
 		quest.Position = UDim2.fromOffset(1024, compact and 207 or 168)
 		quest.Visible = show and (not compact or expanded)
 		local completed, available = 0, 0

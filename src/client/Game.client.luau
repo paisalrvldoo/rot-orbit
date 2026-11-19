@@ -33,6 +33,24 @@ function InputController.Start(hud)
 	more.Parent = hud.Gui
 	Instance.new("UICorner", more).CornerRadius = UDim.new(0, 10)
 	HudController.ButtonFeedback(more, function() utility = not utility end)
+	local menu = Instance.new("TextButton")
+	menu.Name, menu.Text = "MobileMenu", "MENU"
+	menu.AnchorPoint = Vector2.new(0.5, 0)
+	menu.TextColor3, menu.BackgroundColor3 = Config.Palette.White, Config.Palette.Ink
+	menu.Font, menu.TextSize = Enum.Font.GothamBold, 17
+	Instance.new("UICorner", menu).CornerRadius = UDim.new(0, 10)
+	menu.Size, menu.Position = UDim2.fromOffset(144, 62), UDim2.fromOffset(96, 158)
+	menu.Visible = false
+	menu.Parent = hud.Gui
+	HudController.ButtonFeedback(menu, function()
+		self.MenuOpen = not self.MenuOpen
+		if self.MenuOpen then
+			for _, name in ipairs({ "UpgradePanel", "IndexPanel", "CrewPanel" }) do
+				local panel = hud.Gui:FindFirstChild(name)
+				if panel then panel.Visible = false end
+			end
+		end
+	end)
 	local lastLayout
 	local previous
 	RunService.RenderStepped:Connect(function()
@@ -40,38 +58,60 @@ function InputController.Start(hud)
 		if not state then return end
 		local now = workspace:GetServerTimeNow()
 		local compact = HudController.IsCompact() and state.SaveStatus ~= "STUDIO PREVIEW"
-		local layout = compact and (utility and "utility" or "primary") or "all"
+		for _, name in ipairs({ "UpgradePanel", "IndexPanel", "CrewPanel" }) do
+			local panel = hud.Gui:FindFirstChild(name)
+			if panel and panel.Visible then self.MenuOpen = false end
+		end
+		hud.Gui:SetAttribute("MobileMenuOpen", compact and self.MenuOpen == true)
+		menu.Visible = compact
+		menu.Text = self.MenuOpen and "CLOSE MENU" or "MENU"
+		menu:SetAttribute("Selected", self.MenuOpen == true)
+		local layout = compact and ((utility and "utility" or "primary") .. tostring(self.MenuOpen)) or "all"
 		if layout ~= lastLayout then
 			lastLayout = layout
 			local skills = not compact and Config.Skills.Order
 				or (utility and Config.Skills.TouchUtility or Config.Skills.TouchPrimary)
-			local slots = compact and (#Config.Skills.TouchPrimary + 1) or #skills
-			local spacing = 1000 / slots
+			local spacing = 1000 / #skills
+			local arc = { Vector2.new(-274, -142), Vector2.new(-190, -226), Vector2.new(-84, -272) }
 			for _, name in ipairs(Config.Skills.Order) do
 				local button = self.Buttons[name]
 				local index = table.find(skills, name)
 				button.Visible = index ~= nil
 				if index then
-					button.Position = UDim2.new(0.5, (index - (slots + 1) / 2) * spacing, 1, -168)
-					button.Size = UDim2.fromOffset(spacing - 14, 48)
+					button.Position = compact and UDim2.new(1, arc[index].X, 1, arc[index].Y)
+						or UDim2.new(0.5, (index - (#skills + 1) / 2) * spacing, 1, -168)
+					button.Size = compact and UDim2.fromOffset(92, 68) or UDim2.fromOffset(spacing - 14, 48)
 				end
 			end
 			more.Visible = compact
-			more.Text = utility and "MAIN SKILLS" or "MORE SKILLS"
-			more.Size = UDim2.fromOffset(spacing - 14, 48)
-			more.Position = UDim2.new(0.5, (slots - 1) / 2 * spacing, 1, -168)
+			more.Text = utility and "MAIN" or "MORE"
+			more.Size = UDim2.fromOffset(84, 52)
+			more.Position = UDim2.new(1, -292, 1, -224)
 			more:SetAttribute("Selected", utility)
+			for index, name in ipairs({ "Lock", "Upgrades", "Rebirth", "Index" }) do
+				local button = self.Buttons[name]
+				if button then
+					button.Visible = not compact or self.MenuOpen == true
+					button.Position = compact and UDim2.fromOffset(144, 228 + (index - 1) * 64)
+						or UDim2.new(0.5, (index - 3) * 188, 1, -53)
+					button.Size = UDim2.fromOffset(compact and 240 or 176, compact and 58 or 48)
+				end
+			end
+			self.Buttons.Zap.Position = compact and UDim2.new(1, -80, 1, -172) or UDim2.new(0.5, 376, 1, -53)
+			self.Buttons.Zap.Size = compact and UDim2.fromOffset(100, 76) or UDim2.fromOffset(176, 48)
 		end
 		for _, name in ipairs(Config.Skills.Order) do
 			local skill, button = Config.Skills[name], self.Buttons[name]
 			local unlocked = Config.Skills.Unlocked(name, state)
 			local left = math.max(0, ((state.SkillReadyAt or {})[name] or 0) - now)
-			button.Text = skill.Name .. (compact and "" or (" [" .. (skill.KeyLabel or skill.Key) .. "]"))
-				.. "\n" .. (not unlocked and skill.Unlock
+			local short = ({ Slam = "SLAM", Dash = "DASH", Bubble = "SHIELD" })[name] or skill.Name
+			button.Text = (compact and short or (skill.Name .. " [" .. (skill.KeyLabel or skill.Key) .. "]"))
+				.. "\n" .. (not unlocked and (compact and "LOCKED" or skill.Unlock)
 				or (left > 0 and (math.ceil(left) .. "s") or "READY"))
 			button:SetAttribute("Unavailable", not unlocked or left > 0)
 			local ring = button:FindFirstChild("CooldownRing")
 			if ring then
+				ring.Visible = not compact
 				ring.Text = not unlocked and "-" or (left > 0 and tostring(math.ceil(left)) or "+")
 				ring.BackgroundTransparency = left > 0 and (0.15 + 0.65 * left / skill.Cooldown) or 0.15
 			end
@@ -130,7 +170,10 @@ function InputController:Register(name, label, key, callback)
 	stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	stroke.Color = Config.Palette.Teal
 	stroke.Thickness = 2
-	local activate = HudController.ButtonFeedback(button, callback,
+	local activate = HudController.ButtonFeedback(button, function()
+		callback()
+		if name ~= "Zap" and not Config.Skills[name] then self.MenuOpen = false end
+	end,
 		(name == "Lock" or name == "Zap" or Config.Skills[name]) and 0.35 or nil)
 	self.Buttons[name] = button
 	table.insert(self.Order, name)
@@ -229,6 +272,10 @@ local function startCrewPanel(hud)
 		local state = hud.GetState()
 		local view = state and state.Crew
 		if not view then return end
+		local compact = HudController.IsCompact() and state.SaveStatus ~= "STUDIO PREVIEW"
+		open.Visible = not compact or hud.Gui:GetAttribute("MobileMenuOpen") == true
+		open.Position = compact and UDim2.fromOffset(24, 484) or UDim2.fromOffset(16, 365)
+		open.Size = compact and UDim2.fromOffset(240, 58) or UDim2.fromOffset(236, 44)
 		open:SetAttribute("Selected", panel.Visible)
 		open.Text = "CREWS [Y] · " .. (view.Current and Config.Crews.Teams[view.Current].Name or "JOIN A CREW")
 		if not panel.Visible then return end
