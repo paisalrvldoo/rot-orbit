@@ -276,3 +276,10 @@ remain the submission blockers.
   yields. Player theft and gremlins skip loading/departing bays; death/meteors
   cannot turn already-snapshotted carried cargo into a second recoverable drop.
   Regression checks cover the freeze boundary and keep NPC bays raidable.
+- [x] In-world player dock signs now show LOCKED and a live m:ss countdown,
+  matching the HUD and server shield expiry, then return to green OPEN.
+  Source/place verification passes; sign readability remains a Studio check.
+- [x] Downloaded a current kit into `/tmp/rot-orbit-kit-check/roblox-brainrot-01-kit`
+  without altering the installed kit, recording process or vendored library.
+  Its check at `2bb1e6d` passed 5/5, including Public link; no stale-kit warning.
+  Submission-time transcript/repository/media checks remain outside this check.

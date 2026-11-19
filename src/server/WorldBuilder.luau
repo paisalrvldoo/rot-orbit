@@ -260,12 +260,19 @@ local function buildBays(world)
 			badge.Size = UDim2.fromScale(0.25, 0.68)
 			badge.Parent = caption.Parent
 			local function updateStatus()
-				local locked = (model:GetAttribute("LockedUntil") or 0) > Workspace:GetServerTimeNow()
-				badge.Text = locked and "LOCKED" or "OPEN"
+				local seconds = math.max(0, math.ceil((model:GetAttribute("LockedUntil") or 0) - Workspace:GetServerTimeNow()))
+				local locked = seconds > 0
+				badge.Text = locked and string.format("LOCKED\n%d:%02d", math.floor(seconds / 60), seconds % 60) or "OPEN"
 				badge.TextColor3 = locked and palette.Sun or palette.Mint
 			end
 			model:GetAttributeChangedSignal("LockedUntil"):Connect(updateStatus)
 			updateStatus()
+			task.spawn(function()
+				while model.Parent do
+					task.wait(1)
+					if model.Parent then updateStatus() end
+				end
+			end)
 		end
 		local bay = { Index = index, Model = model, Frame = frame, Floor = floor,
 			Label = caption, Color = color, Slots = {}, Rival = rival, CrewName = name,
