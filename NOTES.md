@@ -1,5 +1,27 @@
 # ROT ORBIT build notes
 
+## Current 25-minute orbit continuation
+
+Initial status/diff were clean; `node tools/verify.mjs` passed and checkpoint
+`430cac9` was committed immediately. Read owner refs.md once, including the
+latest 00:43–00:47 phone feedback, and the visual guidance. Core systems pass.
+Research priorities retained: (1) late-game cover, (2) 42–45 originals (43),
+(3) four real captures, (4) ~20–24 purposeful scripts (25 with crews),
+(5) world title, (6) visible meteors/domes, (7) six mutations,
+(8) live HUD/quests/feed, (9) readable cast/value cards, (10) earned progression.
+Latest owner orbit/mobile corrections take precedence over new side systems.
+
+- [x] Raise the nearby cargo track, enlarge its brainrots/pods, add two cargo
+  warp arches, and break up the empty hub floor with station deck panels.
+  Cargo models are 1.5× their previous size, sleds 1.35×; track is 2.1 studs
+  high and spawn faces the near arc (19 studs away). Spawn pad is invisible.
+  All source/gameplay/preset checks pass; phone/cover rendering is pending.
+- [ ] Give Run/Blink/Zap chunky round controls, original geometric icons,
+  visible cooldown progress and seconds; check phone bounds and jump clearance.
+- [ ] Update Studio capture handoff; verify and commit every working piece.
+- [ ] Owner Studio render/playtest and four genuine captures remain required.
+  This machine has no Roblox renderer; source checks cannot approve the look.
+
 ## Current continuation
 
 20 November recovery: initial `git status`/diff were clean and verification

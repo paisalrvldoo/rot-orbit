@@ -291,10 +291,10 @@ local function buildCargoRing(world)
 	local radius = Config.World.RailRadius
 	local y = Config.World.RailHeight
 	local track = folder("CargoTrack", world.Geometry)
-	WorldBuilder.Ring("TrackChassis", radius, 9.2, 0.6, CFrame.new(0, 0.28, 0),
+	WorldBuilder.Ring("TrackChassis", radius, 11.2, 0.6, CFrame.new(0, y - 0.42, 0),
 		palette.Ink, Enum.Material.Metal, track, Config.World.RailSegments, false)
 	for _, side in ipairs({ -1, 1 }) do
-		local rail = WorldBuilder.Ring("GuideRail", radius + side * 3.55, 0.86, 0.27,
+		local rail = WorldBuilder.Ring("GuideRail", radius + side * 4.55, 0.86, 0.27,
 			CFrame.new(0, y, 0), side == 1 and palette.Mint or palette.Teal, Enum.Material.Neon,
 			track, Config.World.RailSegments, false)
 		if side == 1 then
@@ -306,18 +306,18 @@ local function buildCargoRing(world)
 	end
 	for index = 1, 28 do
 		local angle = (index - 1) * math.pi * 2 / 28
-		local frame = CFrame.Angles(0, -angle, 0) * CFrame.new(radius, 0.53, 0)
-		WorldBuilder.Part("TrackSleeper", Vector3.new(8.8, 0.2, 0.67), frame, palette.Teal,
+		local frame = CFrame.Angles(0, -angle, 0) * CFrame.new(radius, y - 0.17, 0)
+		WorldBuilder.Part("TrackSleeper", Vector3.new(10.8, 0.2, 0.67), frame, palette.Teal,
 			Enum.Material.Metal, track, nil, false)
 	end
 	-- Wide clamps and center lane marks keep the ring recognizable from above.
 	for index, name in ipairs(Rarity.Order) do
 		local angle = (index - 1) * math.pi * 2 / #Rarity.Order
-		local frame = CFrame.Angles(0, -angle, 0) * CFrame.new(radius, 0.64, 0)
+		local frame = CFrame.Angles(0, -angle, 0) * CFrame.new(radius, y - 0.06, 0)
 		local color = Rarity.ByName[name].Color
 		for _, side in ipairs({ -1, 1 }) do
 			WorldBuilder.Part("GuideClamp", Vector3.new(1.8, 0.58, 2.5),
-				frame * CFrame.new(side * 4.45, -0.2, 0), palette.White, Enum.Material.Metal, track, nil, false)
+				frame * CFrame.new(side * 5.45, -0.2, 0), palette.White, Enum.Material.Metal, track, nil, false)
 		end
 		for tick = -1, 1 do
 			WorldBuilder.Part("LaneMark", Vector3.new(1.9, 0.06, 0.28),
@@ -327,13 +327,24 @@ local function buildCargoRing(world)
 
 	for index = 1, 7 do
 		local phase = (index - 1) * math.pi * 2 / 7
-		local frame = CFrame.Angles(0, -phase, 0) * CFrame.new(radius + 3.55, y + 0.18, 0)
+		local frame = CFrame.Angles(0, -phase, 0) * CFrame.new(radius + 4.55, y + 0.18, 0)
 		local color = Rarity.ByName[Rarity.Order[index]].Color
 		local tracer = WorldBuilder.Part("RailChaser", Vector3.new(0.8, 0.22, 3.2), frame, color,
 			Enum.Material.Neon, track, nil, false)
 		tracer.CanQuery = false
 		tracer:SetAttribute("OrbitPhase", phase)
 		CollectionService:AddTag(tracer, "OrbitRailChaser")
+	end
+	-- Two open hoops sit across the actual cargo path, away from the arrival
+	-- sightline. Non-solid scenery cannot trap a carrier or block a purchase.
+	for index, angle in ipairs({ -math.pi / 2, -math.pi / 6 }) do
+		local gate = folder("CargoWarpGate_" .. index, track)
+		local frame = CFrame.Angles(0, -angle, 0) * CFrame.new(radius, y + 7.8, 0)
+			* CFrame.Angles(math.pi / 2, 0, 0)
+		WorldBuilder.Ring("GateHousing", 9.4, 0.8, 1.1, frame,
+			palette.Ink, Enum.Material.Metal, gate, 28, false)
+		WorldBuilder.Ring("WarpAperture", 8.8, 0.24, 0.28, frame,
+			index == 1 and palette.Mint or palette.Sun, Enum.Material.Neon, gate, 28, false)
 	end
 	for index = 1, 3 do
 		local angle = (index - 1) * math.pi * 2 / 3 + 0.36
@@ -416,12 +427,27 @@ function WorldBuilder.Build()
 		palette.Teal, Enum.Material.SmoothPlastic, geometry, 100, false)
 	WorldBuilder.Ring("OrbitEdgeLights", radius - 1, 0.65, 0.15, CFrame.new(0, 0.12, 0),
 		palette.Mint, Enum.Material.Neon, geometry, 100, false)
+	-- Large recessed-looking wedges make the hub read as a station floor,
+	-- with bright spokes pointing to the live cargo and the nine docks.
+	for index = 1, 18 do
+		local angle = (index - 1) * math.pi * 2 / 18
+		local frame = CFrame.Angles(0, -angle, 0)
+		WorldBuilder.Part("HubDeckPanel", Vector3.new(15, 0.08, 4.8),
+			frame * CFrame.new(25, 0.05, 0), Color3.fromRGB(96, 124, 137),
+			Enum.Material.Metal, geometry, nil, false)
+		if index % 2 == 1 then
+			WorldBuilder.Part("DockGuide", Vector3.new(26, 0.06, 0.28),
+				frame * CFrame.new(65, 0.08, 0), palette.Teal,
+				Enum.Material.Neon, geometry, nil, false)
+		end
+	end
 	skyAndPlanet(root)
 	local spawn = Instance.new("SpawnLocation")
 	spawn.Name = "ArrivalPad"
 	spawn.Anchored = true
 	spawn.Size = Vector3.new(10, 0.3, 10)
-	spawn.Position = Vector3.new(0, 0.2, 23)
+	spawn.CFrame = CFrame.lookAt(Vector3.new(0, 0.2, 23), Vector3.new(0, 0.2, 42))
+	spawn.Transparency = 1
 	spawn.Color = palette.Teal
 	spawn.Material = Enum.Material.SmoothPlastic
 	spawn.Neutral = true

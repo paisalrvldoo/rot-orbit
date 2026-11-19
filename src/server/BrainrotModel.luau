@@ -84,7 +84,7 @@ function BrainrotModel.Create(record, frame, parent, forSale)
 	local entry = assert(Catalog.Get(record.Id), "Unknown brainrot ID")
 	local rarity = Rarity.ByName[entry.Rarity]
 	local mutation = Mutation.Get(record.Mutation)
-	local scale = rarity.Scale
+	local scale = rarity.Scale * (forSale and Config.Conveyor.ModelScale or 1)
 	local bodyColor = mutation and entry.Color:Lerp(mutation.Color, 0.4) or entry.Color
 	local accent = mutation and entry.Accent:Lerp(mutation.Color, 0.5) or entry.Accent
 	local glow = mutation and mutation.Color or rarity.Color

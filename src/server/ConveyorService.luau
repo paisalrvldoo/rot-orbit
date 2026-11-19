@@ -100,7 +100,7 @@ function ConveyorService:Spawn(record, angle)
 	pivot.CanQuery = false
 	capsule.PrimaryPart = pivot
 	local rarity = Rarity.ByName[Catalog.Get(record.Id).Rarity]
-	local sledSize = 1 + math.max(0, rarity.Rank - 3) * 0.07
+	local sledSize = Config.Conveyor.PodScale * (1 + math.max(0, rarity.Rank - 3) * 0.07)
 	local pad = WorldBuilder.Part("HoverSled", Vector3.new(0.92, 5.8 * sledSize, 5.8 * sledSize),
 		CFrame.new(0, -0.41, 0) * CFrame.Angles(0, 0, math.pi / 2), Config.Palette.Ink,
 		Enum.Material.Metal, capsule, Enum.PartType.Cylinder, false)

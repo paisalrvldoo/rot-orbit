@@ -97,7 +97,7 @@ function BillboardFx.Start()
 				if phase then
 					local angle = phase + (frozen and 0 or time * 0.64)
 					tracer.CFrame = CFrame.Angles(0, -angle, 0)
-						* CFrame.new(Config.World.RailRadius + 3.55, Config.World.RailHeight + 0.18, 0)
+						* CFrame.new(Config.World.RailRadius + 4.55, Config.World.RailHeight + 0.18, 0)
 				end
 			end
 			for relay in pairs(relays) do
