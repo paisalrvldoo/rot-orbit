@@ -16,23 +16,27 @@ end
 function ContractService:AddPlayer(player)
 	local profile = self.Economy.Profiles[player]
 	profile.Contracts = {}
-	for index in ipairs(Config.Contracts.Tracks) do profile.Contracts[index] = { Stage = 1, Progress = 0 } end
+	for index in ipairs(Config.Contracts.Tracks) do
+		profile.Contracts[index] = { Stage = 1, Progress = 0, Completed = 0 }
+	end
 end
 
 function ContractService:View(player)
 	local profile = self.Economy.Profiles[player]
 	local view = {}
 	for index, progress in ipairs(profile and profile.Contracts or {}) do
-		local definition = Config.Contracts.Tracks[index][progress.Stage]
+		local track = Config.Contracts.Tracks[index]
+		local definition = track[progress.Stage]
 		table.insert(view, { Title = definition.Title, Goal = definition.Goal,
-			Reward = definition.Reward, Progress = progress.Progress })
+			Reward = definition.Reward, Progress = progress.Progress,
+			Completed = progress.Completed, Available = #track })
 	end
 	return view
 end
 
 function ContractService:Progress(player, kind, record)
 	local profile = self.Economy.Profiles[player]
-	if not profile or not profile.Contracts then return end
+	if not profile or not profile.Contracts or profile.Demo then return end
 	local entry = record and Catalog.Get(record.Id)
 	local rank = entry and Rarity.ByName[entry.Rarity].Rank or 0
 	for index, progress in ipairs(profile.Contracts) do
@@ -43,6 +47,7 @@ function ContractService:Progress(player, kind, record)
 			if progress.Progress >= definition.Goal then
 				profile.Cash = math.min(Config.MaxCash, profile.Cash + definition.Reward)
 				progress.Progress = 0
+				progress.Completed = math.max(progress.Completed, progress.Stage)
 				progress.Stage = progress.Stage % #track + 1
 				self.Economy.Network.Notice:FireClient(player, "CONTRACT COMPLETE! +" .. Format.Money(definition.Reward))
 			end

@@ -101,7 +101,8 @@ function ScreenshotService:Prepare(player, shot)
 	profile.Rebirths = 3
 	profile.Multiplier = 3
 	profile.SaveStatus = "STUDIO PREVIEW"
-	profile.Contracts = { { Stage = 2, Progress = 3 }, { Stage = 2, Progress = 4 }, { Stage = 3, Progress = 0 } }
+	profile.Contracts = { { Stage = 2, Progress = 3, Completed = 1 },
+		{ Stage = 2, Progress = 4, Completed = 1 }, { Stage = 3, Progress = 0, Completed = 2 } }
 	for index, id in ipairs(lineup) do
 		self.Bases:Restore(player, { Id = id, Mutation = mutations[index], Guid = HttpService:GenerateGUID(false) }, index)
 		local pedestal = state.Bay.Slots[index]
@@ -135,6 +136,9 @@ function ScreenshotService:Prepare(player, shot)
 	if shot == "Cover" then
 		self.Bases:Carry(player, { Id = 11, Mutation = "Diamond", Guid = HttpService:GenerateGUID(false) })
 		if state.Carry then state.Carry.Model.PrimaryPart.BrainrotBillboard.Enabled = false end
+		self.Economy.Network.Notice:FireClient(player, "INDEX · 32/43 DISCOVERED")
+		self.Economy.Network.Notice:FireClient(player, "DOCKED Supernova Il Supremo Supernova")
+		self.Economy.Network.Notice:FireClient(player, "CARGO IN HAND · HEAD FOR YOUR DOCK")
 	end
 	self.Economy:Send(player)
 	self.Economy.Network.Screenshot:FireClient(player, { Shot = shot, Camera = camera, FieldOfView = fieldOfView })

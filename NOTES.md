@@ -111,12 +111,12 @@ The research is prose guidance, not source or reusable names. Rank is not guaran
 6. Strengthen meteor streaks/warnings, dome glow, drop feedback and between-event timer.
 7. [x] Sixth mutation Aurora at x7, with three coloured orbit ribbons.
    [ ] Short positive mutation-spawn event.
-8. Edge HUD now has live upgrade/found/cost/cooldown buttons, a three-action feed,
-   and larger money and event text. Next is a right quest card with a done total.
+8. [x] Edge HUD has live upgrade/found/cost/cooldown buttons, a three-action feed,
+   larger money and event text, and a right quest card with saved completion.
 9. Larger billboards, BUY price, Cosmic beam and SECRET crown/light pillar;
    preserve idle bob/spin and per-character silhouette details.
-10. Later deepen progression: 25–30 upgrade levels, index milestones and 15+
-    rotating contracts. Only show rewards the server actually grants.
+10. Progression now has 15 rotating contracts and saved first completions.
+    Next are 25–30 upgrade levels and index milestones. Show real rewards.
 
 This continuation is capped at ~25 minutes, starting near 19:50 WIB. The owner
 research was reread at the start. Verify and commit each working piece, at most

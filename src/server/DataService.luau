@@ -113,6 +113,8 @@ function DataService:Load(player)
 			if type(loaded) == "table" then
 				progress.Stage = integer(loaded.Stage, 1, 1, #Config.Contracts.Tracks[index])
 				progress.Progress = integer(loaded.Progress, 0, 0, Config.Contracts.Tracks[index][progress.Stage].Goal - 1)
+				progress.Completed = integer(loaded.Completed, progress.Stage - 1,
+					progress.Stage - 1, #Config.Contracts.Tracks[index])
 			end
 		end
 		profile.SaveStatus = "SAVED"
