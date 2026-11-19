@@ -312,7 +312,12 @@ Core fixes and combat take priority over more visual polish.
   Optional lighting/gravity setup is guarded so ambience cannot abort Build.
 - [ ] Live server boots with zero server errors (owner must republish and test;
   no Roblox runtime available here). Source build/compile checks pass.
-- [ ] Earlier, visible raids with health, combat rewards and every-third boss.
+- [x] Earlier raids: first at 75s, then every 135s; six-second red warning and
+  green arrival portal. Visible HP bars, damage from ZAP every 3s, recoverable
+  cargo, kill cash and exactly-once full-wave defence rewards. Every third wave
+  includes a large crowned captain; HP scales with players/rebirths. HUD tracks
+  session raids defended. Actual damage/reward regressions pass; Studio combat
+  timing, effects and two-player test remain required.
 - [ ] Original skills with authoritative cooldowns, mobile controls and VFX.
 - [ ] Same-server crew joining, friendly theft protection and shared defence.
 - [ ] Server/global crew ranks with throttled pcall-safe persistence.

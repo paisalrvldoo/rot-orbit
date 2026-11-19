@@ -61,8 +61,9 @@ local Config = {
 		Aurora = { Tint = Color3.fromRGB(224, 255, 238), Sky = Color3.fromRGB(151, 241, 211),
 			Decay = Color3.fromRGB(169, 188, 255) },
 	},
-	Gremlin = { Interval = 120, Duration = 35, Count = 4, Speed = 11, StunDuration = 5,
-		ZapRadius = 24, ZapCooldown = 8 },
+	Gremlin = { FirstRaid = 75, Interval = 135, Telegraph = 6, Duration = 48, Count = 4, Speed = 9, StunDuration = 3,
+		Health = 4, BossHealth = 18, BossEvery = 3, KillReward = 140, BossReward = 1800,
+		DefendReward = 600, ZapDamage = 2, ZapRadius = 48, ZapCooldown = 3 },
 	Lock = { Duration = 40, Cooldown = 65 },
 	Upgrades = {
 		WalkSpeed = { BaseCost = 1200, CostGrowth = 2.2, Step = 3, MaxLevel = 5 },

@@ -4,6 +4,10 @@ An original space-station entry for make.fun's roblox-brainrot-01 bounty, built
 Rojo-first from Luau and primitive geometry. Buy food astronauts from the neon
 cargo orbit, carry them to your docking bay, and earn passive income. Steal from
 rival crews, shelter from meteors, lock out gremlins, and zap thieves to recover cargo.
+Gremlins arrive through a bright portal after a six-second warning: first raid
+at 75 seconds, then every 135 seconds. ZAP [F] damages and stuns visible enemies,
+returns stolen cargo and pays cash on defeat. Every third wave has a crowned
+captain with player-scaled health. Clear the wave for a defence bonus.
 Solar flares double income; upgrades, rebirths, a discovery index, three rotating
 contracts and protected DataStore saving provide progression.
 Collect 43 original brainrots across seven rarities and six mutations, including

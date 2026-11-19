@@ -172,6 +172,8 @@ function HudController.Start()
 	local feed = {}
 	local feedLabels = {}
 	local feedTweens = {}
+	local raidStatus = HudController.Text(gui, "RaidStatus", "", UDim2.fromOffset(134, 326),
+		UDim2.fromOffset(236, 30), 17, Config.Palette.Sun)
 	local feedGeneration = 0
 	for index = 1, 3 do
 		local row = HudController.Text(gui, "Action" .. index, "", UDim2.fromOffset(134, 168 + (index - 1) * 50),
@@ -234,6 +236,7 @@ function HudController.Start()
 		if not snapshot.Ready then return end
 		state = snapshot
 		cash.Text = Format.Money(snapshot.Cash)
+		raidStatus.Text = "RAIDS DEFENDED  " .. (snapshot.RaidsDefended or 0)
 		save.Text = snapshot.SaveStatus == "SAVED" and "PROGRESS SAVED" or snapshot.SaveStatus
 		detail.Text = Format.Money(snapshot.Income) .. "/s  ·  REBIRTH " .. snapshot.Rebirths
 			.. "  ·  x" .. snapshot.Multiplier .. " INCOME  ·  BAY " .. string.format("%02d", snapshot.BayIndex)
