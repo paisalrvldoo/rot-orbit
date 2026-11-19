@@ -5,7 +5,8 @@ local EconomyService = {}
 EconomyService.__index = EconomyService
 
 function EconomyService.new(bases, network)
-	local self = setmetatable({ Bases = bases, Network = network, Profiles = {}, IncomeMultiplier = 1 }, EconomyService)
+	local self = setmetatable({ Bases = bases, Network = network, Profiles = {}, IncomeMultiplier = 1,
+		Activities = Instance.new("BindableEvent") }, EconomyService)
 	bases.Economy = self
 	network.RequestSnapshot.OnServerInvoke = function(player) return self:Snapshot(player) end
 	task.spawn(function()
@@ -55,8 +56,13 @@ function EconomyService:Purchase(player, record, position)
 	end
 	if not self.Bases:Carry(player, record) then return false end
 	profile.Cash -= price
+	self:Activity(player, "Buy", record)
 	self:Send(player)
 	return true
+end
+
+function EconomyService:Activity(player, kind, record)
+	self.Activities:Fire(player, kind, record)
 end
 
 function EconomyService:Snapshot(player)

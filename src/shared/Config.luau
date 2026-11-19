@@ -42,6 +42,7 @@ local Config = {
 		PreviewAffordableCount = 3,
 	},
 	Meteor = { Interval = 90, Duration = 22, WarningSeconds = 2.2, ImpactRadius = 9, WaveInterval = 1.5 },
+	Steal = { HoldDuration = 0.7, RefillSeconds = 35 },
 	SolarFlare = { Interval = 150, Duration = 20, Multiplier = 2 },
 	Gremlin = { Interval = 120, Count = 4, Speed = 11, StunDuration = 5, ZapRadius = 24, ZapCooldown = 8 },
 	Lock = { Duration = 40, Cooldown = 65 },

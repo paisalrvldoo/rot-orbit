@@ -143,8 +143,10 @@ function BaseService:Place(player, pedestal)
 	pedestal.Label.Visible = false
 	pedestal.PlacePrompt.Enabled = false
 	state.Found[tostring(record.Id)] = true
+	if self.OnPlaced then self.OnPlaced(state.Bay, pedestal) end
 	self:SetSpeed(player)
 	self.Network.Notice:FireClient(player, Catalog.DisplayName(record) .. " docked! Earning every second.")
+	if self.Economy then self.Economy:Activity(player, "Dock", record) end
 	if self.Economy then self.Economy:Send(player) end
 	return true
 end

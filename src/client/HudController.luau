@@ -123,7 +123,7 @@ function HudController.Start()
 			local distance = math.floor((root.Position - state.BayPosition).Magnitude)
 			home.Text = "YOUR BAY " .. string.format("%02d", state.BayIndex) .. " ↓  " .. distance .. "m"
 			hint.Text = state.Carrying and "FOLLOW YOUR MINT BAY BEACON  ·  E DOCK ON AN EMPTY PEDESTAL"
-				or "WASD MOVE  ·  E BUY CARGO  ·  E DOCK ON AN EMPTY PEDESTAL"
+				or "E BUY CARGO  ·  E STEAL FROM RIVAL BAYS  ·  E DOCK AT HOME"
 		end
 	end)
 	task.spawn(function()

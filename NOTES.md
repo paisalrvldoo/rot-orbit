@@ -56,7 +56,8 @@ ScreenshotMode and an exact rules-format TOUR only when those features exist.
   YOUR BAY beacon; buy Common cargo on the ring, then E at a free home pedestal.
   Source review corrected capsule pivot orientation and moved responsive HUD
   scaling onto a fixed-size GuiObject canvas.
-- [ ] Rival stealing; meteors/domes; solar flare; gremlins with lock/zap.
+- [x] Rival stealing and restocking; player theft checks bay shield state.
+- [ ] Meteors/domes; solar flare; gremlins with lock/zap.
 - [ ] Upgrades; rebirth; index; contracts; saving; final HUD polish.
 - [ ] ScreenshotMode/TOUR, README, genuine Studio pictures and published IDs.
 
