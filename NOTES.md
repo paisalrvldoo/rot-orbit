@@ -104,7 +104,8 @@ The research is prose guidance, not source or reusable names. Rank is not guaran
    raid with recovery feedback, combined upgrades/rebirth/contracts. Owner captures.
 4. Consolidate tiny shared helpers and related UI/service helpers toward 20–24
    well-named scripts; preserve visible system names and runtime behaviour.
-5. Add a ~40-stud lit in-world title pylon above cargo; owner and OPEN/LOCKED bay signs.
+5. [x] Built a two-sided 40-stud lit station title and player dock signs with live
+   OPEN/LOCKED badges beside the owner's name.
 6. Strengthen meteor streaks/warnings, dome glow, drop feedback and between-event timer.
 7. [x] Sixth mutation Aurora at x7, with three coloured orbit ribbons.
    [ ] Short positive mutation-spawn event.
@@ -115,9 +116,10 @@ The research is prose guidance, not source or reusable names. Rank is not guaran
 10. Later deepen progression: 25–30 upgrade levels, index milestones and 15+
     rotating contracts. Only show rewards the server actually grants.
 
-This continuation is capped at ~25 minutes, ending near 20:09 WIB. Verify and
-commit each working piece, at most 10 minutes between commits. Next: content
-growth and sixth mutation, then title/cover and HUD; consolidation if time permits.
+This continuation is capped at ~25 minutes, starting near 19:50 WIB. The owner
+research was reread at the start. Verify and commit each working piece, at most
+10 minutes between commits. Next: stage the cover, fix the 43-entry index layout,
+then fill out the HUD, hazard feedback, and script outline.
 
 ## Decisions and open issues
 

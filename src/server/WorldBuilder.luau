@@ -131,13 +131,12 @@ local function skyAndPlanet(parent)
 		Color3.fromRGB(255, 199, 115), Enum.Material.Neon, parent, 120, false)
 end
 
-local function sign(name, text, frame, color, parent)
-	local board = WorldBuilder.Part(name, Vector3.new(29, 3.2, 0.35), frame,
-		color, Enum.Material.SmoothPlastic, parent, nil, false)
+local function signFace(board, face, text, color)
 	local gui = Instance.new("SurfaceGui")
 	gui.Name = "DockSign"
-	gui.Face = Enum.NormalId.Front
-	gui.CanvasSize = Vector2.new(1044, 116)
+	gui.Face = face
+	gui.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+	gui.PixelsPerStud = 36
 	gui.LightInfluence = 0
 	gui.Parent = board
 	local caption = Instance.new("TextLabel")
@@ -147,10 +146,31 @@ local function sign(name, text, frame, color, parent)
 	caption.BackgroundTransparency = 1
 	caption.Font = Enum.Font.GothamBlack
 	caption.TextScaled = true
-	caption.TextColor3 = palette.White
+	caption.TextColor3 = color
 	caption.Text = text
 	caption.Parent = gui
 	return caption
+end
+
+local function buildTitle(parent)
+	local title = folder("StationTitle", parent)
+	local height = 14.5
+	local board = WorldBuilder.Part("TitlePanel", Vector3.new(40, 6.6, 1.2),
+		CFrame.new(0, height, -3), palette.Ink, Enum.Material.SmoothPlastic, title, nil, false)
+	for _, face in ipairs({ Enum.NormalId.Front, Enum.NormalId.Back }) do
+		local caption = signFace(board, face, Config.Title, palette.White)
+		caption.TextStrokeColor3 = palette.Teal
+		caption.TextStrokeTransparency = 0.45
+	end
+	for _, side in ipairs({ -1, 1 }) do
+		WorldBuilder.Part("TitleSupport", Vector3.new(1.05, height, 1.05),
+			CFrame.new(side * 18.8, height / 2, -3), palette.Teal, Enum.Material.SmoothPlastic, title)
+		WorldBuilder.Part("TitleTrim", Vector3.new(41, 0.27, 1.65),
+			CFrame.new(0, height + side * 3.4, -3), palette.Mint, Enum.Material.Neon, title, nil, false)
+		WorldBuilder.Part("TitleBeacon", Vector3.one * 1.1,
+			CFrame.new(side * 19.5, height + 4.15, -3), palette.Sun,
+			Enum.Material.Neon, title, Enum.PartType.Ball, false)
+	end
 end
 
 function WorldBuilder.CreatePedestal(bay, index)
@@ -212,7 +232,24 @@ local function buildBays(world)
 				Enum.Material.Neon, world.Geometry, nil, false)
 		end
 		local name = rival and crews[index] or string.format("BAY %02d · OPEN DOCK", index)
-		local caption = sign("CrewSign", name, frame * CFrame.new(0, 10.2, 23), color, model)
+		local board = WorldBuilder.Part("CrewSign", Vector3.new(29, 3.2, 0.35),
+			frame * CFrame.new(0, 10.2, 23), palette.Ink, Enum.Material.SmoothPlastic, model, nil, false)
+		local caption = signFace(board, Enum.NormalId.Front, name, palette.White)
+		if not rival then
+			caption.Size = UDim2.fromScale(0.7, 0.86)
+			local badge = caption:Clone()
+			badge.Name = "ShieldStatus"
+			badge.Position = UDim2.fromScale(0.73, 0.15)
+			badge.Size = UDim2.fromScale(0.25, 0.68)
+			badge.Parent = caption.Parent
+			local function updateStatus()
+				local locked = (model:GetAttribute("LockedUntil") or 0) > Workspace:GetServerTimeNow()
+				badge.Text = locked and "LOCKED" or "OPEN"
+				badge.TextColor3 = locked and palette.Sun or palette.Mint
+			end
+			model:GetAttributeChangedSignal("LockedUntil"):Connect(updateStatus)
+			updateStatus()
+		end
 		local bay = { Index = index, Model = model, Frame = frame, Floor = floor,
 			Label = caption, Color = color, Slots = {}, Rival = rival, CrewName = name,
 			SpawnFrame = frame * CFrame.new(0, 4.5, -9.5), Owner = nil }
@@ -250,13 +287,7 @@ local function buildCargoRing(world)
 			CFrame.new(0, 4 + level * 1.8, 0) * CFrame.Angles(math.rad(level * 13), 0, math.rad(15)),
 			palette.Mint, Enum.Material.Neon, world.Geometry, 40, false)
 	end
-	local logo = WorldBuilder.Billboard(core, "ROT ORBIT", palette.White, Vector3.new(0, 8, 0), 440, 66)
-	logo.Font = Enum.Font.GothamBlack
-	logo.TextSize = 43
-	logo.Parent.MaxDistance = 250
-	local subtitle = WorldBuilder.Billboard(core, "ORBITAL CARGO EXCHANGE · E TO BUY", palette.Mint,
-		Vector3.new(0, 5.8, 0), 440, 32)
-	subtitle.TextSize = 17
+	buildTitle(world.Geometry)
 	WorldBuilder.Ring("SafetyRail", Config.World.DeckRadius - 0.5, 0.75, 2.1,
 		CFrame.new(0, 1.2, 0), palette.Teal, Enum.Material.SmoothPlastic, world.Geometry, 90, true)
 end
