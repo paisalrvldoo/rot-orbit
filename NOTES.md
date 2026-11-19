@@ -1,5 +1,27 @@
 # ROT ORBIT build notes
 
+## 20 November readability and socket continuation
+
+Recovered one uncommitted BillboardFx change; initial status/diff and full
+verification passed, then committed it immediately as `3cbe746`. Read owner
+`refs.md` once. Keep its ten priorities in the plan: (1) staged late-game
+cover dominated by the cargo ring, (2) 42–45 originals (43), (3) four genuine
+Studio captures, (4) about 20–24 purposeful scripts (25 with crews), (5) large
+world title with clear space, (6) readable meteor hazards and shields,
+(7) six mutations, (8) live HUD buttons with quests and action feed,
+(9) clear rarity/name/value cards, (10) earned progression. Core systems pass;
+finish remaining readability and pedestal accents before adding side systems.
+
+- [x] Extend live HUD/card collision protection to docked and carried cargo.
+  Cards share clear screen space, prioritize carried cargo, and recover when
+  the HUD/camera moves. Actual-function tests cover 1024×460 HUD obstruction,
+  edge clipping, overlapping carry/dock/buy cards and frozen preset ownership.
+  All source/place/dossier checks pass; Studio rendering remains unverified.
+- [ ] Add lightweight layered moving pedestal accents, driven locally and
+  limited by distance; keep empty slots quiet and frozen presets repeatable.
+- [ ] Studio phone/cover review, zero-error live boot and four genuine captures
+  remain owner steps; this machine has no Roblox renderer.
+
 ## Current build pass
 
 Recovered at clean `755d744`. Verification passed and `7c2dc16` records the

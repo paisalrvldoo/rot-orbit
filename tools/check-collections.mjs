@@ -215,17 +215,18 @@ for _, shot in ipairs({ "Cover", "Index", "Raid", "Upgrades", "Cover" }) do
 end
 do
     local visuals, cards = {}, {}
-    local function nearPod(distance, x, y)
+    local function nearPod(distance, x, y, state)
         local point = Vector3.new(x, y, 15)
         local details = {}
         local card = { MaxDistance = 45, StudsOffsetWorldSpace = 0,
+            Size = { X = { Offset = 248 }, Y = { Offset = 90 } },
             FindFirstChildOfClass = function() return { Details = details } end, Details = details }
         local position = setmetatable({}, {
             __sub = function() return { Magnitude = distance } end,
             __add = function() return point end,
         })
         visuals[{ Parent = true, PrimaryPart = { Position = position, FindFirstChild = function() return card end },
-            GetAttribute = function(_, key) if key == "VisualState" then return "Cargo" end end }] = true
+            GetAttribute = function(_, key) if key == "VisualState" then return state or "Cargo" end end }] = true
         table.insert(cards, card)
     end
     Players.LocalPlayer.Character = { FindFirstChild = function() return { Position = {} } end }
@@ -242,6 +243,29 @@ do
     assert(not cards[1].Enabled and not cards[2].Enabled, "blocked and clipped cargo cards must stay hidden")
     assert(cards[3].Enabled and cards[3].Details.Visible, "next clear nearby pod must get the full card")
     assert(cards[4].Enabled and not cards[4].Details.Visible, "only one card gets full pricing and income details")
+    visuals, cards = {}, {}
+    nearPod(2, 390, 85, "Carrying")
+    nearPod(8, 730, 82, "Pedestal")
+    nearPod(6, 120, 205, "Pedestal")
+    updateCargoCards(visuals, false, hud)
+    assert(not cards[1].Enabled and not cards[2].Enabled, "carried and docked cards must also clear HUD")
+    assert(not cards[3].Enabled, "full dock cards cannot clip through the viewport edge")
+    banner.Visible = false
+    updateCargoCards(visuals, false, hud)
+    assert(cards[1].Enabled and cards[2].Enabled, "hidden cards must recover as soon as the HUD clears")
+    updateCargoCards(visuals, true, hud)
+    assert(cards[1].Enabled and cards[2].Enabled and not cards[3].Enabled,
+        "frozen presets own both visible and hidden dock/carry cards")
+    visuals, cards = {}, {}
+    nearPod(9, 490, 210, "Pedestal")
+    nearPod(2, 500, 225, "Carrying")
+    nearPod(3, 505, 218)
+    updateCargoCards(visuals, false, hud)
+    assert(not cards[1].Enabled and cards[2].Enabled and not cards[3].Enabled,
+        "carried card takes priority and all live brainrot cards share collision space")
+    workspace.CurrentCamera.WorldToViewportPoint = function(_, point) return point, false end
+    updateCargoCards(visuals, false, hud)
+    for _, card in ipairs(cards) do assert(not card.Enabled, "panning away must hide stale live cards") end
 end
 -- Rejoining the same server must create a new lease identity.
 local document

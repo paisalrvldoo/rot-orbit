@@ -11,17 +11,23 @@ local function updateCargoCards(visuals, frozen, hud)
 	local camera = workspace.CurrentCamera
 	local character = Players.LocalPlayer.Character
 	local playerRoot = character and character:FindFirstChild("HumanoidRootPart")
-	local candidates, placed = {}, {}
+	local candidates, docked, placed = {}, {}, {}
 	for model in pairs(visuals) do
 		local root = model.PrimaryPart
 		local gui = root and root:FindFirstChild("BrainrotBillboard")
-		if model.Parent and gui and model:GetAttribute("VisualState") == "Cargo" then
-			gui.Enabled = frozen and model:GetAttribute("ScreenshotCard") == true or false
-			if camera and playerRoot and not frozen and (root.Position - camera.CFrame.Position).Magnitude < gui.MaxDistance then
-				local point, onScreen = camera:WorldToViewportPoint(root.Position + gui.StudsOffsetWorldSpace)
-				if onScreen then
-					table.insert(candidates, { Gui = gui, Point = point,
-						Distance = (root.Position - playerRoot.Position).Magnitude })
+		if model.Parent and gui then
+			local cargo = model:GetAttribute("VisualState") == "Cargo"
+			-- Presets own their dock/carry cards. Only live play may hide them.
+			if cargo then gui.Enabled = frozen and model:GetAttribute("ScreenshotCard") == true or false end
+			if not frozen then
+				gui.Enabled = false
+				if camera and playerRoot and (root.Position - camera.CFrame.Position).Magnitude < gui.MaxDistance then
+					local point, onScreen = camera:WorldToViewportPoint(root.Position + gui.StudsOffsetWorldSpace)
+					if onScreen then
+						table.insert(cargo and candidates or docked, { Gui = gui, Point = point,
+							Distance = (root.Position - playerRoot.Position).Magnitude,
+							Carrying = model:GetAttribute("VisualState") == "Carrying" })
+					end
 				end
 			end
 		end
@@ -33,14 +39,15 @@ local function updateCargoCards(visuals, frozen, hud)
 		if closeA then return a.Distance < b.Distance end
 		return a.Point.Z < b.Point.Z
 	end)
-	if #candidates == 0 then return end
+	if frozen or not camera then return end
 	local viewport = camera.ViewportSize
 	local narrow = viewport.Y <= 540
 	if hud then
 		for _, name in ipairs({ "Cash", "Income", "EventBanner", "CaptainHealth", "Counts",
 			"Carrying", "QuestCard", "ContractsTab", "Action1", "Action2", "Action3",
 			"UpgradePanel", "IndexPanel", "CrewPanel", "MobileMenu", "Lock", "Zap",
-			"Blink", "Sprint" }) do
+			"Blink", "Sprint", "Logo", "SaveStatus", "Hint", "RaidStatus",
+			"Upgrades", "Rebirth", "Index", "Crews", "Contracts" }) do
 			local chrome = hud:FindFirstChild(name)
 			if chrome and chrome.Visible and (not chrome:IsA("TextLabel") or chrome.Text ~= "") then
 				local origin, size = chrome.AbsolutePosition, chrome.AbsoluteSize
@@ -57,6 +64,17 @@ local function updateCargoCards(visuals, frozen, hud)
 				and math.abs(point.Y - other.Y) < (height + other.Height) / 2 + 8 then return false end
 		end
 		return true
+	end
+	table.sort(docked, function(a, b)
+		if a.Carrying ~= b.Carrying then return a.Carrying end
+		return a.Distance < b.Distance
+	end)
+	for _, item in ipairs(docked) do
+		local width, height = item.Gui.Size.X.Offset, item.Gui.Size.Y.Offset
+		if fits(item.Point, width, height) then
+			item.Gui.Enabled = true
+			table.insert(placed, { X = item.Point.X, Y = item.Point.Y, Width = width, Height = height })
+		end
 	end
 	local fullPlaced, cardsPlaced = false, 0
 	for _, item in ipairs(candidates) do
