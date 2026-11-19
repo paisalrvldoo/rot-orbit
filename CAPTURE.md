@@ -34,6 +34,10 @@ silhouettes, occlusion and text still require this Studio check.
 Copy these four real captures into `screenshots/`, then remove its three starter
 PNGs in the same change. Keep exactly four images. Verify and commit with
 `node tools/verify.mjs`. Do not substitute generated images for Studio shots.
+Then run `node tools/verify.mjs --submission`. This also checks exact final
+filenames, four matching TOUR steps, JPEG frame dimensions and the 256 KiB cap.
+It deliberately fails while the starter placeholders remain. This file check
+cannot approve the actual scene, text readability or Roblox moderation.
 
 Publish the latest game to the existing ROT ORBIT place. On Creator Dashboard,
 select this experience → Configurations → Places → starred start place. Upload

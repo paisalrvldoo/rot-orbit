@@ -255,9 +255,14 @@ remain the submission blockers.
   see Retire, and empty home sockets offer Dock only while carrying. Actual
   interactions still check ownership, distance, cargo and lock on the server.
   Check prompt replication with two Studio clients.
-- [ ] Review the screenshot presets and capture handoff against the kit rules.
+- [x] Reviewed presets/TOUR and capture handoff against kit screenshot rules.
+  Added `node tools/verify.mjs --submission`: requires our four exact filenames,
+  matching TOUR presets, complete JPEG framing, 1280×720 and <=256 KiB. The normal
+  development verify still works with placeholders; submission mode correctly
+  refuses them. File checks cannot approve real Studio content or moderation.
 - [x] Contextual first-dock guidance replaces the generic controls hint until
   the player owns income cargo; a full bay explains retirement/slot upgrades.
   Carry guidance shows distance home, then the docking action near the bay.
   Screenshot presets retain their specified carry caption.
-- [ ] Recheck the Public link and leave a clean committed tree.
+- [x] Public link rechecked at `225521b`: 5 passed, 0 failed. Kit level 26
+  reports site level 27; use a refreshed kit before final submission.

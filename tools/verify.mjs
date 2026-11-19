@@ -37,4 +37,7 @@ for (const artifact of ['game.rbxl', 'src', 'screenshots', 'PLAY.json', 'dossier
   if (!existsSync(join(scratch, artifact))) throw new Error(`Missing output artifact: ${artifact}`);
 }
 JSON.parse(readFileSync(join(scratch, 'dossier.json'), 'utf8'));
+if (process.argv.includes('--submission')) {
+  process.stdout.write(run(process.execPath, ['tools/check-captures.mjs']));
+}
 process.stdout.write(`Verified ${scripts.length} Luau scripts; place ${statSync(join(root, 'game.rbxl')).size} bytes; dossier written to out/verify/.\n`);

@@ -42,6 +42,8 @@ and contracts; R opens rebirth (click again to confirm); B opens the index.
 `node tools/verify.mjs` rebuilds the place, compiles every Luau script and checks
 the exported dossier. Roblox Studio playtesting remains necessary: this machine
 has no Studio. See NOTES.md for current progress and the next polish priorities.
+After replacing the starter pictures, run `node tools/verify.mjs --submission`
+to also check all four final JPEGs and their TOUR presets.
 `node tools/check-collections.mjs` checks one-time collection payouts and save
 snapshot isolation using the real server functions in the Luau interpreter.
 
