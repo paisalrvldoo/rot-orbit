@@ -12,7 +12,9 @@ end
 local function prepare(shot, playerId)
 	if RunService:IsServer() then
 		assert(handler, "Start a Studio playtest before using ScreenshotMode")
-		return handler(shot, playerId)
+		local ready = handler(shot, playerId)
+		assert(ready, "Preset not ready: use Studio Play, wait for your avatar and cash HUD, then retry")
+		return ready
 	end
 	Remotes.Get().Action:FireServer("Screenshot", shot)
 end
@@ -24,6 +26,7 @@ function ScreenshotMode.Upgrades(playerId) return prepare("Upgrades", playerId) 
 
 function ScreenshotMode.Listen(hud)
 	Remotes.Get().Screenshot.OnClientEvent:Connect(function(scene)
+		game:GetService("ProximityPromptService").Enabled = false
 		local camera = workspace.CurrentCamera
 		if camera then
 			camera.CameraType = Enum.CameraType.Scriptable

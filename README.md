@@ -27,6 +27,8 @@ and contracts; R opens rebirth (click again to confirm); B opens the index.
 - One of your screenshots must also be your game's first thumbnail on Roblox: the same picture, uploaded on the
   Creator Dashboard with your game's icon.
 - `TOUR.json` names four Studio screenshot presets: Cover, Index, Raid and Upgrades.
+  See [CAPTURE.md](CAPTURE.md) for all four commands, expected frame contents,
+  image replacement and publishing steps.
   During a Studio playtest, switch Command Bar to Server and run
   `require(game.ReplicatedStorage.ScreenshotMode).Cover(0)` (replace Cover with
   another preset name). These previews disable saving of staged progress. Stop

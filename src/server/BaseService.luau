@@ -272,7 +272,9 @@ function BaseService:SpawnDrop(record, position)
 			if dropped.Parent and self:Near(visitor, dropped.PrimaryPart.Position)
 				and self:Carry(visitor, record) then dropped:Destroy() end
 		end)
-		Debris:AddItem(dropped, Config.DropLifetime)
+		if not self.World.Root:GetAttribute("ScreenshotFrozen") then
+			Debris:AddItem(dropped, Config.DropLifetime)
+		end
 		return dropped
 	end
 end

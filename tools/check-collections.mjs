@@ -16,6 +16,7 @@ local Format = Traits.Format
 local BaseService = ${moduleBody('src/server/BaseService.luau', 'local BaseService =')}
 local EconomyService = ${moduleBody('src/server/EconomyService.luau', 'local EconomyService =')}
 local DataService = ${moduleBody('src/server/DataService.luau', 'local DataService =')}
+local ScreenshotService = ${moduleBody('src/server/ScreenshotService.luau', 'local ScreenshotService =')}
 local player, notices = {}, {}
 local state = { Found = {}, Variants = {}, Bay = { Slots = {} } }
 local profile = { Cash = 0, IndexMilestone = 0, MutationMilestones = {}, Upgrades = {},
@@ -61,7 +62,22 @@ state.Variants.Gold["43"] = nil
 profile.MutationMilestones.Gold = 0
 assert(saved.Variants.Gold["43"] and saved.MutationMilestones.Gold == 4,
     "queued save snapshots must not change with live discoveries")
+local screenshots = setmetatable({ Bases = bases }, ScreenshotService)
+screenshots:StageDiscoveries(state)
+local found, gold = 0, 0
+for _ in pairs(state.Found) do found += 1 end
+for id in pairs(state.Variants.Gold) do
+    gold += 1
+    assert(state.Found[id], "every staged mutation must have a discovered original")
+end
+assert(found == 32 and gold == 10, "staged index must truthfully show 32 originals and 10 Gold")
+assert(state.Variants.Supernova["30"] and state.Found["30"], "cover SECRET must be discovered")
+screenshots:StageDiscoveries(state)
+found = 0
+for _ in pairs(state.Found) do found += 1 end
+assert(found == 32, "switching presets must not accumulate discoveries")
 print("Collection checks passed: unique variants, independent tabs, one-time rewards, preview/load guards, cap, save isolation.")
+print("Screenshot discovery checks passed: 32/43, 10 Gold, owned SECRET and repeatable presets.")
 `;
 const directory = join(root, 'out', 'collection-check');
 mkdirSync(directory, { recursive: true });

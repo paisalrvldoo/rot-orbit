@@ -11,6 +11,16 @@ local valid = { Cover = true, Index = true, Raid = true, Upgrades = true }
 local lineup = { 13, 38, 30, 40, 42, 22, 28, 29, 18 }
 local mutations = { "Gold", "Diamond", "Supernova", "Neon", "Aurora", "Gold", "Zero-G", "Neon", "Gold" }
 
+function ScreenshotService:StageDiscoveries(state)
+	state.Found, state.Variants = {}, {}
+	for index, id in ipairs(lineup) do
+		self.Bases:Discover(state, { Id = id, Mutation = mutations[index] })
+	end
+	-- The nine displayed heroes include six beyond these first 26 entries.
+	for id = 1, 26 do state.Found[tostring(id)] = true end
+	for id = 1, 7 do state.Variants.Gold[tostring(id)] = true end
+end
+
 local function pose(pedestal, frame)
 	local model = pedestal.Occupant.Model
 	model:SetAttribute("RestFrame", frame)
@@ -43,7 +53,7 @@ local function stageCover(state, root, meteors)
 	for index = 1, 5 do
 		local column = index - 3
 		local pedestal = state.Bay.Slots[index]
-		local center = platform * CFrame.new(column * 9.7, 0.8, math.abs(column) * 0.85)
+		local center = platform * CFrame.new(column * 8.4, 0.8, math.abs(column) * 0.85)
 		local color = index == 3 and palette.Sun or palette.Mint
 		WorldBuilder.Part("ShowcasePedestal", Vector3.new(1, 6.2, 6.2),
 			center * CFrame.Angles(0, 0, math.pi / 2), palette.Ink, Enum.Material.SmoothPlastic,
@@ -55,7 +65,8 @@ local function stageCover(state, root, meteors)
 		card.StudsOffsetWorldSpace = Vector3.new(0, -0.48, 1)
 		card.Enabled = true
 	end
-	root.CFrame = CFrame.new(3.1, 3.4, 25) * CFrame.Angles(0, math.rad(152), 0)
+	-- Keep the carried Cornetto to the left of the SECRET face and its beam.
+	root.CFrame = CFrame.new(-6, 3.4, 25) * CFrame.Angles(0, math.rad(152), 0)
 	for _, offset in ipairs({ Vector3.new(-26, 0.16, 12), Vector3.new(28, 0.16, 10), Vector3.new(23, 0.16, -12) }) do
 		WorldBuilder.Ring("PreviewWarning", 7, 0.34, 0.15, CFrame.new(offset),
 			palette.Sun, Enum.Material.Neon, effects, 24, false)
@@ -64,7 +75,7 @@ local function stageCover(state, root, meteors)
 		Vector3.new(42, 18, -40), Vector3.new(-44, 20, -46) }) do
 		meteors:CreateMeteor(center, 2.5, Vector3.new(5, 10, -4))
 	end
-	return CFrame.lookAt(Vector3.new(6, 14, 46), Vector3.new(0, 7, 11)), 54
+	return CFrame.lookAt(Vector3.new(6, 14, 46), Vector3.new(0, 7, 11)), 58
 end
 
 function ScreenshotService.new(context)
@@ -99,6 +110,8 @@ function ScreenshotService:Prepare(player, shot)
 	profile.Upgrades = { WalkSpeed = 2, CarrySpeed = 3, LockDuration = 2, BaySlots = 1, IncomeBoost = 3 }
 	self.Bases:Reset(player)
 	state.Found = {}
+	state.Variants = {}
+	profile.MutationMilestones = { Gold = 1 }
 	profile.Cash = 867500000
 	profile.Rebirths = 3
 	local extraSlots = Config.World.SlotsPerUpgrade + Config.Rebirth.BonusSlots(profile.Rebirths)
@@ -116,8 +129,7 @@ function ScreenshotService:Prepare(player, shot)
 	end
 	-- Keep the staged late-game cover and the Index preset honest: 32 of the
 	-- 43 catalog entries are discovered, with the remaining silhouettes visible.
-	for id = 1, 29 do state.Found[tostring(id)] = true end
-	for _, id in ipairs({ 31, 33, 35 }) do state.Found[tostring(id)] = true end
+	self:StageDiscoveries(state)
 	root.Anchored = true
 	root.CFrame = state.Bay.Frame * CFrame.new(9, 3.8, -6) * CFrame.Angles(0, math.pi, 0)
 	for capsule in pairs(self.Conveyor.Capsules) do self.Conveyor.Capsules[capsule] = nil; capsule:Destroy() end

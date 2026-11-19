@@ -17,6 +17,7 @@ function IndexPanel.Start(hud, input)
 	local milestoneLabel = Style.Text(panel, "", 629, 20, 501, 36, 20, Config.Palette.Sun)
 	milestoneLabel.TextXAlignment = Enum.TextXAlignment.Right
 	local selected = "All"
+	hud.Network.Screenshot.OnClientEvent:Connect(function() selected = "All" end)
 	local tabs = {}
 	local function tab(name, text, x, width, color)
 		local button = Style.Button(panel, text, x, 394, width, 39, function() selected = name end)

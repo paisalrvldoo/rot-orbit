@@ -203,7 +203,7 @@ originals, six mutations, station title, 24 scripts, dense HUD and staged cover.
   appears in the HUD feed on return. The lease acquisition credits each
   departure once. Previous saves earn offline cash after their next save.
   Needs a Studio DataStore playtest.
-- [ ] Source-review the four staged shots and make the owner capture handoff clear.
+- [x] Source-reviewed the four presets; CAPTURE.md has the capture/publish handoff.
 
 ## Public-link continuation (19 November, 21:20 WIB; 25-minute cap)
 
@@ -220,5 +220,13 @@ Core systems precede more spectacle. This pass's remaining order:
   `node tools/check-collections.mjs` exercises the actual server functions:
   duplicate docking, independent mutations, repeat/catch-up claims, preview/load
   guards, cash cap and immutable queued save snapshots all pass.
-- [ ] Correct/review deterministic staging, then document the four-shot handoff.
+- [x] Correct/review deterministic staging, then document the four-shot handoff.
+  Fixed 36 actual discoveries behind the advertised 32/43: every owned hero
+  stays found, now with exactly 32 originals and 10 Gold. Regression checks run
+  the actual staging function twice. Each preset resets the index to ALL;
+  prompts are hidden and staged raid drops no longer expire during framing.
+  Cover projection at 1280x720 showed carry/SECRET overlap; moved the avatar
+  left and tightened the lineup/widened FOV to leave the right quest card clear.
+  Source projection is not a render approval. All four real captures remain
+  pending Studio, as do approved icon/thumbnail and publishing the latest place.
 - [ ] Reverify, retry the Public link check, and leave a clean committed tree.
