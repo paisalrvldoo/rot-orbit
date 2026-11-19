@@ -58,6 +58,17 @@ local Config = {
 	Rebirth = { BaseCost = 100000, CostGrowth = 5, MaxLevel = 15,
 		Multipliers = { 1, 1.5, 2, 3, 4.5, 6, 8, 10 } },
 	Data = { StoreName = "RotOrbit_v1", AutosaveSeconds = 60, Version = 1 },
+	Contracts = { Tracks = {
+		{ { Kind = "Dock", Goal = 3, Reward = 1200, Title = "Dock 3 brainrots" },
+			{ Kind = "Buy", MinRank = 2, Goal = 5, Reward = 8500, Title = "Buy 5 Rare or better" },
+			{ Kind = "Buy", MinRank = 3, Goal = 3, Reward = 35000, Title = "Buy 3 Epic or better" } },
+		{ { Kind = "Steal", Goal = 2, Reward = 1800, Title = "Steal 2 brainrots" },
+			{ Kind = "Steal", Goal = 5, Reward = 6500, Title = "Steal 5 brainrots" },
+			{ Kind = "Steal", MinRank = 4, Goal = 2, Reward = 25000, Title = "Steal 2 Legendary or better" } },
+		{ { Kind = "SurviveMeteor", Goal = 1, Reward = 3000, Title = "Survive a shower holding cargo" },
+			{ Kind = "Zap", Goal = 3, Reward = 4500, Title = "Zap gremlins 3 times" },
+			{ Kind = "SurviveMeteor", MinRank = 5, Goal = 1, Reward = 120000, Title = "Survive a shower holding a Mythic" } },
+	} },
 	Palette = {
 		Deck = Color3.fromRGB(237, 245, 247),
 		Teal = Color3.fromRGB(17, 183, 186),

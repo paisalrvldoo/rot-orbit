@@ -70,7 +70,9 @@ ScreenshotMode and an exact rules-format TOUR only when those features exist.
   cash/upgrades/bay for permanent income. Found index entries survive resets.
 - [x] Index [B]: all 30 cast entries in a six-column grid; found count, seven
   rarity counts and coloured found icons / dark undiscovered silhouettes.
-- [ ] Contracts; saving; final HUD polish.
+- [x] Three simultaneous contracts, rotating through nine missions with cash
+  rewards. U/R show contracts beside upgrades/rebirth. All rewards are server-owned.
+- [ ] Saving; final HUD polish.
 - [ ] ScreenshotMode/TOUR, README, genuine Studio pictures and published IDs.
 
 NPC stealing; meteor warnings/impacts and safe domes; solar flare; green gremlin

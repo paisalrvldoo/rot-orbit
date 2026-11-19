@@ -86,7 +86,8 @@ function EconomyService:Snapshot(player)
 		ZapReadyAt = state.ZapReadyAt or 0,
 		Carrying = state.Carry and { Name = Catalog.DisplayName(state.Carry.Record),
 			Id = state.Carry.Record.Id, Mutation = state.Carry.Record.Mutation } or false,
-		Catalog = Catalog.Public(), Events = self.Events }
+		Catalog = Catalog.Public(), Events = self.Events,
+		Contracts = self.Contracts and self.Contracts:View(player) or {} }
 end
 
 function EconomyService:Send(player)

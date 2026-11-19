@@ -12,6 +12,7 @@ local GremlinRaid = require(script.Parent:WaitForChild("GremlinRaid"))
 local SolarFlareEvent = require(script.Parent:WaitForChild("SolarFlareEvent"))
 local UpgradeService = require(script.Parent:WaitForChild("UpgradeService"))
 local RebirthService = require(script.Parent:WaitForChild("RebirthService"))
+local ContractService = require(script.Parent:WaitForChild("ContractService"))
 local Config = require(ReplicatedStorage:WaitForChild("Config"))
 local Players = game:GetService("Players")
 
@@ -28,6 +29,7 @@ local gremlins = GremlinRaid.new(world, bases, economy, locks)
 local solarFlare = SolarFlareEvent.new(world, economy)
 local upgrades = UpgradeService.new(bases, economy)
 local rebirth = RebirthService.new(bases, economy)
+local contracts = ContractService.new(economy)
 local actions = { Lock = function(player) locks:Activate(player) end,
 	Zap = function(player) gremlins:Zap(player) end,
 	Upgrade = function(player, name) upgrades:Buy(player, name) end,
@@ -42,7 +44,11 @@ network.Action.OnServerEvent:Connect(function(player, action, argument)
 end)
 
 local function joined(player)
-	if bases:Assign(player) then economy:AddPlayer(player) end
+	if bases:Assign(player) then
+		economy:AddPlayer(player)
+		contracts:AddPlayer(player)
+		economy:Send(player)
+	end
 end
 Players.PlayerAdded:Connect(joined)
 Players.PlayerRemoving:Connect(function(player)
