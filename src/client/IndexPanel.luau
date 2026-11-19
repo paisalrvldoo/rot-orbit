@@ -1,8 +1,9 @@
 local RunService = game:GetService("RunService")
 local shared = game:GetService("ReplicatedStorage")
 local Config = require(shared:WaitForChild("Config"))
-local Rarity = require(shared:WaitForChild("Rarity"))
-local Mutation = require(shared:WaitForChild("Mutation"))
+local Traits = require(shared:WaitForChild("BrainrotTraits"))
+local Rarity = Traits.Rarity
+local Mutation = Traits.Mutation
 local Style = require(script.Parent:WaitForChild("PanelStyle"))
 local IndexPanel = {}
 

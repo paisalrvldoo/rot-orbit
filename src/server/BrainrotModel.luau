@@ -2,9 +2,10 @@
 local shared = game:GetService("ReplicatedStorage")
 local CollectionService = game:GetService("CollectionService")
 local Catalog = require(script.Parent:WaitForChild("BrainrotCatalog"))
-local Rarity = require(shared:WaitForChild("Rarity"))
-local Mutation = require(shared:WaitForChild("Mutation"))
-local Format = require(shared:WaitForChild("Format"))
+local Traits = require(shared:WaitForChild("BrainrotTraits"))
+local Rarity = Traits.Rarity
+local Mutation = Traits.Mutation
+local Format = Traits.Format
 local Config = require(shared:WaitForChild("Config"))
 local BrainrotModel = {}
 local rounded = { Bean = true, Olive = true, Leaf = true, Raviolo = true, Penguin = true,

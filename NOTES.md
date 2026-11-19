@@ -104,8 +104,8 @@ The research is prose guidance, not source or reusable names. Rank is not guaran
 3. Four genuine Studio shots. The loop cover and 32/43 discovery grid with a
    six-mutation legend are staged. Raid recovery feedback and progression polish
    are next. The owner captures all four in Studio.
-4. Consolidate tiny shared helpers and related UI/service helpers toward 20–24
-   well-named scripts; preserve visible system names and runtime behaviour.
+4. Shared rarity, mutation and number formatting are together in BrainrotTraits
+   (30 scripts). Group related UI and services next, aiming for 24 scripts.
 5. [x] Built a two-sided 40-stud lit station title and player dock signs with live
    OPEN/LOCKED badges beside the owner's name.
 6. Strengthen meteor streaks/warnings, dome glow, drop feedback and between-event timer.

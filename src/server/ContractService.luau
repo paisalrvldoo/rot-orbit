@@ -1,7 +1,8 @@
 local shared = game:GetService("ReplicatedStorage")
 local Config = require(shared:WaitForChild("Config"))
-local Rarity = require(shared:WaitForChild("Rarity"))
-local Format = require(shared:WaitForChild("Format"))
+local Traits = require(shared:WaitForChild("BrainrotTraits"))
+local Rarity = Traits.Rarity
+local Format = Traits.Format
 local Catalog = require(script.Parent:WaitForChild("BrainrotCatalog"))
 local ContractService = {}
 ContractService.__index = ContractService

@@ -1,8 +1,9 @@
 -- The complete original cast lives in this one catalog; clients get a read-only public view.
 local shared = game:GetService("ReplicatedStorage")
 local Config = require(shared:WaitForChild("Config"))
-local Rarity = require(shared:WaitForChild("Rarity"))
-local Mutation = require(shared:WaitForChild("Mutation"))
+local Traits = require(shared:WaitForChild("BrainrotTraits"))
+local Rarity = Traits.Rarity
+local Mutation = Traits.Mutation
 local Catalog = {}
 
 local function brainrot(id, name, rarity, price, income, kind, color, accent)

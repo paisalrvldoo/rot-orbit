@@ -1,7 +1,8 @@
 local RunService = game:GetService("RunService")
 local shared = game:GetService("ReplicatedStorage")
 local Config = require(shared:WaitForChild("Config"))
-local Format = require(shared:WaitForChild("Format"))
+local Traits = require(shared:WaitForChild("BrainrotTraits"))
+local Format = Traits.Format
 local Style = require(script.Parent:WaitForChild("PanelStyle"))
 local ContractPanel = {}
 
