@@ -95,14 +95,14 @@ local function lighting()
 	sky.Parent = Lighting
 	local bloom = Instance.new("BloomEffect")
 	bloom.Name = "SoftNeon"
-	bloom.Intensity = 0.24
+	bloom.Intensity = 0.39
 	bloom.Size = 24
-	bloom.Threshold = 1.5
+	bloom.Threshold = 1.24
 	bloom.Parent = Lighting
 	local grade = Instance.new("ColorCorrectionEffect")
 	grade.Name = "SunnyOrbit"
 	grade.Brightness = 0.02
-	grade.Saturation = 0.08
+	grade.Saturation = 0.13
 	grade.TintColor = Color3.fromRGB(255, 249, 237)
 	grade.Parent = Lighting
 end
@@ -113,18 +113,45 @@ local function skyAndPlanet(parent)
 	for _, direction in ipairs({ Vector3.xAxis, -Vector3.xAxis, Vector3.yAxis,
 		-Vector3.yAxis, Vector3.zAxis, -Vector3.zAxis }) do
 		local center = direction * 900
+		local up = math.abs(direction.Y) > 0.5 and Vector3.zAxis or Vector3.yAxis
 		local wall = WorldBuilder.Part("SpaceBackdrop", Vector3.new(1900, 1900, 2),
-			CFrame.lookAt(center, Vector3.zero), navy, Enum.Material.SmoothPlastic, backdrop, nil, false)
+			CFrame.lookAt(center, Vector3.zero, up), navy, Enum.Material.SmoothPlastic, backdrop, nil, false)
 		wall.CanQuery = false
 	end
 	local random = Random.new(73126)
+	local starColors = { palette.White, Color3.fromRGB(156, 209, 255), Color3.fromRGB(255, 216, 163) }
+	local function star(position, size, color, transparency)
+		local point = WorldBuilder.Part("Star", Vector3.one * size, CFrame.new(position),
+			color, Enum.Material.Neon, backdrop, Enum.PartType.Ball, false)
+		point.CanQuery = false
+		point.Transparency = transparency
+		return point
+	end
 	for index = 1, Config.World.StarCount do
 		local angle = random:NextNumber(0, math.pi * 2)
-		local radius = random:NextNumber(420, 720)
-		local size = random:NextNumber(0.8, 2.7)
-		local position = Vector3.new(math.cos(angle) * radius, random:NextNumber(25, 410), math.sin(angle) * radius)
-		WorldBuilder.Part("Star", Vector3.one * size, CFrame.new(position),
-			index % 4 == 0 and palette.Mint or palette.White, Enum.Material.Neon, backdrop, Enum.PartType.Ball, false)
+		local distance = random:NextNumber(480, 800)
+		local elevation = random:NextNumber(-0.62, 0.92)
+		local horizontal = distance * math.sqrt(1 - elevation ^ 2)
+		local position = Vector3.new(math.cos(angle) * horizontal, elevation * distance, math.sin(angle) * horizontal)
+		local bright = index % 14 == 0
+		local color = starColors[index % 7 == 0 and 2 or index % 5 == 0 and 3 or 1]
+		local point = star(position, random:NextNumber(0.62, bright and 3.2 or 1.65), color, bright and 0.15 or 0.32)
+		if bright then
+			point:SetAttribute("TwinklePhase", angle)
+			CollectionService:AddTag(point, "OrbitSkyStar")
+		end
+	end
+	-- A sloped dust band makes the skyline recognizable from the arrival
+	-- camera. Small opaque points avoid a stack of transparent nebula planes.
+	local lilac, cyan = Color3.fromRGB(161, 107, 208), Color3.fromRGB(81, 179, 220)
+	for index = 1, Config.World.StarBandCount do
+		local x = random:NextNumber(-590, 580)
+		local scatter = random:NextNumber(-1, 1) + random:NextNumber(-1, 1)
+		local y = 42 + x * 0.27 + scatter * 42
+		local color = lilac:Lerp(cyan, random:NextNumber())
+		if index % 4 == 0 then color = color:Lerp(palette.White, 0.72) end
+		star(Vector3.new(x, y, random:NextNumber(-790, -690)), random:NextNumber(1.0, 2.7), color,
+			0.25 + math.abs(scatter) * 0.18)
 	end
 	local radius = Config.World.PlanetRadius
 	local position = Config.World.PlanetPosition
@@ -136,11 +163,43 @@ local function skyAndPlanet(parent)
 		WorldBuilder.Ring("PlanetCloudBelt", bandRadius, 1.4, 9,
 			CFrame.new(position) * CFrame.Angles(0, 0, math.rad(-16)) * CFrame.new(0, math.sin(latitude) * radius, 0),
 			band % 2 == 0 and Color3.fromRGB(255, 157, 66) or Color3.fromRGB(223, 91, 32),
-			Enum.Material.SmoothPlastic, parent, 84, false)
+			Enum.Material.SmoothPlastic, parent, 56, false)
 	end
 	WorldBuilder.Ring("PlanetHalo", radius * 1.45, 2, 0.9,
 		CFrame.new(position) * CFrame.Angles(math.rad(12), 0, math.rad(-16)),
-		Color3.fromRGB(255, 199, 115), Enum.Material.Neon, parent, 120, false)
+		Color3.fromRGB(255, 199, 115), Enum.Material.Neon, parent, 94, false)
+
+	-- A second planetary limb sits well behind the station on the opposite
+	-- edge. Nested spheres give the horizon a narrow blue atmospheric rim.
+	local bluePosition = Vector3.new(389, -236, -468)
+	local rim = WorldBuilder.Part("AzureAtmosphere", Vector3.one * 453, CFrame.new(bluePosition),
+		cyan, Enum.Material.Neon, backdrop, Enum.PartType.Ball, false)
+	rim.Transparency = 0.64
+	rim.CanQuery = false
+	local planet = WorldBuilder.Part("AzurePlanet", Vector3.one * 444, CFrame.new(bluePosition),
+		Color3.fromRGB(41, 105, 178), Enum.Material.SmoothPlastic, backdrop, Enum.PartType.Ball, false)
+	planet.CanQuery = false
+	for _, latitude in ipairs({ -0.21, 0.03, 0.24 }) do
+		WorldBuilder.Ring("AzureClouds", math.cos(latitude) * 223.5, 1.3, 7,
+			CFrame.new(bluePosition) * CFrame.Angles(0, 0, math.rad(23))
+				* CFrame.new(0, math.sin(latitude) * 222, 0),
+			Color3.fromRGB(119, 183, 217), Enum.Material.SmoothPlastic, backdrop, 54, false)
+	end
+	local moonPosition = Vector3.new(157, 10, -408)
+	local moon = WorldBuilder.Part("PearlMoon", Vector3.one * 46, CFrame.new(moonPosition),
+		Color3.fromRGB(173, 177, 204), Enum.Material.SmoothPlastic, backdrop, Enum.PartType.Ball, false)
+	moon.CanQuery = false
+	for _, crater in ipairs({
+		Vector3.new(-9, 7, 9), Vector3.new(7, 4, 16), Vector3.new(-4, -8, 17),
+		Vector3.new(5, 13, 6), Vector3.new(-13, -3, 8),
+	}) do
+		local normal = crater.Unit
+		local face = CFrame.lookAt(moonPosition + normal * 22.6, moonPosition) * CFrame.Angles(0, math.pi / 2, 0)
+		local width = random:NextNumber(5.4, 10)
+		local mark = WorldBuilder.Part("MoonCrater", Vector3.new(1.55, width, width), face,
+			Color3.fromRGB(127, 136, 167), Enum.Material.SmoothPlastic, backdrop, Enum.PartType.Ball, false)
+		mark.CanQuery = false
+	end
 end
 
 local function signFace(board, face, text, color)

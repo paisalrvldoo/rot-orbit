@@ -19,7 +19,10 @@ card and action feed, readable rarity and value cards, and earned progression.
 - [x] Replace the wall of rank text with three physical podiums, large
   team-colour standings, a rotating crown and a shine on score changes.
   Hide empty ranks. Phone crews are a two-line action inside Menu.
-- [ ] Refine sky and cover.
+- [x] Add a blue planetary limb, cratered moon, diagonal dust band and
+  twinkling star field from primitives. Keep the orange ringed planet and
+  raise bloom slightly for the rails. Studio framing remains to be checked.
+- [ ] Refine deck finishes and the cover parade.
 - [ ] Studio review at 1024×460 and 1280×720, with four genuine captures.
 
 ## Current 25-minute orbit continuation

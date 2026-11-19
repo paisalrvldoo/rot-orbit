@@ -84,6 +84,7 @@ function BillboardFx.Start()
 	local relays = tagged("OrbitCargoRelay")
 	local cores = tagged("OrbitHologramCore")
 	local crowns = tagged("OrbitCrewCrown")
+	local stars = tagged("OrbitSkyStar")
 	local function restore(model)
 		if reveals[model] and model.Parent then model:ScaleTo(1) end
 		reveals[model] = nil
@@ -134,6 +135,10 @@ function BillboardFx.Start()
 		railFrozen = frozen
 		cardElapsed += dt
 		if cardElapsed >= 0.07 then
+			for star in pairs(stars) do
+				local phase = star:GetAttribute("TwinklePhase")
+				if phase then star.Transparency = frozen and 0.13 or 0.22 + math.sin(time * 0.8 + phase * 4) * 0.15 end
+			end
 			local screen = playerGui:FindFirstChild("RotOrbitHUD")
 			updateCargoCards(visuals, frozen, screen and screen:FindFirstChild("Canvas"))
 			cardElapsed = 0

@@ -37,7 +37,8 @@ local Config = {
 		DomeOrbit = 63,
 		PlanetPosition = Vector3.new(-110, -190, -330),
 		PlanetRadius = 210,
-		StarCount = 105,
+		StarCount = 220,
+		StarBandCount = 132,
 	},
 	Conveyor = {
 		SpawnInterval = 4.5,
