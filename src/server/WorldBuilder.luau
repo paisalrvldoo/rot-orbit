@@ -258,6 +258,9 @@ function WorldBuilder.CreatePedestal(bay, index)
 	pad:SetAttribute("SlotIndex", index)
 	local socket = WorldBuilder.Ring("SocketGlow_" .. index, 2.85, 0.2, 0.12,
 		bay.Frame * CFrame.new(x, 1.53, z), bay.Color, Enum.Material.Neon, bay.Model, 16, false)
+	WorldBuilder.Part("SocketUnderglow", Vector3.new(0.16, 6.3, 6.3),
+		center * CFrame.new(0, -0.25, 0) * CFrame.Angles(0, 0, math.pi / 2),
+		bay.Color, Enum.Material.Neon, socket, Enum.PartType.Cylinder, false).Transparency = 0.38
 	local label = WorldBuilder.Billboard(pad, string.format("%02d · EMPTY", index),
 		palette.Muted, Vector3.new(0, 2.4, 0), 130, 28)
 	label.TextSize = 13
@@ -299,6 +302,8 @@ local function buildBays(world)
 			frame * CFrame.new(0, 0.4, floorZ), rival and Color3.fromRGB(255, 235, 211)
 			or Color3.fromRGB(207, 238, 240), Enum.Material.SmoothPlastic, model)
 		for _, side in ipairs({ -1, 1 }) do
+			WorldBuilder.Part("DockLane", Vector3.new(0.25, 0.06, 26),
+				frame * CFrame.new(side * 5.6, 0.06, -27), color, Enum.Material.Neon, model, nil, false)
 			WorldBuilder.Part("DockEdge", Vector3.new(0.35, 0.1, depth),
 				frame * CFrame.new(side * 17.7, 0.8, floorZ), color, Enum.Material.Neon, model, nil, false)
 			WorldBuilder.Part("SignPost", Vector3.new(0.7, 10.4, 0.7),
@@ -307,9 +312,11 @@ local function buildBays(world)
 		WorldBuilder.Part("LandingMark", Vector3.new(12, 0.12, 6),
 			frame * CFrame.new(0, 0.82, -9.5), color, Enum.Material.SmoothPlastic, model, nil, false)
 		for step = 1, 4 do
-			WorldBuilder.Part("HomeArrow", Vector3.new(3.6, 0.08, 1.3),
-				frame * CFrame.new(0, 0.06, -16 - step * 7), color,
-				Enum.Material.Neon, world.Geometry, nil, false)
+			for _, side in ipairs({ -1, 1 }) do
+				WorldBuilder.Part("HomeArrow", Vector3.new(2.35, 0.05, 0.27),
+					frame * CFrame.new(side * 1.02, 0.06, -16 - step * 7) * CFrame.Angles(0, side * 0.52, 0),
+					color, Enum.Material.Neon, model, nil, false)
+			end
 		end
 		local name = rival and crews[index] or string.format("BAY %02d · OPEN DOCK", index)
 		local board = WorldBuilder.Part("CrewSign", Vector3.new(29, 3.2, 0.35),
@@ -507,23 +514,25 @@ function WorldBuilder.Build()
 	local radius = Config.World.DeckRadius
 	WorldBuilder.Part("SunlitDeck", Vector3.new(Config.World.DeckThickness, radius * 2, radius * 2),
 		CFrame.new(0, -Config.World.DeckThickness / 2, 0) * CFrame.Angles(0, 0, math.pi / 2),
-		palette.Deck, Enum.Material.SmoothPlastic, geometry, Enum.PartType.Cylinder)
+		palette.Deck, Enum.Material.Metal, geometry, Enum.PartType.Cylinder).Reflectance = 0.025
 	WorldBuilder.Ring("DeckTrim", radius, 2.2, 1.8, CFrame.new(0, -0.8, 0),
 		palette.Teal, Enum.Material.SmoothPlastic, geometry, 100, false)
 	WorldBuilder.Ring("OrbitEdgeLights", radius - 1, 0.65, 0.15, CFrame.new(0, 0.12, 0),
 		palette.Mint, Enum.Material.Neon, geometry, 100, false)
-	-- Large recessed-looking wedges make the hub read as a station floor,
-	-- with bright spokes pointing to the live cargo and the nine docks.
+	-- Low-contrast panels and recessed paths make the deck readable at a glance.
 	for index = 1, 18 do
 		local angle = (index - 1) * math.pi * 2 / 18
 		local frame = CFrame.Angles(0, -angle, 0)
-		WorldBuilder.Part("HubDeckPanel", Vector3.new(15, 0.08, 4.8),
-			frame * CFrame.new(25, 0.05, 0), Color3.fromRGB(96, 124, 137),
+		local tint = palette.Deck:Lerp(palette.White, index % 2 == 0 and 0.08 or 0.035)
+		WorldBuilder.Part("HubDeckPanel", Vector3.new(17, 0.04, 5.2),
+			frame * CFrame.new(25, 0.025, 0), tint,
 			Enum.Material.Metal, geometry, nil, false)
 		if index % 2 == 1 then
-			WorldBuilder.Part("DockGuide", Vector3.new(26, 0.06, 0.28),
-				frame * CFrame.new(65, 0.08, 0), palette.Teal,
-				Enum.Material.Neon, geometry, nil, false)
+			for _, side in ipairs({ -1, 1 }) do
+				WorldBuilder.Part("HubGuide", Vector3.new(14.6, 0.045, 0.18),
+					frame * CFrame.new(25, 0.04, side * 2.45), side == 1 and palette.Teal or Color3.fromRGB(145, 98, 238),
+					Enum.Material.Neon, geometry, nil, false)
+			end
 		end
 	end
 	skyAndPlanet(root)

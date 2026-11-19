@@ -22,7 +22,9 @@ card and action feed, readable rarity and value cards, and earned progression.
 - [x] Add a blue planetary limb, cratered moon, diagonal dust band and
   twinkling star field from primitives. Keep the orange ringed planet and
   raise bloom slightly for the rails. Studio framing remains to be checked.
-- [ ] Refine deck finishes and the cover parade.
+- [x] Soften the hub panel contrast, add paired lane lights and chevrons
+  toward docks, and layer rarity-coloured underglow below the socket rings.
+- [ ] Refine the cover parade.
 - [ ] Studio review at 1024×460 and 1280×720, with four genuine captures.
 
 ## Current 25-minute orbit continuation
