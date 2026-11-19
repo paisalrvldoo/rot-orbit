@@ -57,7 +57,9 @@ ScreenshotMode and an exact rules-format TOUR only when those features exist.
   Source review corrected capsule pivot orientation and moved responsive HUD
   scaling onto a fixed-size GuiObject canvas.
 - [x] Rival stealing and restocking; player theft checks bay shield state.
-- [ ] Meteors/domes; solar flare; gremlins with lock/zap.
+- [x] Meteor shower every 90s: warning rings, falling impacts, safe dome checks,
+  dropped cargo and a full-width countdown banner. Mythic survival activity hook.
+- [ ] Solar flare; gremlins with lock/zap.
 - [ ] Upgrades; rebirth; index; contracts; saving; final HUD polish.
 - [ ] ScreenshotMode/TOUR, README, genuine Studio pictures and published IDs.
 

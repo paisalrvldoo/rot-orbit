@@ -23,6 +23,9 @@ function EventBanner.Start(gui, network)
 			active[event.Name] = event
 		end
 	end)
+	network.Snapshot.OnClientEvent:Connect(function(snapshot)
+		for name, event in pairs(snapshot.Events or {}) do active[name] = event end
+	end)
 	RunService.RenderStepped:Connect(function()
 		local now = workspace:GetServerTimeNow()
 		local selected

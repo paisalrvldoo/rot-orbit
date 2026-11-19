@@ -6,7 +6,7 @@ EconomyService.__index = EconomyService
 
 function EconomyService.new(bases, network)
 	local self = setmetatable({ Bases = bases, Network = network, Profiles = {}, IncomeMultiplier = 1,
-		Activities = Instance.new("BindableEvent") }, EconomyService)
+		Activities = Instance.new("BindableEvent"), Events = {} }, EconomyService)
 	bases.Economy = self
 	network.RequestSnapshot.OnServerInvoke = function(player) return self:Snapshot(player) end
 	task.spawn(function()
@@ -65,6 +65,11 @@ function EconomyService:Activity(player, kind, record)
 	self.Activities:Fire(player, kind, record)
 end
 
+function EconomyService:PublishEvent(event)
+	self.Events[event.Name] = event
+	self.Network.Event:FireAllClients(event)
+end
+
 function EconomyService:Snapshot(player)
 	local profile = self.Profiles[player]
 	local state = self.Bases.Players[player]
@@ -79,7 +84,7 @@ function EconomyService:Snapshot(player)
 		Slots = #state.Bay.Slots, Inventory = inventory, Found = state.Found,
 		Carrying = state.Carry and { Name = Catalog.DisplayName(state.Carry.Record),
 			Id = state.Carry.Record.Id, Mutation = state.Carry.Record.Mutation } or false,
-		Catalog = Catalog.Public() }
+		Catalog = Catalog.Public(), Events = self.Events }
 end
 
 function EconomyService:Send(player)

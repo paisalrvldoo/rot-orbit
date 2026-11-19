@@ -6,6 +6,7 @@ local BaseService = require(script.Parent:WaitForChild("BaseService"))
 local EconomyService = require(script.Parent:WaitForChild("EconomyService"))
 local ConveyorService = require(script.Parent:WaitForChild("ConveyorService"))
 local StealService = require(script.Parent:WaitForChild("StealService"))
+local MeteorEvent = require(script.Parent:WaitForChild("MeteorEvent"))
 local Players = game:GetService("Players")
 
 local network = Remotes.Get()
@@ -15,6 +16,7 @@ bases:SeedRivals()
 local economy = EconomyService.new(bases, network)
 local conveyor = ConveyorService.new(world, economy)
 local stealing = StealService.new(bases, economy, network)
+local meteors = MeteorEvent.new(world, bases, economy)
 
 local function joined(player)
 	if bases:Assign(player) then economy:AddPlayer(player) end
