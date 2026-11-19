@@ -233,10 +233,11 @@ function HudController.Start()
 	marker.Parent = workspace
 	local beacon = Instance.new("BillboardGui")
 	beacon.Adornee = marker
-	beacon.Size = UDim2.fromOffset(240, 52)
-	beacon.AlwaysOnTop = true
+	beacon.Size = UDim2.fromOffset(140, 30)
+	beacon.AlwaysOnTop = false
+	beacon.MaxDistance = 190
 	beacon.Parent = marker
-	local home = HudController.Text(beacon, "Home", "YOUR BAY ↓", UDim2.fromScale(0.5, 0), UDim2.fromScale(1, 1), 23, Config.Palette.Mint)
+	local home = HudController.Text(beacon, "Home", "YOUR BAY ↓", UDim2.fromScale(0.5, 0), UDim2.fromScale(1, 1), 15, Config.Palette.Mint)
 	local function showNotice(message)
 		if feed[1] ~= message then table.insert(feed, 1, message) end
 		feed[4] = nil
@@ -325,6 +326,7 @@ function HudController.Start()
 		if state and root then
 			local distance = math.floor((root.Position - state.BayPosition).Magnitude)
 			home.Text = "YOUR BAY " .. string.format("%02d", state.BayIndex) .. " ↓  " .. distance .. "m"
+			beacon.Enabled = distance > 24 and state.SaveStatus ~= "STUDIO PREVIEW"
 			if state.Carrying and state.SaveStatus ~= "STUDIO PREVIEW" then
 				carrying.Text = "CARRYING " .. state.Carrying.Name .. " → "
 					.. (distance > 23 and ("YOUR BAY · " .. distance .. "m") or "DOCK AT AN EMPTY PEDESTAL")

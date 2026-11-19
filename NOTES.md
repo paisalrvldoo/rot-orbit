@@ -2,6 +2,21 @@
 
 ## Resume here
 
+Recovery continuation, 19 November 22:52 WIB (~25-minute cap): verified the
+interrupted raid/bomb work and immediately committed it as `129afc6`.
+Read owner's refs.md. Preserve its ten priorities: staged late-game cover,
+43 originals, four genuine captures, purposeful ~20–24 scripts (25 with crews),
+large world title, readable hazards, six mutations, live HUD/quests/feed,
+readable rarity/income cards and earned progression. Core correctness first.
+Newest phone feedback takes precedence over extra features this pass:
+- [x] Implement physical, hub-facing crew rank panel away from spawn; no
+  camera-facing ranks, empty rows or overlapping global status lines.
+- [x] Shrink home beacon, respect world occlusion and hide when already home.
+- [ ] Collapse mobile controls into Menu and a compact combat/movement cluster.
+- [ ] Keep the best cargo earning after rebirth; verify actual reset/income.
+- [ ] Owner: 1024×460 phone render/playtest (Studio unavailable here), then
+  publish and four genuine screenshots. Source checks cannot approve rendering.
+
 Started 19 November 2026, 18:18 WIB, from starter commit `4e93d12` on `main`.
 Read `git log`, `git status`, and this file before continuing. Extend the existing
 files in small patches; do not restart the game. All game code is authored in

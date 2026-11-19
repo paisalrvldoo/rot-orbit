@@ -213,10 +213,25 @@ function CrewService:View(player)
 end
 
 function CrewService:BuildBoard()
-	local board = WorldBuilder.Part("CrewRankingBoard", Vector3.new(26, 15, 0.8), CFrame.new(22, 9, 18),
-		Config.Palette.Ink, Enum.Material.SmoothPlastic, self.World.Geometry, nil, false)
-	self.Board = WorldBuilder.Billboard(board, "CREW RANKS", Config.Palette.White, Vector3.zero, 510, 290)
-	self.Board.TextSize = 22
+	-- Face the hub from a real panel; text must never follow the camera or cover play.
+	local board = WorldBuilder.Part("CrewRankingBoard", Vector3.new(22, 12, 0.8),
+		CFrame.lookAt(Vector3.new(31, 7, 39), Vector3.new(0, 7, 0)),
+		Config.Palette.Ink, Enum.Material.SmoothPlastic, self.World.Geometry)
+	local surface = Instance.new("SurfaceGui")
+	surface.Name = "CrewRanks"
+	surface.Face = Enum.NormalId.Front
+	surface.CanvasSize = Vector2.new(660, 360)
+	surface.AlwaysOnTop = false
+	surface.LightInfluence = 0
+	surface.MaxDistance = 90
+	surface.Parent = board
+	local label = Instance.new("TextLabel")
+	label.Position, label.Size = UDim2.fromOffset(24, 18), UDim2.fromOffset(612, 324)
+	label.BackgroundTransparency = 1
+	label.TextColor3, label.Font = Config.Palette.White, Enum.Font.GothamBold
+	label.TextSize, label.TextYAlignment = 26, Enum.TextYAlignment.Top
+	label.Parent = surface
+	self.Board = label
 	for id, crew in ipairs(self.Crews) do
 		local pad = WorldBuilder.Part("Join" .. id, Vector3.new(6, 0.35, 6), CFrame.new(14 + (id - 1) * 8, 0.3, 26),
 			crew.Color, Enum.Material.SmoothPlastic, self.World.Geometry)
@@ -236,15 +251,17 @@ end
 
 function CrewService:Refresh()
 	local view = self:View(nil)
-	local lines = { "CREW RANKS · [Y]", "SERVER · SCORE / RAIDS / BOSSES" }
+	local lines = { "CREW RANKS · [Y]", "SERVER · DEFENCE SCORE" }
+	local populated = false
 	for rank, row in ipairs(view.Rows) do
-		table.insert(lines, string.format("#%d %s · %d / %d / %d", rank, row.Name, row.Score, row.Raids, row.Bosses))
+		if row.Score > 0 then
+			populated = true
+			table.insert(lines, string.format("#%d %s · %d", rank, row.Name, row.Score))
+		end
 	end
-	table.insert(lines, "ALL-TIME · " .. self.GlobalStatus)
-	for rank, row in ipairs(self.Global) do
-		table.insert(lines, "#" .. rank .. " " .. row.Name .. " · " .. row.Score)
-	end
-	table.insert(lines, "JOIN A COLOUR PAD · TEAM UP TO DEFEND")
+	if not populated then table.insert(lines, "No raids yet · defend together!") end
+	-- Full global results and sync status have their own HUD tab.
+	table.insert(lines, "ALL-TIME RANKS · OPEN [Y]")
 	self.Board.Text = table.concat(lines, "\n")
 	local leader = view.Rows[1]
 	for player, banner in pairs(self.Banners) do
