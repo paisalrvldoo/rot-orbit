@@ -46,10 +46,7 @@ function StealService:Attach(bay, pedestal)
 			self.Network.Notice:FireClient(player, "You need empty hands and a free home pedestal.")
 			return
 		end
-		occupant.Model:Destroy()
-		pedestal.Occupant = nil
-		pedestal.Label.Visible = true
-		if pedestal.PlacePrompt then pedestal.PlacePrompt.Enabled = true end
+		self.Bases:ClearPedestal(pedestal)
 		self.Network.Notice:FireClient(player, "STOLEN " .. Catalog.DisplayName(occupant.Record) .. "! Run to your bay.")
 		if bay.Owner then
 			self.Network.Notice:FireClient(bay.Owner, player.DisplayName .. " stole from your bay! Lock [L] to protect it.")

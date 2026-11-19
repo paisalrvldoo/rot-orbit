@@ -4,6 +4,7 @@ local Debris = game:GetService("Debris")
 local HttpService = game:GetService("HttpService")
 local CollectionService = game:GetService("CollectionService")
 local Config = require(shared:WaitForChild("Config"))
+local Rarity = require(shared:WaitForChild("BrainrotTraits")).Rarity
 local Catalog = require(script.Parent:WaitForChild("BrainrotCatalog"))
 local BrainrotModel = require(script.Parent:WaitForChild("BrainrotModel"))
 local WorldBuilder = require(script.Parent:WaitForChild("WorldBuilder"))
@@ -125,6 +126,20 @@ function BaseService:CanCarry(player)
 		and self:FreeSlot(player) ~= nil
 end
 
+function BaseService:RefreshPedestal(pedestal)
+	local occupant = pedestal.Occupant
+	local rarity = occupant and Rarity.ByName[Catalog.Get(occupant.Record.Id).Rarity]
+	pedestal.Label.Visible = occupant == nil
+	if pedestal.PlacePrompt then pedestal.PlacePrompt.Enabled = occupant == nil end
+	WorldBuilder.ColorSocket(pedestal.Socket, rarity and rarity.Color or pedestal.EmptyColor)
+end
+
+function BaseService:ClearPedestal(pedestal)
+	pedestal.Occupant.Model:Destroy()
+	pedestal.Occupant = nil
+	self:RefreshPedestal(pedestal)
+end
+
 function BaseService:AttachRetirePrompt(player, pedestal)
 	local occupant = pedestal.Occupant
 	local prompt = Instance.new("ProximityPrompt")
@@ -145,10 +160,7 @@ function BaseService:AttachRetirePrompt(player, pedestal)
 		if visitor ~= player or not state or state.Loading or state.Bay.Owner ~= visitor
 			or state.Bay.Slots[pedestal.Index] ~= pedestal or pedestal.Occupant ~= occupant
 			or not self:Near(visitor, pedestal.Pad.Position) then return end
-		pedestal.Occupant = nil
-		occupant.Model:Destroy()
-		pedestal.Label.Visible = true
-		pedestal.PlacePrompt.Enabled = true
+		self:ClearPedestal(pedestal)
 		self.Network.Notice:FireClient(visitor, "RETIRED " .. Catalog.DisplayName(occupant.Record) .. " · SLOT OPEN")
 		self.Economy:Send(visitor)
 	end)
@@ -190,8 +202,7 @@ function BaseService:Place(player, pedestal)
 	state.Carry.Model:Destroy()
 	state.Carry = nil
 	pedestal.Occupant = { Record = record, Model = BrainrotModel.Create(record, pedestal.Frame, state.Bay.Model) }
-	pedestal.Label.Visible = false
-	pedestal.PlacePrompt.Enabled = false
+	self:RefreshPedestal(pedestal)
 	self:AttachRetirePrompt(player, pedestal)
 	local discovered = not state.Found[tostring(record.Id)]
 	state.Found[tostring(record.Id)] = true
@@ -244,16 +255,11 @@ function BaseService:Reset(player)
 	if state.Carry then state.Carry.Model:Destroy(); state.Carry = nil end
 	for index = #state.Bay.Slots, 1, -1 do
 		local pedestal = state.Bay.Slots[index]
-		if pedestal.Occupant then pedestal.Occupant.Model:Destroy() end
-		pedestal.Occupant = nil
+		if pedestal.Occupant then self:ClearPedestal(pedestal) end
 		if index > Config.World.InitialSlots then
 			pedestal.Pad:Destroy()
-			local ring = state.Bay.Model:FindFirstChild("SocketGlow_" .. index)
-			if ring then ring:Destroy() end
+			pedestal.Socket:Destroy()
 			state.Bay.Slots[index] = nil
-		else
-			pedestal.Label.Visible = true
-			pedestal.PlacePrompt.Enabled = true
 		end
 	end
 	state.LockUntil = 0
@@ -272,8 +278,7 @@ function BaseService:Restore(player, record, slotIndex)
 	if not pedestal then return false end
 	pedestal.Occupant = { Record = record,
 		Model = BrainrotModel.Create(record, pedestal.Frame, state.Bay.Model) }
-	pedestal.Label.Visible = false
-	pedestal.PlacePrompt.Enabled = false
+	self:RefreshPedestal(pedestal)
 	self:AttachRetirePrompt(player, pedestal)
 	state.Found[tostring(record.Id)] = true
 	if self.OnPlaced then self.OnPlaced(state.Bay, pedestal) end
@@ -286,9 +291,6 @@ function BaseService:Release(player)
 	self:Reset(player)
 	state.CharacterConnection:Disconnect()
 	for _, pedestal in ipairs(state.Bay.Slots) do
-		if pedestal.Occupant then pedestal.Occupant.Model:Destroy() end
-		pedestal.Occupant = nil
-		pedestal.Label.Visible = true
 		pedestal.PlacePrompt:Destroy()
 		pedestal.PlacePrompt = nil
 	end
@@ -312,7 +314,7 @@ function BaseService:SeedRivals()
 				if crewIndex == 3 and index == 6 then record.Mutation = "Diamond" end
 				pedestal.Occupant = { Record = record,
 					Model = BrainrotModel.Create(record, pedestal.Frame, bay.Model) }
-				pedestal.Label.Visible = false
+				self:RefreshPedestal(pedestal)
 			end
 		end
 	end

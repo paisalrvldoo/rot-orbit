@@ -79,10 +79,7 @@ function GremlinRaid:Grab(state, slotIndex)
 	if not pedestal or not pedestal.Occupant then return end
 	local occupant = pedestal.Occupant
 	state.Loot = occupant.Record
-	occupant.Model:Destroy()
-	pedestal.Occupant = nil
-	pedestal.Label.Visible = true
-	if pedestal.PlacePrompt then pedestal.PlacePrompt.Enabled = true end
+	self.Bases:ClearPedestal(pedestal)
 	state.LootModel = BrainrotModel.Create(state.Loot,
 		state.Model:GetPivot() * CFrame.new(0, 3.4, 0), state.Model)
 	state.LootModel:SetAttribute("VisualState", "Raided")

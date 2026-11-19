@@ -2,8 +2,8 @@
 local Rarity = {}
 Rarity.Order = { "Common", "Rare", "Epic", "Legendary", "Mythic", "Cosmic", "SECRET" }
 Rarity.ByName = {
-	Common = { Rank = 1, Color = Color3.fromRGB(194, 220, 228), Scale = 0.95, Weight = 52 },
-	Rare = { Rank = 2, Color = Color3.fromRGB(65, 170, 255), Scale = 1.05, Weight = 25 },
+	Common = { Rank = 1, Color = Color3.fromRGB(176, 220, 180), Scale = 0.95, Weight = 52 },
+	Rare = { Rank = 2, Color = Color3.fromRGB(86, 197, 255), Scale = 1.05, Weight = 25 },
 	Epic = { Rank = 3, Color = Color3.fromRGB(183, 110, 255), Scale = 1.17, Weight = 13 },
 	Legendary = { Rank = 4, Color = Color3.fromRGB(255, 204, 65), Scale = 1.3, Weight = 6.5 },
 	Mythic = { Rank = 5, Color = Color3.fromRGB(255, 91, 160), Scale = 1.43, Weight = 2.4 },

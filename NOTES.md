@@ -188,7 +188,9 @@ originals, six mutations, station title, 24 scripts, dense HUD and staged cover.
 - [x] Owners can hold G near docked cargo to retire it and free a pedestal.
   Retirement leaves index discoveries intact and awards no cash. Studio
   multiplayer prompt visibility still needs a playtest.
-- [ ] Bring rarity colors onto the docks and improve the live rare cargo reveal.
+- [x] Docks and the index use the billboard rarity palette. Socket colors
+  reset on theft, retirement and rebirth and are restored with saved cargo.
+- [ ] Improve the live rare cargo reveal.
 - [ ] Improve progression feedback using the research priorities for earned
   rewards, the index and rebirth while preserving old saves.
 - [ ] Source-review the four staged shots and make the owner capture handoff clear.

@@ -193,16 +193,22 @@ function WorldBuilder.CreatePedestal(bay, index)
 		Enum.Material.SmoothPlastic, bay.Model, Enum.PartType.Cylinder)
 	pad:SetAttribute("BayIndex", bay.Index)
 	pad:SetAttribute("SlotIndex", index)
-	WorldBuilder.Ring("SocketGlow_" .. index, 2.85, 0.2, 0.12,
+	local socket = WorldBuilder.Ring("SocketGlow_" .. index, 2.85, 0.2, 0.12,
 		bay.Frame * CFrame.new(x, 1.53, z), bay.Color, Enum.Material.Neon, bay.Model, 16, false)
 	local label = WorldBuilder.Billboard(pad, string.format("%02d · EMPTY", index),
 		palette.Muted, Vector3.new(0, 2.4, 0), 130, 28)
 	label.TextSize = 13
 	label.Parent.MaxDistance = 55
-	local pedestal = { Index = index, Pad = pad, Label = label,
+	local pedestal = { Index = index, Pad = pad, Label = label, Socket = socket, EmptyColor = bay.Color,
 		Frame = bay.Frame * CFrame.new(x, 1.65, z), Occupant = nil }
 	bay.Slots[index] = pedestal
 	return pedestal
+end
+
+function WorldBuilder.ColorSocket(socket, color)
+	for _, segment in ipairs(socket:GetChildren()) do
+		segment.Color = color
+	end
 end
 
 local function buildBays(world)
