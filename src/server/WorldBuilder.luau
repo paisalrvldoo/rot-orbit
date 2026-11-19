@@ -423,6 +423,24 @@ local function buildCargoRing(world)
 			palette.Ink, Enum.Material.Metal, gate, 28, false)
 		WorldBuilder.Ring("WarpAperture", 9.6, 0.24, 0.28, frame,
 			color, Enum.Material.Neon, gate, 28, false)
+		local rotor = Instance.new("Model")
+		rotor.Name = "WarpRotor"
+		rotor.WorldPivot = frame
+		rotor:SetAttribute("GateFrame", frame)
+		rotor:SetAttribute("GateColor", color)
+		rotor:SetAttribute("GatePhase", index * 0.9)
+		rotor.Parent = gate
+		for arc = 0, 2 do
+			for segment = 0, 2 do
+				local spin = (arc * 2 * math.pi / 3) + segment * 0.13
+				local shard = WorldBuilder.Part("WarpArc", Vector3.new(0.38, 0.46, 1.34),
+					frame * CFrame.Angles(0, -spin, 0) * CFrame.new(9.06, 0, 0),
+					color, Enum.Material.Neon, rotor, nil, false)
+				shard.CanQuery = false
+			end
+		end
+		CollectionService:AddTag(rotor, "OrbitWarpRotor")
+		if index == 1 then world.CargoEntry = rotor end
 		for _, side in ipairs({ -1, 1 }) do
 			local cap = WorldBuilder.Part("GateBeacon", Vector3.new(0.8, 0.8, 1.4),
 				frame * CFrame.new(side * 10.1, 0, 0), color, Enum.Material.Neon, gate, nil, false)

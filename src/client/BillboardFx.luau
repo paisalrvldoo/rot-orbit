@@ -85,6 +85,7 @@ function BillboardFx.Start()
 	local cores = tagged("OrbitHologramCore")
 	local crowns = tagged("OrbitCrewCrown")
 	local stars = tagged("OrbitSkyStar")
+	local rotors = tagged("OrbitWarpRotor")
 	local function restore(model)
 		if reveals[model] and model.Parent then model:ScaleTo(1) end
 		reveals[model] = nil
@@ -103,6 +104,7 @@ function BillboardFx.Start()
 	end)
 	local cardElapsed = math.huge
 	local railFrozen
+	local rotorTint = setmetatable({}, { __mode = "k" })
 	local playerGui = Players.LocalPlayer:WaitForChild("PlayerGui")
 	RunService.RenderStepped:Connect(function(dt)
 		local time = workspace:GetServerTimeNow()
@@ -135,6 +137,22 @@ function BillboardFx.Start()
 		railFrozen = frozen
 		cardElapsed += dt
 		if cardElapsed >= 0.07 then
+			for rotor in pairs(rotors) do
+				local frame, color = rotor:GetAttribute("GateFrame"), rotor:GetAttribute("GateColor")
+				if frame and color then
+					local age = time - (rotor:GetAttribute("ArrivalTime") or -math.huge)
+					local charge = not frozen and age >= 0 and age < 1.6 and 1 - age / 1.6 or 0
+					local arrival = rotor:GetAttribute("ArrivalColor") or color
+					local tint = color:Lerp(arrival, math.min(1, charge * 2))
+					local phase = rotor:GetAttribute("GatePhase") or 0
+					local angle = phase + (frozen and 0 or (time % 120) * math.pi / 6)
+					rotor:PivotTo(frame * CFrame.Angles(0, angle, 0))
+					if rotorTint[rotor] ~= tint then
+						for _, arc in ipairs(rotor:GetChildren()) do arc.Color = tint end
+						rotorTint[rotor] = tint
+					end
+				end
+			end
 			for star in pairs(stars) do
 				local phase = star:GetAttribute("TwinklePhase")
 				if phase then star.Transparency = frozen and 0.13 or 0.22 + math.sin(time * 0.8 + phase * 4) * 0.15 end

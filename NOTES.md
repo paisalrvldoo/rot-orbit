@@ -1,5 +1,19 @@
 # ROT ORBIT build notes
 
+## Current recovery and Studio review
+
+Resumed at clean `196000f`; initial verification passed. Owner research is
+folded into this ten-point checklist in judging order: (1) staged late-game
+cover around the cargo ring, (2) 42–45 original brainrots (43), (3) four real
+Studio captures, (4) about 20–24 focused scripts (25 with crew support), (5)
+large world title, (6) readable meteor hazards and domes, (7) six mutations,
+(8) live controls, quest card and action feed, (9) readable rarity and value
+cards, (10) earned progression. Core gameplay passed before visual changes.
+
+- [x] Add rotating neon segments to the warp arches. The entry flashes the
+  cargo rarity on a live Mythic or better arrival; preview holds a fixed pose.
+- [ ] Studio phone and cover passes, then four real captures and publish.
+
 ## Orbit and cover continuation
 
 Clean recovery at `261bc29`. The full verifier passed before the checkpoint.

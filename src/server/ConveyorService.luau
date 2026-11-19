@@ -62,7 +62,12 @@ function ConveyorService.new(world, economy)
 				end
 				self:Spawn(record, -math.pi / 2)
 				local entry = Catalog.Get(record.Id)
-				if Rarity.ByName[entry.Rarity].Rank >= 4 then
+				local rarity = Rarity.ByName[entry.Rarity]
+				if rarity.Rank >= 5 and world.CargoEntry then
+					world.CargoEntry:SetAttribute("ArrivalColor", rarity.Color)
+					world.CargoEntry:SetAttribute("ArrivalTime", workspace:GetServerTimeNow())
+				end
+				if rarity.Rank >= 4 then
 					local notice = entry.Rarity == "SECRET" and "SECRET INCOMING!"
 						or (string.upper(entry.Rarity) .. " ON THE RING")
 					economy:PublishEvent({
@@ -70,7 +75,7 @@ function ConveyorService.new(world, economy)
 						Text = notice .. " · " .. string.upper(Catalog.DisplayName(record)),
 						EndsAt = workspace:GetServerTimeNow() + Config.Conveyor.RareNoticeSeconds,
 						Priority = entry.Rarity == "SECRET" and 1.75 or 1.25,
-						Color = Rarity.ByName[entry.Rarity].Color,
+						Color = rarity.Color,
 						HideCountdown = true,
 					})
 				end
