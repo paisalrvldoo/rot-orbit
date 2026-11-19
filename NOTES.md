@@ -234,4 +234,10 @@ Core systems precede more spectacle. This pass's remaining order:
   ordering. Ending an event restores the remaining active event rather than
   wiping its look. Screenshot presets reset positive-event state. The Luau
   checks cover all overlapping-event priorities; Studio color review pending.
+- [x] Newly docked SECRET cargo has a 0.9s reveal: anticipation squash, Back Out
+  growth/overshoot, a small settling tilt, then exact normal scale. Nearby
+  pedestal idle movement/outline intensity briefly quiets. Restored inventory
+  has no docking stamp and never replays the reward; screenshot mode restores
+  normal scales and outlines before freezing. Compiles; Studio motion review
+  remains necessary (no renderer available here).
 - [ ] Reverify, retry the Public link check, and leave a clean committed tree.

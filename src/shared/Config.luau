@@ -16,6 +16,8 @@ local Config = {
 	ActionCooldown = 0.2,
 	CarryHeight = 4.6,
 	CarryTrailLifetime = 0.65,
+	SecretDock = { Duration = 0.9, Anticipation = 0.12, Settle = 0.62, StartScale = 0.88, PeakScale = 1.08,
+		Drop = 0.3, Tilt = 0.065, Radius = 28 },
 	DropLifetime = 35,
 	MaxCash = 1e15,
 	World = {

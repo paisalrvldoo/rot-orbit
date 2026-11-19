@@ -230,6 +230,7 @@ function BaseService:Place(player, pedestal)
 	state.Carry.Model:Destroy()
 	state.Carry = nil
 	pedestal.Occupant = { Record = record, Model = BrainrotModel.Create(record, pedestal.Frame, state.Bay.Model) }
+	pedestal.Occupant.Model:SetAttribute("DockedAt", workspace:GetServerTimeNow())
 	self:RefreshPedestal(pedestal)
 	self:AttachRetirePrompt(player, pedestal)
 	local discovered, newVariant = self:Discover(state, record)
