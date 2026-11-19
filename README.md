@@ -6,6 +6,8 @@ cargo orbit, carry them to your docking bay, and earn passive income. Steal from
 rival crews, shelter from meteors, lock out gremlins, and zap thieves to recover cargo.
 Solar flares double income; upgrades, rebirths, a discovery index, three rotating
 contracts and protected DataStore saving provide progression.
+Collect 43 original brainrots across seven rarities and six mutations, including
+the x7 Aurora and x10 Supernova variants.
 
 WASD moves; E buys, steals, recovers and docks; L locks; F zaps; U opens upgrades
 and contracts; R opens rebirth (click again to confirm); B opens the index.

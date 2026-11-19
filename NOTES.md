@@ -98,7 +98,7 @@ The research is prose guidance, not source or reusable names. Rank is not guaran
 
 1. Strengthen Cover: $250M–$2B, >$1M/s, rebirth 3, 18s meteor banner,
    Diamond carry, five readable ascending-tier heroes, SECRET beam, planet and title.
-2. Grow to 43 originals: 8 Common, 8 Rare, 7 Epic, 7 Legendary, 6 Mythic,
+2. [x] Grow to 43 originals: 8 Common, 8 Rare, 7 Epic, 7 Legendary, 6 Mythic,
    5 Cosmic, 2 SECRET; distinct primitive silhouettes; update all count strings.
 3. Four genuine Studio shots: loop cover, 32/43 discovery grid with mutation legend,
    raid with recovery feedback, combined upgrades/rebirth/contracts. Owner captures.
@@ -106,7 +106,8 @@ The research is prose guidance, not source or reusable names. Rank is not guaran
    well-named scripts; preserve visible system names and runtime behaviour.
 5. Add a ~40-stud lit in-world title pylon above cargo; owner and OPEN/LOCKED bay signs.
 6. Strengthen meteor streaks/warnings, dome glow, drop feedback and between-event timer.
-7. Add sixth mutation at x7, then a short positive mutation-spawn event.
+7. [x] Sixth mutation Aurora at x7, with three coloured orbit ribbons.
+   [ ] Short positive mutation-spawn event.
 8. Denser edge HUD: live upgrade/found/cost/cooldown buttons, right quest progress
    card with done total, left three-action feed, readable money and event text.
 9. Larger billboards, BUY price, Cosmic beam and SECRET crown/light pillar;

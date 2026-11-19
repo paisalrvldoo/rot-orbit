@@ -1,5 +1,6 @@
 -- The complete original cast lives in this one catalog; clients get a read-only public view.
 local shared = game:GetService("ReplicatedStorage")
+local Config = require(shared:WaitForChild("Config"))
 local Rarity = require(shared:WaitForChild("Rarity"))
 local Mutation = require(shared:WaitForChild("Mutation"))
 local Catalog = {}
@@ -41,7 +42,35 @@ Catalog.Entries = {
 	brainrot(28, "Pulsar Pistacchione", "Cosmic", 68000000, 340000, "Pistachio", rgb(163, 237, 176), rgb(177, 161, 255)),
 	brainrot(29, "Galassia Gorgonzola", "Cosmic", 130000000, 550000, "Gorgonzola", rgb(155, 214, 249), rgb(106, 210, 173)),
 	brainrot(30, "Il Supremo Supernova", "SECRET", 600000000, 2400000, "Supernova", rgb(255, 246, 214), rgb(255, 126, 65)),
+	-- Append stable IDs so saved collections from the original cast keep their meaning.
+	brainrot(31, "Asteroide Biscottino", "Common", 220, 14, "Biscotto",
+		rgb(227, 182, 119), rgb(107, 70, 54)),
+	brainrot(32, "Carotina Cosmonauta", "Common", 600, 33, "Carrot",
+		rgb(255, 145, 62), rgb(100, 208, 119)),
+	brainrot(33, "Razzo Pretzellino", "Rare", 2100, 93, "Pretzel",
+		rgb(206, 138, 69), rgb(255, 237, 168)),
+	brainrot(34, "Lunotto Dumplino", "Rare", 6200, 235, "Dumpling",
+		rgb(244, 225, 177), rgb(150, 220, 210)),
+	brainrot(35, "Peperone Parabolico", "Epic", 28000, 790, "Pepper",
+		rgb(242, 93, 86), rgb(135, 225, 114)),
+	brainrot(36, "Tagliatella Teleportina", "Epic", 62000, 1480, "Tagliatelle",
+		rgb(255, 219, 110), rgb(121, 192, 255)),
+	brainrot(37, "Espressino Eclipse", "Legendary", 470000, 8100, "Espresso",
+		rgb(109, 75, 70), rgb(255, 188, 101)),
+	brainrot(38, "Draconico Fruttone", "Legendary", 780000, 12100, "Dragonfruit",
+		rgb(245, 106, 192), rgb(121, 238, 157)),
+	brainrot(39, "Basilico Bellatrix", "Mythic", 5600000, 54000, "Basil",
+		rgb(101, 207, 129), rgb(250, 210, 95)),
+	brainrot(40, "Meringa Magnetica", "Mythic", 9600000, 79000, "Meringue",
+		rgb(249, 224, 255), rgb(162, 159, 255)),
+	brainrot(41, "Andromeda Anellino", "Cosmic", 95000000, 440000, "Ringlet",
+		rgb(255, 181, 105), rgb(117, 255, 229)),
+	brainrot(42, "Nebulone Nocciolone", "Cosmic", 185000000, 740000, "Hazelnut",
+		rgb(182, 134, 91), rgb(188, 152, 255)),
+	brainrot(43, "Imperatore Infinito", "SECRET", 950000000, 3800000, "Emperor",
+		rgb(222, 241, 255), rgb(255, 210, 92)),
 }
+assert(#Catalog.Entries == Config.CatalogCount, "Update Config and the cast together")
 
 Catalog.ById = {}
 Catalog.ByRarity = {}
@@ -81,6 +110,10 @@ function Catalog.Public()
 		table.insert(view, { Id = entry.Id, Name = entry.Name, Rarity = entry.Rarity,
 			Price = entry.Price, Income = entry.Income })
 	end
+	table.sort(view, function(a, b)
+		local rankA, rankB = Rarity.ByName[a.Rarity].Rank, Rarity.ByName[b.Rarity].Rank
+		return rankA == rankB and a.Id < b.Id or rankA < rankB
+	end)
 	return view
 end
 

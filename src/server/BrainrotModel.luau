@@ -9,7 +9,8 @@ local Config = require(shared:WaitForChild("Config"))
 local BrainrotModel = {}
 local rounded = { Bean = true, Olive = true, Leaf = true, Raviolo = true, Penguin = true,
 	Cornetto = true, Pastry = true, Quokka = true, Gnocco = true, Arancino = true,
-	Stracciatella = true, Pistachio = true, Supernova = true }
+	Stracciatella = true, Pistachio = true, Supernova = true, Dumpling = true,
+	Pepper = true, Dragonfruit = true, Basil = true, Meringue = true, Hazelnut = true }
 
 local function label(parent, name, text, y, height, size, color)
 	local result = Instance.new("TextLabel")
@@ -109,6 +110,8 @@ function BrainrotModel.Create(record, frame, parent)
 	local bodySize = Vector3.new(2.2, 2.55, 1.7)
 	if kind == "Toast" or kind == "Bruschetta" then bodySize = Vector3.new(2.25, 2.55, 1.15) end
 	if kind == "Zucchini" or kind == "Maccherone" then bodySize = Vector3.new(1.95, 2.95, 1.65) end
+	if kind == "Carrot" then bodySize = Vector3.new(1.4, 3.0, 1.4) end
+	if kind == "Biscotto" then bodySize = Vector3.new(2.1, 2.9, 0.9) end
 	make("Body", bodySize, Vector3.new(0, 1.8, 0), bodyColor,
 		rounded[kind] and Enum.PartType.Ball or nil)
 	for _, side in ipairs({ -1, 1 }) do
@@ -231,6 +234,70 @@ function BrainrotModel.Create(record, frame, parent)
 		end
 	elseif kind == "Pistachio" then
 		make("PistachioShell", Vector3.new(2.55, 1.4, 1.9), Vector3.new(0, 2.95, 0.1), accent, Enum.PartType.Ball)
+	elseif kind == "Biscotto" then
+		for index = 1, 6 do
+			make("CookieChip", Vector3.one * 0.22, Vector3.new(math.sin(index * 2) * 0.75,
+				0.7 + index * 0.42, -0.51), accent, Enum.PartType.Ball)
+		end
+	elseif kind == "Carrot" or kind == "Basil" then
+		for index = -1, 1 do
+			make("LeafThruster", Vector3.new(0.55, 1.4, 0.5), Vector3.new(index * 0.6, 3.5, 0),
+				accent, Enum.PartType.Ball, CFrame.Angles(0, 0, -index * 0.5))
+		end
+		if kind == "Basil" then
+			make("LeafWings", Vector3.new(3.6, 1.2, 0.45), Vector3.new(0, 1.7, 0.7), accent, Enum.PartType.Ball)
+		end
+	elseif kind == "Pretzel" then
+		for _, side in ipairs({ -1, 1 }) do
+			for index = 1, 10 do
+				local angle = index * math.pi / 5
+				make("PretzelLoop", Vector3.one * 0.42,
+					Vector3.new(side * 0.8 + math.cos(angle) * 0.8, 3.3 + math.sin(angle) * 0.75, 0),
+					bodyColor, Enum.PartType.Ball)
+			end
+		end
+	elseif kind == "Dumpling" then
+		for index = -2, 2 do
+			make("DumplingPleat", Vector3.new(0.25, 0.7, 1.2), Vector3.new(index * 0.43, 3.0, 0), accent)
+		end
+	elseif kind == "Pepper" then
+		make("CurvedStem", Vector3.new(0.45, 0.8, 0.45), Vector3.new(0, 3.4, 0), accent,
+			nil, CFrame.Angles(0, 0, 0.4))
+		make("PepperVisor", Vector3.new(2.2, 0.18, 0.3), Vector3.new(0, 2.7, -0.9), accent)
+	elseif kind == "Tagliatelle" then
+		for index = -2, 2 do
+			make("RibbonNoodle", Vector3.new(0.42, 2.1, 0.2), Vector3.new(index * 0.48, 3.1, 0.3),
+				bodyColor, nil, CFrame.Angles(0, 0, index * 0.16))
+		end
+	elseif kind == "Espresso" then
+		make("Saucer", Vector3.new(3.5, 0.2, 2.6), Vector3.new(0, 0.65, 0), accent, Enum.PartType.Ball)
+		make("Crema", Vector3.new(2.2, 0.28, 1.7), Vector3.new(0, 3.1, 0), accent)
+		orbit(1.7, 3.6, glow, 0.4)
+	elseif kind == "Dragonfruit" then
+		for index = 1, 7 do
+			local angle = index * math.pi * 2 / 7
+			make("DragonScale", Vector3.new(0.6, 1.0, 0.5),
+				Vector3.new(math.sin(angle) * 1.2, 2.6, math.cos(angle) * 0.9), accent,
+				nil, CFrame.Angles(0, angle, 0.4), "WedgePart")
+		end
+	elseif kind == "Meringue" then
+		for index = 1, 4 do
+			make("SugarSwirl", Vector3.new(2.3 - index * 0.4, 0.5, 1.9 - index * 0.3),
+				Vector3.new(0, 2.8 + index * 0.35, 0), index % 2 == 0 and accent or bodyColor, Enum.PartType.Ball)
+		end
+	elseif kind == "Ringlet" then
+		orbit(2.2, 2.7, accent, 0.65)
+		orbit(2.6, 1.5, bodyColor, -0.65)
+	elseif kind == "Hazelnut" then
+		make("NutShell", Vector3.new(2.6, 1.6, 2.1), Vector3.new(0, 1.2, 0.2), accent, Enum.PartType.Ball)
+		for _, side in ipairs({ -1, 1 }) do
+			make("CometHorn", Vector3.new(0.45, 1.6, 0.4), Vector3.new(side * 1.1, 3.4, 0), glow,
+				nil, CFrame.Angles(0, 0, -side * 0.35))
+		end
+	elseif kind == "Emperor" then
+		make("ImperialCape", Vector3.new(3.1, 3.0, 0.3), Vector3.new(0, 1.7, 1), accent)
+		make("Sceptre", Vector3.new(0.18, 3.8, 0.18), Vector3.new(1.8, 2.1, 0), glow)
+		make("SceptreStar", Vector3.one * 0.8, Vector3.new(1.8, 4.0, 0), glow, Enum.PartType.Ball)
 	elseif kind == "Bean" or kind == "Olive" then
 		make("BeanBelt", Vector3.new(2.05, 0.26, 1.6), Vector3.new(0, 1.2, 0), accent)
 	end
@@ -271,6 +338,19 @@ function BrainrotModel.Create(record, frame, parent)
 		belt.Material = Enum.Material.Neon
 	elseif record.Mutation == "Supernova" then
 		orbit(2.35, 2.3, glow, 0.4)
+	elseif record.Mutation == "Aurora" then
+		for index = 1, 3 do
+			orbit(1.7 + index * 0.25, 0.7 + index * 0.8,
+				index == 2 and Color3.fromRGB(186, 142, 255) or glow, index * 0.17)
+		end
+	end
+	if rarity.Rank == 7 then
+		make("CrownBand", Vector3.new(2.6, 0.24, 1.9), Vector3.new(0, 3.7, 0), Config.Palette.Sun)
+		for index = -2, 2 do
+			local jewel = make("CrownPoint", Vector3.new(0.32, 0.65, 0.35),
+				Vector3.new(index * 0.48, 4.02, -0.6), glow)
+			jewel.Material = Enum.Material.Neon
+		end
 	end
 	local halo = Instance.new("Highlight")
 	halo.Name = "RarityGlow"

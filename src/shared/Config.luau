@@ -1,9 +1,9 @@
 -- Tunable gameplay values for ROT ORBIT. Geometry is built in WorldBuilder.
 local Config = {
 	Title = "ROT ORBIT",
-	CatalogCount = 30,
+	CatalogCount = 43,
 	RarityCount = 7,
-	MutationCount = 5,
+	MutationCount = 6,
 	StartingCash = 400,
 	BaseWalkSpeed = 22,
 	BaseCarrySpeed = 15,

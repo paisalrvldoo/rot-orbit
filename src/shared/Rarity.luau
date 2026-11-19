@@ -6,8 +6,8 @@ Rarity.ByName = {
 	Epic = { Rank = 3, Color = Color3.fromRGB(183, 110, 255), Scale = 1.17, Weight = 13 },
 	Legendary = { Rank = 4, Color = Color3.fromRGB(255, 204, 65), Scale = 1.3, Weight = 6.5 },
 	Mythic = { Rank = 5, Color = Color3.fromRGB(255, 91, 160), Scale = 1.43, Weight = 2.4 },
-	Cosmic = { Rank = 6, Color = Color3.fromRGB(69, 255, 226), Scale = 1.6, Weight = 0.9 },
-	SECRET = { Rank = 7, Color = Color3.fromRGB(255, 116, 63), Scale = 1.85, Weight = 0.2 },
+	Cosmic = { Rank = 6, Color = Color3.fromRGB(69, 255, 226), Scale = 1.8, Weight = 0.9 },
+	SECRET = { Rank = 7, Color = Color3.fromRGB(255, 116, 63), Scale = 2.35, Weight = 0.2 },
 }
 
 function Rarity.Roll(random)
