@@ -45,7 +45,8 @@ network.Action.OnServerEvent:Connect(function(player, action, argument)
 	if type(action) ~= "string" or not actions[action] then return end
 	if not bases.Players[player] or bases.Players[player].Loading or bases.Players[player].Closing then return end
 	local profile = economy.Profiles[player]
-	if profile and profile.Demo and action ~= "Screenshot" then return end
+	if action ~= "Screenshot" and ((profile and profile.Demo)
+		or world.Root:GetAttribute("ScreenshotFrozen")) then return end
 	local now = workspace:GetServerTimeNow()
 	if now - (lastAction[player] or 0) < Config.ActionCooldown then return end
 	lastAction[player] = now

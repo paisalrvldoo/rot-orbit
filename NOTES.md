@@ -376,3 +376,8 @@ Studio rendering and combat balance remain unverified.
   staged server state. Recheck camera/billboard bounds in real Studio captures.
 - [x] Current-kit check at 6d957dd (22:11 WIB) passed 5/5, including Public
   start place/universe/description. It does not check live world boot or media.
+
+Final combat review: defence bonuses require an eligible player alive near
+their bay (90 studs); distant/dead clients cannot collect unattended rewards.
+Presets cancel an active raid and freeze server actions for every client,
+including other clients in a two-player Studio capture. Regression checks pass.

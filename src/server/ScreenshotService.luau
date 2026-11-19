@@ -101,6 +101,7 @@ function ScreenshotService:Prepare(player, shot)
 	end
 	local world = self.Bases.World
 	world.Root:SetAttribute("ScreenshotFrozen", true)
+	self.Gremlins.Active = false
 	self.Meteors.Active = false
 	self.Meteors.SolarActive, self.Meteors.AuroraActive = false, false
 	world.Root:SetAttribute("SolarFlareActive", false)

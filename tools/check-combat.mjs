@@ -14,10 +14,11 @@ local GremlinRaid = ${moduleBody('src/server/GremlinRaid.luau', 'local GremlinRa
 local player, other, preview, loading = {}, {}, {}, {}
 local profiles = { [player] = { Cash = 0 }, [other] = { Cash = Config.MaxCash - 1 },
     [preview] = { Cash = 0, Demo = true }, [loading] = { Cash = 0 } }
-local players = { [player] = {}, [other] = {}, [preview] = {}, [loading] = { Loading = true } }
+local bay = { Frame = { Position = {} } }
+local players = { [player] = { Bay = bay }, [other] = { Bay = bay }, [preview] = { Bay = bay }, [loading] = { Bay = bay, Loading = true } }
 local notices, sends, stunned, recovered = 0, 0, 0, 0
 local raid = setmetatable({ Gremlins = {}, Wave = 1, WaveCount = 2, Defeated = 0, Active = true,
-    Bases = { Players = players }, Economy = { Profiles = profiles,
+    Bases = { Players = players, Near = function() return true end }, Economy = { Profiles = profiles,
       Network = { Notice = { FireClient = function() notices += 1 end } },
       Send = function() sends += 1 end },
     Stun = function() stunned += 1 end,
@@ -133,6 +134,10 @@ raid.Active, raid.Defeated, raid.Participants = true, raid.WaveCount, { [player]
 raid:Finish()
 assert(players[player].RaidsDefended == 2 and players[other].RaidsDefended == 1,
     'joining after the wave starts must not grant an unearned defence bonus')
+raid.Active, raid.Defeated, raid.Participants = true, raid.WaveCount, { [player] = true }
+raid.Bases.Near = function() return false end
+raid:Finish()
+assert(players[player].RaidsDefended == 2, 'absent or dead players must not receive nearby defence rewards')
 print('Global crew checks passed: combined servers, ambiguous ledger retry, ordered retry and monotonic publication.')
 print('Crew checks passed: friendly protection, nearby assist payout, outsider exclusion, once-per-crew raid score and membership guards.')
 print('Skill checks passed: invalid names, unlocks, upgrade/rebirth paths, cooldown spam and departure/preview guards.')

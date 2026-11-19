@@ -113,7 +113,8 @@ function GremlinRaid:Finish()
 		for player, state in pairs(self.Bases.Players) do
 			local profile = self.Economy.Profiles[player]
 			if profile and not profile.Demo and not state.Loading and not state.Closing
-				and (not self.Participants or self.Participants[player]) then
+				and (not self.Participants or self.Participants[player])
+				and self.Bases:Near(player, state.Bay.Frame.Position, Config.Crews.RewardRadius) then
 				table.insert(defended, player)
 				state.RaidsDefended = (state.RaidsDefended or 0) + 1
 				profile.Cash = math.min(Config.MaxCash, profile.Cash + Config.Gremlin.DefendReward)
