@@ -46,6 +46,16 @@ ScreenshotMode and an exact rules-format TOUR only when those features exist.
 
 ## Subsequent passes
 
+## Progress (19 November continuation)
+
+- [x] Recovered catalog/model/pedestal work; verified and committed `50e5c42`.
+- [x] Sunny runtime world, 30 original brainrots, seven rarities, five mutations.
+- [x] Player bay assignment, server-owned carry/drop/dock logic and passive economy.
+- [ ] Moving cargo and buy prompts; money HUD, carrying strip and income pops.
+- [ ] Rival stealing; meteors/domes; solar flare; gremlins with lock/zap.
+- [ ] Upgrades; rebirth; index; contracts; saving; final HUD polish.
+- [ ] ScreenshotMode/TOUR, README, genuine Studio pictures and published IDs.
+
 NPC stealing; meteor warnings/impacts and safe domes; solar flare; green gremlin
 raids with lock/zap; upgrades; rebirth; index; contracts; pcall-safe saving; final
 HUD/effects; ScreenshotMode/TOUR; genuine captures and approved icon/thumbnail.
