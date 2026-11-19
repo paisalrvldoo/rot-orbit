@@ -47,7 +47,9 @@ function DataService:Load(player)
 	local profile = self.Economy.Profiles[player]
 	if not state or not profile then return end
 	state.Loading = true
-	local session = { Key = "player_" .. player.UserId, Profile = profile, CanSave = false }
+	-- A rejoin to this same server must not share the departing connection's lease.
+	local session = { Key = "player_" .. player.UserId, Profile = profile, Player = player,
+		Token = self.Token .. ":" .. HttpService:GenerateGUID(false), CanSave = false }
 	self.Sessions[player] = session
 	local reason
 	local offlineHaul = 0
@@ -61,7 +63,7 @@ function DataService:Load(player)
 				return nil
 			end
 			local lease = previous.Session
-			if type(lease) == "table" and lease.Token ~= self.Token
+			if type(lease) == "table" and lease.Token ~= session.Token
 				and type(lease.ExpiresAt) == "number" and lease.ExpiresAt > os.time() then
 				reason = "Your dock is still open in another server. Close it and rejoin shortly."
 				return nil
@@ -77,7 +79,7 @@ function DataService:Load(player)
 				previous.Cash = cash + offlineHaul
 			end
 			previous.LastSeen = nil
-			previous.Session = { Token = self.Token, ExpiresAt = now + Config.Data.LeaseSeconds }
+			previous.Session = { Token = session.Token, ExpiresAt = now + Config.Data.LeaseSeconds }
 			return previous
 		end)
 	end)
@@ -86,7 +88,7 @@ function DataService:Load(player)
 			pcall(function()
 				self.Store:UpdateAsync(session.Key, function(previous)
 					if type(previous) == "table" and type(previous.Session) == "table"
-						and previous.Session.Token == self.Token then previous.Session = nil; return previous end
+						and previous.Session.Token == session.Token then previous.Session = nil; return previous end
 					return nil
 				end)
 			end)
@@ -187,14 +189,17 @@ function DataService:Write(session, payload, release)
 	local ok = pcall(function()
 		self.Store:UpdateAsync(session.Key, function(previous)
 			if type(previous) ~= "table" or type(previous.Session) ~= "table"
-				or previous.Session.Token ~= self.Token then lostLease = true; return nil end
-			payload.Session = not release and { Token = self.Token, ExpiresAt = os.time() + Config.Data.LeaseSeconds } or nil
+				or previous.Session.Token ~= session.Token then lostLease = true; return nil end
+			payload.Session = not release and { Token = session.Token, ExpiresAt = os.time() + Config.Data.LeaseSeconds } or nil
 			return payload
 		end)
 	end)
 	if lostLease then session.CanSave = false end
 	session.Profile.SaveStatus = ok and not lostLease and "SAVED" or "SAVE RETRY"
 	session.Saving = false
+	if lostLease and session.Player and session.Player.Parent then
+		session.Player:Kick("Your dock opened in another session. Rejoin to load your latest saved progress.")
+	end
 	if session.FinalPayload and not release then
 		local final = session.FinalPayload
 		session.FinalPayload = nil

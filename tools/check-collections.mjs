@@ -13,6 +13,10 @@ local Vector3 = { new = function(...) return {...} end }
 local Config = ${moduleBody('src/shared/Config.luau', 'local Config =')}
 local Traits = ${moduleBody('src/shared/BrainrotTraits.luau', 'local Rarity =')}
 local Format = Traits.Format
+local Mutation = Traits.Mutation
+local Catalog = { Entries = {} }
+local guid = 0
+local HttpService = { GenerateGUID = function() guid += 1; return tostring(guid) end }
 local BaseService = ${moduleBody('src/server/BaseService.luau', 'local BaseService =')}
 local EconomyService = ${moduleBody('src/server/EconomyService.luau', 'local EconomyService =')}
 local DataService = ${moduleBody('src/server/DataService.luau', 'local DataService =')}
@@ -91,8 +95,56 @@ screenshots:StageDiscoveries(state)
 found = 0
 for _ in pairs(state.Found) do found += 1 end
 assert(found == 32, "switching presets must not accumulate discoveries")
+-- Rejoining the same server must create a new lease identity.
+local document
+local store = { UpdateAsync = function(_, _, callback)
+    local updated = callback(document)
+    if updated then document = updated end
+    return updated
+end }
+local connections, loadedProfiles = {}, {}
+local saveBases = { Players = connections, SetSpeed = function() end, AddSlot = function() end }
+local saveEconomy = { Profiles = loadedProfiles, Send = function() end, ClaimIndexMilestones = function() end }
+local saves = setmetatable({ Bases = saveBases, Economy = saveEconomy, Sessions = {},
+    Store = store, Token = "same-server" }, DataService)
+local function connection()
+    local p = { UserId = 7, Parent = true, Kick = function(self, reason) self.Kicked = reason end }
+    connections[p] = { Found = {}, Variants = {} }
+    loadedProfiles[p] = { Upgrades = {}, MutationMilestones = {}, Contracts = {} }
+    return p
+end
+local first = connection()
+saves:Load(first)
+local firstSession = saves.Sessions[first]
+assert(firstSession.CanSave and document.Session.Token == firstSession.Token)
+local second = connection()
+saves:Load(second)
+assert(second.Kicked and not saves.Sessions[second].CanSave,
+    "same-server rejoin must not take a live departing session lease")
+document.Session.ExpiresAt = 0
+local third = connection()
+saves:Load(third)
+local thirdSession = saves.Sessions[third]
+assert(thirdSession.CanSave and thirdSession.Token ~= firstSession.Token)
+local token = document.Session.Token
+saves:Write(firstSession, { Cash = 999 }, true)
+assert(not firstSession.CanSave and first.Kicked and document.Session.Token == token,
+    "stale writes must neither overwrite nor release the new connection")
+saves:Write(thirdSession, { Cash = 42 }, false)
+assert(document.Cash == 42 and document.Session.Token == token and thirdSession.Profile.SaveStatus == "SAVED",
+    "renewal must preserve the connection lease identity")
+saves.Store = { UpdateAsync = function() error("temporary store failure") end }
+saves:Write(thirdSession, { Cash = 43 }, false)
+assert(thirdSession.CanSave and not third.Kicked and thirdSession.Profile.SaveStatus == "SAVE RETRY",
+    "transient write failures must remain retryable")
+saves.Store = store
+thirdSession.FinalPayload = { Cash = 44 }
+saves:Write(thirdSession, { Cash = 43 }, false)
+assert(document.Cash == 44 and document.Session == nil and thirdSession.FinalPayload == nil,
+    "queued departure must write final state and release its own lease")
 print("Collection checks passed: unique variants, independent tabs, one-time rewards, preview/load guards, cap, save isolation.")
 print("Screenshot discovery checks passed: 32/43, 10 Gold, owned SECRET and repeatable presets.")
+print("Save lease checks passed: same-server rejoin, stale write rejection, renewal, transient failure and queued release.")
 `;
 const directory = join(root, 'out', 'collection-check');
 mkdirSync(directory, { recursive: true });

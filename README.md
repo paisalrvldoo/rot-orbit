@@ -44,8 +44,9 @@ the exported dossier. Roblox Studio playtesting remains necessary: this machine
 has no Studio. See NOTES.md for current progress and the next polish priorities.
 After replacing the starter pictures, run `node tools/verify.mjs --submission`
 to also check all four final JPEGs and their TOUR presets.
-`node tools/check-collections.mjs` checks one-time collection payouts and save
-snapshot isolation using the real server functions in the Luau interpreter.
+`node tools/check-collections.mjs` checks one-time collection payouts, save
+snapshot isolation and per-connection save leases using the real server
+functions in the Luau interpreter.
 
 Run it as the grader does, writing `out/` in place of `/output`:
 

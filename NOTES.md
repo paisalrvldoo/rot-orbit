@@ -266,3 +266,9 @@ remain the submission blockers.
   Screenshot presets retain their specified carry caption.
 - [x] Public link rechecked at `225521b`: 5 passed, 0 failed. Kit level 26
   reports site level 27; use a refreshed kit before final submission.
+- [x] Save leases now identify each connection, including rejoins to the same
+  server. An old connection cannot release or overwrite a newer one's lease.
+  Confirmed lease loss stops that session; transient API failures stay retryable.
+  The actual Load/Write functions pass regressions for same-server contention,
+  expiry/reacquisition, stale writes, renewals, transient failures and queued
+  final release. Live DataStore/multiplayer tests remain on the Studio handoff.
