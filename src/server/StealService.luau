@@ -50,7 +50,7 @@ function StealService:Attach(bay, pedestal)
 			self.Network.Notice:FireClient(player, "This bay is shield locked. Find another target!")
 			return
 		end
-		if not self.Bases:Carry(player, occupant.Record) then
+		if not self.Bases:Carry(player, occupant.Record, true) then
 			self.Network.Notice:FireClient(player, "You need empty hands and a free home pedestal.")
 			return
 		end

@@ -350,7 +350,158 @@ function GremlinRaid:Sprint(player, state, root, now, skill)
 	end)
 end
 
-function GremlinRaid:Skill(player, name)
+function GremlinRaid:ShieldBlocks(origin, target)
+	local move = target - origin
+	local function blocks(shield)
+		-- Test both directions so a blast cannot escape a shield either.
+		return shieldEntry(origin, move, shield) ~= nil or shieldEntry(target, -move, shield) ~= nil
+	end
+	for _, dome in ipairs(self.World.Domes) do
+		if blocks(dome.Part) then return true end
+	end
+	for _, bay in ipairs(self.World.PlayerBays) do
+		if self.Locks:IsLocked(bay) then
+			local shield = bay.Model:FindFirstChild("BayLockShield") or bay.Model:FindFirstChild("SkillBayBubble")
+			if shield and blocks(shield) then return true end
+		end
+	end
+	return false
+end
+
+function GremlinRaid:TargetableThief(player, other, state)
+	return other ~= player and not state.Loading and not state.Closing and state.Carry and state.Carry.Stolen
+		and not (self.Crews and self.Crews:Same(player, other))
+end
+
+function GremlinRaid:Knockback(player, state, root, away, duration)
+	local now = workspace:GetServerTimeNow()
+	local untilTime = math.max(state.StunnedUntil or 0, now + duration)
+	state.StunnedUntil = untilTime
+	self.Bases:Drop(player)
+	self.Bases:SetSpeed(player)
+	if away.Magnitude > 0.01 then
+		local ok = pcall(function() root:SetNetworkOwner(nil) end)
+		root.AssemblyLinearVelocity = away.Unit * 65 + Vector3.new(0, 12, 0)
+		task.delay(duration, function()
+			if ok and root.Parent and state.StunnedUntil == untilTime then
+				pcall(function() root:SetNetworkOwnershipAuto() end)
+			end
+		end)
+	end
+	task.delay(untilTime - now, function()
+		if self.Bases.Players[player] == state and state.StunnedUntil == untilTime then
+			state.StunnedUntil = nil
+			self.Bases:SetSpeed(player)
+		end
+	end)
+end
+
+function GremlinRaid:BombBlast(player, position, skill)
+	local function inRange(at)
+		return (at - position).Magnitude <= skill.Radius and not self:ShieldBlocks(position, at)
+	end
+	for _, enemy in pairs(self.Gremlins) do
+		if inRange(enemy.Position) then self:Damage(enemy, player, skill.Damage) end
+	end
+	for other, state in pairs(self.Bases.Players) do
+		local root = other.Character and other.Character:FindFirstChild("HumanoidRootPart")
+		if root and self:TargetableThief(player, other, state) and self.Bases:Near(other, root.Position) and inRange(root.Position) then
+			self:Knockback(other, state, root, (root.Position - position) * Vector3.new(1, 0, 1), skill.Stun)
+			self.Economy.Network.Notice:FireClient(other, "BOMB HIT · CARGO DROPPED")
+		end
+	end
+	self:Pulse(position, skill.Radius, Config.Palette.Sun, "CargoBombBurst")
+	self.Economy:Send(player)
+end
+
+function GremlinRaid:Bomb(player, state, root, trap, skill)
+	state.Traps = state.Traps or {}
+	local origin = root.Position
+	local model = Instance.new("Model")
+	model.Name = trap and "CargoTrap" or "CargoBomb"
+	local shell = WorldBuilder.Part("BombShell", Vector3.one * 1.8, CFrame.new(origin), Config.Palette.Ink,
+		Enum.Material.SmoothPlastic, model, Enum.PartType.Ball, false)
+	model.PrimaryPart = shell
+	local lamp = WorldBuilder.Part("FuseBeacon", Vector3.one * 0.4, CFrame.new(origin + Vector3.new(0, 0.92, 0)),
+		Config.Palette.Sun, Enum.Material.Neon, model, Enum.PartType.Ball, false)
+	shell.CanQuery, lamp.CanQuery = false, false
+	model.Parent = self.World.Root
+	local function live()
+		return model.Parent ~= nil and self.Bases.Players[player] == state and not state.Closing
+			and not self.World.Root:GetAttribute("ScreenshotFrozen")
+	end
+	local function finish(explode)
+		if explode and live() then self:BombBlast(player, shell.Position, skill) end
+		state.Traps[model] = nil
+		model:Destroy()
+	end
+	local function pulseFuse()
+		TweenService:Create(lamp, TweenInfo.new(trap and 0.45 or 0.16, Enum.EasingStyle.Sine,
+			Enum.EasingDirection.InOut, -1, true), { Transparency = 0.78 }):Play()
+	end
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Exclude
+	params.FilterDescendantsInstances = { player.Character, model }
+	params.RespectCanCollide = true
+	local function floorAt(position)
+		local ground = workspace:Raycast(position + Vector3.new(0, 1, 0), Vector3.new(0, -22, 0), params)
+		return ground and ground.Position + Vector3.new(0, 0.93, 0)
+	end
+	if trap then
+		local landing = floorAt(origin)
+		if not landing then finish(false); return false end
+		model:PivotTo(CFrame.new(landing))
+		state.Traps[model] = true
+		pulseFuse()
+		task.spawn(function()
+			task.wait(skill.Arm)
+			local expires = workspace:GetServerTimeNow() + skill.TrapLifetime
+			local function near(position)
+				return (position - landing).Magnitude <= skill.TriggerRadius and not self:ShieldBlocks(landing, position)
+			end
+			while live() and workspace:GetServerTimeNow() < expires do
+				for _, enemy in pairs(self.Gremlins) do
+					if near(enemy.Position) then finish(true); return end
+				end
+				for other, otherState in pairs(self.Bases.Players) do
+					local target = other.Character and other.Character:FindFirstChild("HumanoidRootPart")
+					if target and self:TargetableThief(player, other, otherState)
+						and self.Bases:Near(other, target.Position) and near(target.Position) then finish(true); return end
+				end
+				task.wait(0.15)
+			end
+			finish(false)
+		end)
+	else
+		pulseFuse()
+		task.spawn(function()
+			local aim = root.CFrame.LookVector * Vector3.new(1, 0, 1)
+			local move = aim.Magnitude > 0.01 and aim.Unit * skill.Distance or Vector3.zero
+			local started = workspace:GetServerTimeNow()
+			while live() do
+				local t = math.clamp((workspace:GetServerTimeNow() - started) / skill.Travel, 0, 1)
+				local nextAt = origin + move * t + Vector3.new(0, 4 * skill.Arc * t * (1 - t), 0)
+				local step = nextAt - shell.Position
+				if step.Magnitude > 0.01 then
+					local wall = workspace:Spherecast(shell.Position, 0.65, step, params)
+					if wall or self:ShieldBlocks(shell.Position, nextAt) then break end
+					model:PivotTo(CFrame.new(nextAt))
+				end
+				if t >= 1 then break end
+				RunService.Heartbeat:Wait()
+			end
+			if live() then
+				local landing = floorAt(shell.Position)
+				if landing and not self:ShieldBlocks(shell.Position, landing) then model:PivotTo(CFrame.new(landing)) end
+				task.wait(math.max(0, skill.Fuse - (workspace:GetServerTimeNow() - started)))
+			end
+			finish(true)
+		end)
+	end
+	return true
+end
+
+function GremlinRaid:Skill(player, name, mode)
 	if type(name) ~= "string" or not table.find(Config.Skills.Order, name) then return end
 	local state, profile = self.Bases.Players[player], self.Economy.Profiles[player]
 	local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
@@ -362,6 +513,7 @@ function GremlinRaid:Skill(player, name)
 		return
 	end
 	local now = workspace:GetServerTimeNow()
+	if (state.StunnedUntil or 0) > now then return end
 	state.SkillReadyAt = state.SkillReadyAt or {}
 	if now < (state.SkillReadyAt[name] or 0) then return end
 	if name == "Bubble" and (root.Position - state.Bay.Frame.Position).Magnitude > skill.Radius then
@@ -375,6 +527,22 @@ function GremlinRaid:Skill(player, name)
 			self.Economy.Network.Notice:FireClient(player, "BLINK BLOCKED · TURN TOWARD OPEN DECK")
 			return
 		end
+	end
+	if name == "Bomb" then
+		local trap = mode == "Trap"
+		if mode ~= nil and not trap then return end
+		if trap then
+			local traps = 0
+			for model in pairs(state.Traps or {}) do if model.Parent then traps += 1 end end
+			if traps >= skill.TrapLimit then
+				self.Economy.Network.Notice:FireClient(player, "BOMB · TWO TRAPS ALREADY ACTIVE")
+				return
+			end
+		end
+		if not self:Bomb(player, state, root, trap, skill) then return end
+		state.SkillReadyAt[name] = now + skill.Cooldown
+		self.Economy:Send(player)
+		return
 	end
 	state.SkillReadyAt[name] = now + skill.Cooldown
 	if name == "Blink" then

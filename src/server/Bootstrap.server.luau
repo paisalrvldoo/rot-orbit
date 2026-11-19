@@ -35,13 +35,13 @@ local screenshots = ScreenshotService.new({ Bases = bases, Economy = economy, Da
 	Meteors = meteors, Gremlins = gremlins, Conveyor = conveyor })
 local actions = { Lock = function(player) locks:Activate(player) end,
 	Zap = function(player) gremlins:Zap(player) end,
-	Skill = function(player, name) gremlins:Skill(player, name) end,
+	Skill = function(player, name, mode) gremlins:Skill(player, name, mode) end,
 	Crew = function(player, id) crews:Join(player, id) end,
 	Upgrade = function(player, name) upgrades:Buy(player, name) end,
 	Rebirth = function(player) upgrades:Perform(player) end,
 	Screenshot = function(player, shot) screenshots:Prepare(player, shot) end }
 local lastAction = {}
-network.Action.OnServerEvent:Connect(function(player, action, argument)
+network.Action.OnServerEvent:Connect(function(player, action, argument, mode)
 	if type(action) ~= "string" or not actions[action] then return end
 	if not bases.Players[player] or bases.Players[player].Loading or bases.Players[player].Closing then return end
 	local profile = economy.Profiles[player]
@@ -50,7 +50,7 @@ network.Action.OnServerEvent:Connect(function(player, action, argument)
 	local now = workspace:GetServerTimeNow()
 	if now - (lastAction[player] or 0) < Config.ActionCooldown then return end
 	lastAction[player] = now
-	actions[action](player, argument)
+	actions[action](player, argument, mode)
 end)
 
 local function joined(player)

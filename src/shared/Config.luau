@@ -71,8 +71,8 @@ local Config = {
 			{ Name = "Comet Cannoli", Color = Color3.fromRGB(255, 129, 172) },
 		} },
 	Skills = {
-		Order = { "Dash", "Slam", "Bubble", "Blink", "Sprint" },
-		TouchPrimary = { "Slam", "Blink", "Sprint" },
+		Order = { "Dash", "Slam", "Bubble", "Blink", "Sprint", "Bomb" },
+		TouchPrimary = { "Slam", "Blink", "Sprint", "Bomb" },
 		TouchUtility = { "Dash", "Bubble" },
 		Dash = { Name = "JET DASH", Key = "X", Cooldown = 7, Distance = 18, Unlock = "FREE" },
 		Slam = { Name = "GRAVITY SLAM", Key = "V", Cooldown = 12, Radius = 24, Damage = 4,
@@ -82,6 +82,9 @@ local Config = {
 		Blink = { Name = "BLINK", Key = "Q", Cooldown = 9, Distance = 28, CarryDistance = 15, Unlock = "FREE" },
 		Sprint = { Name = "SPRINT", Key = "LeftShift", KeyLabel = "SHIFT", Cooldown = 11,
 			Duration = 4, Speed = 1.7, CarrySpeed = 1.35, Unlock = "FREE" },
+		Bomb = { Name = "BOMB", Key = "G", Cooldown = 13, Radius = 13, Damage = 6,
+			Distance = 34, Arc = 9, Travel = 0.55, Fuse = 1.5, Arm = 0.65,
+			TrapLimit = 2, TrapLifetime = 30, TriggerRadius = 5, Stun = 0.9, Unlock = "FREE" },
 	},
 	Lock = { Duration = 40, Cooldown = 65 },
 	Upgrades = {

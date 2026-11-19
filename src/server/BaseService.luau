@@ -59,9 +59,11 @@ function BaseService:SetSpeed(player)
 		if state and state.SprintUntil and state.SprintUntil > workspace:GetServerTimeNow() then
 			speed *= state.Carry and Config.Skills.Sprint.CarrySpeed or Config.Skills.Sprint.Speed
 		end
+		local stunned = state and state.StunnedUntil and state.StunnedUntil > workspace:GetServerTimeNow()
+		if stunned then speed = 0 end
 		humanoid.WalkSpeed = speed
 		humanoid.UseJumpPower = true
-		humanoid.JumpPower = Config.JumpPower
+		humanoid.JumpPower = stunned and 0 or Config.JumpPower
 	end
 end
 
@@ -88,6 +90,7 @@ function BaseService:Assign(player)
 		local humanoid = character:WaitForChild("Humanoid", 10)
 		if not root or not humanoid or self.Players[player] ~= state then return end
 		state.SprintUntil = nil
+		state.StunnedUntil = nil
 		local destination = state.HasSpawned and state.Bay.SpawnFrame
 			or self.World.Spawn.CFrame * CFrame.new(0, 4, 0)
 		state.HasSpawned = true
@@ -178,7 +181,7 @@ function BaseService:AttachRetirePrompt(player, pedestal)
 	prompt.Name = "RetireCargo"
 	prompt.ActionText = "Retire · frees slot"
 	prompt.ObjectText = Catalog.DisplayName(occupant.Record)
-	prompt.KeyboardKeyCode = Enum.KeyCode.G
+	prompt.KeyboardKeyCode = Enum.KeyCode.H
 	prompt.GamepadKeyCode = Enum.KeyCode.ButtonY
 	prompt.Exclusivity = Enum.ProximityPromptExclusivity.OnePerButton
 	prompt.HoldDuration = Config.RetireHoldDuration
@@ -198,7 +201,7 @@ function BaseService:AttachRetirePrompt(player, pedestal)
 	end)
 end
 
-function BaseService:Carry(player, record)
+function BaseService:Carry(player, record, stolen)
 	if not self:CanCarry(player) then return false end
 	local state = self.Players[player]
 	local root = player.Character.HumanoidRootPart
@@ -219,7 +222,7 @@ function BaseService:Carry(player, record)
 	trail.LightEmission = 1
 	trail.Transparency = NumberSequence.new(0.2, 1)
 	trail.Parent = model.PrimaryPart
-	state.Carry = { Record = record, Model = model }
+	state.Carry = { Record = record, Model = model, Stolen = stolen == true }
 	self:SetSpeed(player)
 	if self.Economy then self.Economy:Send(player) end
 	return true
