@@ -12,7 +12,7 @@ the recorded session, with no downloaded packages or uploaded assets.
 1. Keep the starter publishable and document the build/check workflow.
 2. Map shared modules; enable avatars; build a sunny station, orange planet,
    cargo ring, player/NPC bays, eight pedestals per bay, and shield domes at runtime.
-3. Add a catalog of 30 original brainrots, seven rarities, five mutations, and
+3. Add a catalog of 43 original brainrots, seven rarities, six mutations, and
    primitive character models with readable billboards and idle animation.
 4. Finish a playable purchase -> carry -> place -> passive income loop with a
    top-centre cash HUD and a carrying strip. Verify and commit each feature.
@@ -68,7 +68,7 @@ ScreenshotMode and an exact rules-format TOUR only when those features exist.
   server recomputes costs and enforces upgrade caps.
 - [x] Rebirth [R] opens the upgrade panel; a second click confirms resetting
   cash/upgrades/bay for permanent income. Found index entries survive resets.
-- [x] Index [B]: all 30 cast entries in a six-column grid; found count, seven
+- [x] Index [B]: all 43 cast entries in a nine-column grid; found count, seven
   rarity counts and coloured found icons / dark undiscovered silhouettes.
 - [x] Three simultaneous contracts, rotating through nine missions with cash
   rewards. U/R show contracts beside upgrades/rebirth. All rewards are server-owned.
