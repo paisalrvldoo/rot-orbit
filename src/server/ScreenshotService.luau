@@ -192,7 +192,7 @@ function ScreenshotService:Prepare(player, shot)
 		self.Economy:PublishEvent({ Name = "Meteor", Text = "METEOR SHOWER! GET UNDER THE SHIELD DOME",
 			EndsAt = workspace:GetServerTimeNow() + 60, FrozenSeconds = 18, Priority = 3 })
 	elseif shot == "Raid" then
-		self.Economy:PublishEvent({ Name = "Gremlin", Text = "GREMLIN RAID! LOCK [L] OR ZAP [F]",
+		self.Economy:PublishEvent({ Name = "Gremlin", Text = "GREMLIN RAID! · LOCK [L] OR ZAP [F]",
 			EndsAt = workspace:GetServerTimeNow() + 60, FrozenSeconds = 27, Priority = 2,
 			Color = Color3.fromRGB(155, 255, 105) })
 		local frame = state.Bay.Frame

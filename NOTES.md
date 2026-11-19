@@ -34,8 +34,11 @@ banner; phone playtest/capture approval remains with the owner.
   near x341 and carry near x436. This is a framing estimate, not a render.
 - [x] Update the active handoff with the latest ten priorities and the first
   phone review items; keep final Studio rendering/captures explicit.
-- [ ] Recheck 1024×460 phone presentation: dark deck, useful zero-income hint,
-  clean join labels, readable cover cards, and compact raid warning.
+- [x] Darken the station deck for stronger path contrast; zero dock income now
+  reads as a docking hint. Crew pads are spaced around the hub with shorter,
+  local join labels; the raid warning is compact enough for phone layouts.
+- [ ] Owner recheck at 1024×460: confirm deck contrast, zero-income hint,
+  join-pad readability, cover billboards and raid banner in Studio.
 - [ ] Owner Studio render/playtest and four genuine captures remain required.
   This machine has no Roblox renderer; source checks cannot approve the look.
 

@@ -548,7 +548,7 @@ function GremlinRaid:Start()
 	local boss = self.Wave % Config.Gremlin.BossEvery == 0
 	local endsAt = workspace:GetServerTimeNow() + Config.Gremlin.Duration + Config.Gremlin.Telegraph
 	self.Economy:PublishEvent({ Name = "Gremlin", Text = boss and "CAPTAIN RAID! FIGHT THE BOSS · ZAP [F]"
-		or "GREMLIN RAID! INCOMING · LOCK [L] OR ZAP [F]", EndsAt = endsAt, Priority = 4,
+		or "GREMLIN RAID! · LOCK [L] OR ZAP [F]", EndsAt = endsAt, Priority = 4,
 		Color = Color3.fromRGB(255, 109, 91) })
 	local portal = WorldBuilder.Part("GremlinArrivalPortal", Vector3.new(12, 14, 1), CFrame.new(0, 7, -60),
 		Color3.fromRGB(151, 255, 81), Enum.Material.Neon, self.World.Root, Enum.PartType.Ball, false)

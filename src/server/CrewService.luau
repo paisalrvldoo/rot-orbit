@@ -233,9 +233,14 @@ function CrewService:BuildBoard()
 	label.Parent = surface
 	self.Board = label
 	for id, crew in ipairs(self.Crews) do
-		local pad = WorldBuilder.Part("Join" .. id, Vector3.new(6, 0.35, 6), CFrame.new(14 + (id - 1) * 8, 0.3, 26),
+		local angle = (id - 1) * math.pi * 2 / #self.Crews
+		local pad = WorldBuilder.Part("Join" .. id, Vector3.new(6, 0.35, 6),
+			CFrame.new(math.cos(angle) * 29, 0.3, math.sin(angle) * 29),
 			crew.Color, Enum.Material.SmoothPlastic, self.World.Geometry)
-		WorldBuilder.Billboard(pad, "JOIN " .. string.upper(crew.Name), crew.Color, Vector3.new(0, 2, 0), 200, 30).TextSize = 14
+		local joinLabel = WorldBuilder.Billboard(pad, "JOIN " .. string.upper(crew.Name), crew.Color,
+			Vector3.new(0, 2, 0), 142, 26)
+		joinLabel.TextSize = 13
+		joinLabel.Parent.MaxDistance = 34
 		local prompt = Instance.new("ProximityPrompt")
 		prompt.ActionText, prompt.ObjectText = "Join Crew", crew.Name
 		prompt.HoldDuration = 0.3
