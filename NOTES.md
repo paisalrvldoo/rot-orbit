@@ -146,7 +146,9 @@ Visual order for this pass (compile/source checks here; Studio review pending):
   source-reviewed only, owner must confirm brightness in Studio.
 - [x] Fix detached boot/antenna/cap joins, add satellite struts and a sceptre
   grip, bring capes onto the bodies. Clay/second-angle Studio review is pending.
-- [ ] Give controls focus, hover, press and honest unavailable states.
+- [x] Bottom controls share mouse/touch/gamepad hover, gold focus/selected border,
+  press scale, short pending guard and real lock/zap cooldown disabling; keys use
+  the same guarded activation. Upgrade panel controls are next.
 - [ ] Choreograph income pops and recent-action entrances.
 - [ ] Review cover/title bounds and document Studio capture checks. No generated
   image can replace a genuine Studio screenshot.

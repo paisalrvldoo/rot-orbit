@@ -10,6 +10,59 @@ local Format = Traits.Format
 local Remotes = require(shared:WaitForChild("Remotes"))
 local HudController = {}
 
+-- Shared mouse, touch and gamepad feedback, used by both HUD and panel controls.
+function HudController.ButtonFeedback(button, callback, pendingSeconds)
+	button.AutoButtonColor = false
+	local scale = Instance.new("UIScale", button)
+	local stroke = button:FindFirstChildOfClass("UIStroke") or Instance.new("UIStroke", button)
+	stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	local hovered, focused, pressed = false, false, false
+	local tween
+	local function refresh()
+		local blocked = button:GetAttribute("Unavailable") or button:GetAttribute("Pending")
+		button.Active = not blocked
+		button.Selectable = not blocked
+		button.TextTransparency = blocked and 0.35 or 0
+		local selected = button:GetAttribute("Selected")
+		stroke.Color = (focused or selected) and Config.Palette.Sun
+			or (hovered and not blocked and Config.Palette.Mint or Config.Palette.Teal)
+		stroke.Transparency = blocked and 0.65 or 0.15
+		stroke.Thickness = (focused or selected) and 3 or 2
+		if tween then tween:Cancel() end
+		tween = TweenService:Create(scale, TweenInfo.new(pressed and 0.1 or 0.2,
+			pressed and Enum.EasingStyle.Quad or Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+			{ Scale = pressed and not blocked and 0.96 or 1 })
+		tween:Play()
+	end
+	button.MouseEnter:Connect(function() hovered = true; refresh() end)
+	button.MouseLeave:Connect(function() hovered = false; pressed = false; refresh() end)
+	button.SelectionGained:Connect(function() focused = true; refresh() end)
+	button.SelectionLost:Connect(function() focused = false; pressed = false; refresh() end)
+	button.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1
+			or input.UserInputType == Enum.UserInputType.Touch or input.KeyCode == Enum.KeyCode.ButtonA then
+			pressed = true; refresh()
+		end
+	end)
+	button.InputEnded:Connect(function() pressed = false; refresh() end)
+	for _, attribute in ipairs({ "Unavailable", "Pending", "Selected" }) do
+		button:GetAttributeChangedSignal(attribute):Connect(refresh)
+	end
+	local function activate()
+		if button:GetAttribute("Unavailable") or button:GetAttribute("Pending") then return end
+		if pendingSeconds then
+			button:SetAttribute("Pending", true)
+			task.delay(pendingSeconds, function()
+				if button.Parent then button:SetAttribute("Pending", false) end
+			end)
+		end
+		callback()
+	end
+	button.Activated:Connect(activate)
+	refresh()
+	return activate
+end
+
 function HudController.Text(parent, name, text, position, size, textSize, color)
 	local label = Instance.new("TextLabel")
 	label.Name = name

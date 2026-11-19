@@ -6,6 +6,7 @@ local shared = game:GetService("ReplicatedStorage")
 local Config = require(shared:WaitForChild("Config"))
 local Traits = require(shared:WaitForChild("BrainrotTraits"))
 local Format = Traits.Format
+local HudController = require(script.Parent:WaitForChild("HudController"))
 local InputController = {}
 InputController.__index = InputController
 
@@ -31,6 +32,13 @@ function InputController.Start(hud)
 		end
 		self.Buttons.Zap.Text = "ZAP [F]\n" .. ((state.ZapReadyAt or 0) > now
 			and ("RECHARGE · " .. math.ceil(state.ZapReadyAt - now) .. "s") or "READY")
+		lock:SetAttribute("Unavailable", (state.LockReadyAt or 0) > now)
+		self.Buttons.Zap:SetAttribute("Unavailable", (state.ZapReadyAt or 0) > now)
+		for action, panelName in pairs({ Upgrades = "UpgradePanel", Rebirth = "UpgradePanel", Index = "IndexPanel" }) do
+			local button = self.Buttons[action]
+			local panel = hud.Gui:FindFirstChild(panelName)
+			if button then button:SetAttribute("Selected", panel and panel.Visible or false) end
+		end
 		if state == previous or not (self.Buttons.Upgrades and self.Buttons.Rebirth and self.Buttons.Index) then return end
 		previous = state
 		local levels, maxLevels, found = 0, 0, 0
@@ -65,7 +73,8 @@ function InputController:Register(name, label, key, callback)
 	stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	stroke.Color = Config.Palette.Teal
 	stroke.Thickness = 2
-	button.Activated:Connect(callback)
+	local activate = HudController.ButtonFeedback(button, callback,
+		(name == "Lock" or name == "Zap") and 0.35 or nil)
 	self.Buttons[name] = button
 	table.insert(self.Order, name)
 	local priority = { Lock = 1, Upgrades = 2, Rebirth = 3, Index = 4, Zap = 5 }
@@ -75,7 +84,7 @@ function InputController:Register(name, label, key, callback)
 	end
 	ContextActionService:BindAction("RotOrbit" .. name, function(_, inputState)
 		if UserInputService:GetFocusedTextBox() then return Enum.ContextActionResult.Pass end
-		if inputState == Enum.UserInputState.Begin then callback() end
+		if inputState == Enum.UserInputState.Begin then activate() end
 		return Enum.ContextActionResult.Sink
 	end, false, key)
 end
