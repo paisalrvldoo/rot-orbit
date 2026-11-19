@@ -31,14 +31,14 @@ function EconomyService:AddPlayer(player)
 	self:Send(player)
 end
 
-function EconomyService:Income(player, showPops)
+function EconomyService:Income(player, showPops, baseRateOnly)
 	local state = self.Bases.Players[player]
 	local profile = self.Profiles[player]
 	if not state or not profile or state.Loading then return 0 end
 	local income = 0
 	local pops = showPops and {} or nil
 	local boost = 1 + (profile.Upgrades.IncomeBoost or 0) * Config.Upgrades.IncomeBoost.Step
-	local multiplier = profile.Multiplier * self.IncomeMultiplier * boost
+	local multiplier = profile.Multiplier * boost * (baseRateOnly and 1 or self.IncomeMultiplier)
 	for _, pedestal in ipairs(state.Bay.Slots) do
 		local occupant = pedestal.Occupant
 		if occupant then
@@ -109,6 +109,7 @@ function EconomyService:Snapshot(player)
 	return { Ready = true, Cash = profile.Cash, Income = self:Income(player),
 		Rebirths = profile.Rebirths, Multiplier = profile.Multiplier, Upgrades = profile.Upgrades,
 		SaveStatus = profile.SaveStatus or "SESSION ONLY",
+		OfflineHaul = not profile.Demo and profile.OfflineHaul or nil,
 		BayIndex = state.Bay.Index, BayPosition = state.Bay.SpawnFrame.Position,
 		Slots = #state.Bay.Slots, Inventory = inventory, Found = state.Found,
 		IndexMilestone = profile.IndexMilestone,

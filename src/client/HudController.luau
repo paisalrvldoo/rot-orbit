@@ -217,6 +217,19 @@ function HudController.Start()
 	beacon.AlwaysOnTop = true
 	beacon.Parent = marker
 	local home = HudController.Text(beacon, "Home", "YOUR BAY ↓", UDim2.fromScale(0.5, 0), UDim2.fromScale(1, 1), 23, Config.Palette.Mint)
+	local function showNotice(message)
+		if feed[1] ~= message then table.insert(feed, 1, message) end
+		feed[4] = nil
+		feedGeneration += 1
+		local generation = feedGeneration
+		renderFeed(true)
+		task.delay(12, function()
+			if generation ~= feedGeneration then return end
+			table.clear(feed)
+			renderFeed()
+		end)
+	end
+	local showedOfflineHaul = false
 	local function update(snapshot)
 		if not snapshot.Ready then return end
 		state = snapshot
@@ -228,20 +241,13 @@ function HudController.Start()
 		hint.Visible = not snapshot.Carrying
 		if snapshot.Carrying then carrying.Text = "CARRYING " .. snapshot.Carrying.Name .. " → RUN TO YOUR BAY" end
 		marker.Position = snapshot.BayPosition + Vector3.new(0, 11, 0)
+		if snapshot.OfflineHaul and not showedOfflineHaul then
+			showedOfflineHaul = true
+			showNotice("WHILE YOU WERE AWAY · +" .. Format.Money(snapshot.OfflineHaul))
+		end
 	end
 	network.Snapshot.OnClientEvent:Connect(update)
-	network.Notice.OnClientEvent:Connect(function(message)
-		if feed[1] ~= message then table.insert(feed, 1, message) end
-		feed[4] = nil
-		feedGeneration += 1
-		local generation = feedGeneration
-		renderFeed(true)
-		task.delay(12, function()
-			if generation ~= feedGeneration then return end
-			table.clear(feed)
-			renderFeed()
-		end)
-	end)
+	network.Notice.OnClientEvent:Connect(showNotice)
 	network.Screenshot.OnClientEvent:Connect(function(scene)
 		feedGeneration += 1
 		feed = scene.Actions or {}

@@ -50,9 +50,11 @@ function DataService:Load(player)
 	local session = { Key = "player_" .. player.UserId, Profile = profile, CanSave = false }
 	self.Sessions[player] = session
 	local reason
+	local offlineHaul = 0
 	local ok, saved = pcall(function()
 		if not self.Store then error("Progress store unavailable") end
 		return self.Store:UpdateAsync(session.Key, function(previous)
+			offlineHaul = 0
 			previous = type(previous) == "table" and previous or { Version = Config.Data.Version }
 			if type(previous.Version) == "number" and previous.Version > Config.Data.Version then
 				reason = "Your progress needs a newer server. Please rejoin."
@@ -64,7 +66,18 @@ function DataService:Load(player)
 				reason = "Your dock is still open in another server. Close it and rejoin shortly."
 				return nil
 			end
-			previous.Session = { Token = self.Token, ExpiresAt = os.time() + Config.Data.LeaseSeconds }
+			local now = os.time()
+			-- Consume the saved departure time and credit the haul in the same write.
+			local lastSeen = integer(previous.LastSeen, now, 0, now)
+			local away = math.min(now - lastSeen, Config.Data.OfflineMaxSeconds)
+			if away >= Config.Data.OfflineMinSeconds then
+				local rate = integer(previous.DockRate, 0, 0, Config.MaxCash)
+				local cash = integer(previous.Cash, Config.StartingCash, 0, Config.MaxCash)
+				offlineHaul = math.min(Config.MaxCash - cash, math.floor(rate * away * Config.Data.OfflineShare))
+				previous.Cash = cash + offlineHaul
+			end
+			previous.LastSeen = nil
+			previous.Session = { Token = self.Token, ExpiresAt = now + Config.Data.LeaseSeconds }
 			return previous
 		end)
 	end)
@@ -84,6 +97,7 @@ function DataService:Load(player)
 	if ok and type(saved) == "table" then
 		session.CanSave = true
 		profile.Cash = integer(saved.Cash, Config.StartingCash, 0, Config.MaxCash)
+		profile.OfflineHaul = offlineHaul > 0 and offlineHaul or nil
 		profile.Rebirths = integer(saved.Rebirths, 0, 0, Config.Rebirth.MaxLevel)
 		profile.Multiplier = Config.Rebirth.Multiplier(profile.Rebirths)
 		profile.IndexMilestone = integer(saved.IndexMilestone, 0, 0, #Config.IndexMilestones)
@@ -143,6 +157,7 @@ function DataService:Serialize(player)
 	-- Cargo already purchased/stolen is owned; reconnecting safely docks it in a free slot.
 	if state.Carry then add(state.Carry.Record, 0) end
 	return { Version = Config.Data.Version, Cash = profile.Cash, Rebirths = profile.Rebirths,
+		LastSeen = os.time(), DockRate = self.Economy:Income(player, false, true),
 		Upgrades = table.clone(profile.Upgrades), Found = table.clone(state.Found), Inventory = inventory,
 		IndexMilestone = profile.IndexMilestone,
 		Contracts = { table.clone(profile.Contracts[1]), table.clone(profile.Contracts[2]), table.clone(profile.Contracts[3]) } }

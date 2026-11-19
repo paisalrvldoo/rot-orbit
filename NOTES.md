@@ -194,4 +194,8 @@ originals, six mutations, station title, 24 scripts, dense HUD and staged cover.
   Moving sleds use the same rarity rim color as the docks.
 - [ ] Improve progression feedback using the research priorities for earned
   rewards, the index and rebirth while preserving old saves.
+- [x] Offline haul pays 25% of the saved dock rate for up to two hours and
+  appears in the HUD feed on return. The lease acquisition credits each
+  departure once. Previous saves earn offline cash after their next save.
+  Needs a Studio DataStore playtest.
 - [ ] Source-review the four staged shots and make the owner capture handoff clear.
