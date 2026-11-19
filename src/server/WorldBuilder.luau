@@ -339,9 +339,12 @@ function WorldBuilder.Build()
 	if built then
 		return built
 	end
-	lighting()
-	Workspace.Gravity = Config.Gravity
-	Workspace.FallenPartsDestroyHeight = -100
+	-- Optional ambience must never prevent the playable station from spawning.
+	local lit, reason = pcall(lighting)
+	if not lit then warn("ROT ORBIT lighting fallback:", reason) end
+	local gravitySet, gravityReason = pcall(function() Workspace.Gravity = Config.Gravity end)
+	if not gravitySet then warn("ROT ORBIT default gravity:", gravityReason) end
+	-- Restricted Workspace properties belong in default.project.json, never here.
 	local root = folder("ROT_ORBIT", Workspace)
 	local geometry = folder("Station", root)
 	local radius = Config.World.DeckRadius

@@ -295,3 +295,25 @@ remain the submission blockers.
   frames pass; wrong dimensions, truncation and oversize files fail. Repository
   images stayed untouched. Both normal verify and the actual-function
   collection/save regressions pass. Every working piece committed.
+
+
+## Live recovery and combat continuation (19 November, 21:55 WIB; 25-minute cap)
+
+Initial verify passed with a clean tree; recorded checkpoint d4d37ad. Read the
+owner research once, including new live errors and enemy/skill/crew requests.
+The ten research priorities remain the plan: 43 originals, six mutations,
+24 meaningful scripts, large title, late-game cover, four real captures,
+visible hazards, live HUD/quests/feed, rarity value cards and earned progression.
+Core fixes and combat take priority over more visual polish.
+
+- [x] Remove runtime FallenPartsDestroyHeight assignment; set it in the Rojo
+  Workspace properties. Audit global service writes: no runtime Technology,
+  StreamingEnabled, FilteringEnabled or character-loading property writes.
+  Optional lighting/gravity setup is guarded so ambience cannot abort Build.
+- [ ] Live server boots with zero server errors (owner must republish and test;
+  no Roblox runtime available here). Source build/compile checks pass.
+- [ ] Earlier, visible raids with health, combat rewards and every-third boss.
+- [ ] Original skills with authoritative cooldowns, mobile controls and VFX.
+- [ ] Same-server crew joining, friendly theft protection and shared defence.
+- [ ] Server/global crew ranks with throttled pcall-safe persistence.
+- [ ] Four genuine Studio captures, approved icon/thumbnail and latest publish.
