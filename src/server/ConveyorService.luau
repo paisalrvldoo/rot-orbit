@@ -56,13 +56,13 @@ function ConveyorService.new(world, economy)
 				end
 				self:Spawn(record, -math.pi / 2)
 				local entry = Catalog.Get(record.Id)
-				if entry.Rarity == "SECRET" then
+				if Rarity.ByName[entry.Rarity].Rank >= 4 then
 					economy:PublishEvent({
-						Name = "SecretCargo",
-						Text = "SECRET ON THE RING · " .. string.upper(Catalog.DisplayName(record)),
-						EndsAt = workspace:GetServerTimeNow() + Config.Conveyor.SecretNoticeSeconds,
-						Priority = 1.75,
-						Color = Rarity.ByName.SECRET.Color,
+						Name = "RareCargo",
+						Text = string.upper(entry.Rarity) .. " ON THE RING · " .. string.upper(Catalog.DisplayName(record)),
+						EndsAt = workspace:GetServerTimeNow() + Config.Conveyor.RareNoticeSeconds,
+						Priority = entry.Rarity == "SECRET" and 1.75 or 1.25,
+						Color = Rarity.ByName[entry.Rarity].Color,
 						HideCountdown = true,
 					})
 				end
@@ -100,30 +100,46 @@ function ConveyorService:Spawn(record, angle)
 	pivot.CanQuery = false
 	capsule.PrimaryPart = pivot
 	local rarity = Rarity.ByName[Catalog.Get(record.Id).Rarity]
-	local pad = WorldBuilder.Part("HoverSled", Vector3.new(0.68, 5.6, 5.6),
-		CFrame.new(0, -0.3, 0) * CFrame.Angles(0, 0, math.pi / 2), Config.Palette.Ink,
+	local sledSize = 1 + math.max(0, rarity.Rank - 3) * 0.07
+	local pad = WorldBuilder.Part("HoverSled", Vector3.new(0.92, 5.8 * sledSize, 5.8 * sledSize),
+		CFrame.new(0, -0.41, 0) * CFrame.Angles(0, 0, math.pi / 2), Config.Palette.Ink,
 		Enum.Material.Metal, capsule, Enum.PartType.Cylinder, false)
-	WorldBuilder.Part("SledRarityBand", Vector3.new(0.18, 5.8, 5.8),
-		CFrame.new(0, -0.34, 0) * CFrame.Angles(0, 0, math.pi / 2), rarity.Color,
+	WorldBuilder.Part("SledRarityBand", Vector3.new(0.28, 6 * sledSize, 6 * sledSize),
+		CFrame.new(0, -0.44, 0) * CFrame.Angles(0, 0, math.pi / 2), rarity.Color,
 		Enum.Material.Neon, capsule, Enum.PartType.Cylinder, false)
 	for _, side in ipairs({ -1, 1 }) do
 		WorldBuilder.Part("SledClamp", Vector3.new(0.64, 0.48, 2.6),
-			CFrame.new(side * 2.58, -0.02, 0), Config.Palette.White,
+			CFrame.new(side * 2.75 * sledSize, -0.06, 0), Config.Palette.White,
 			Enum.Material.SmoothPlastic, capsule, nil, false)
 	end
+	WorldBuilder.Part("SledUnderglow", Vector3.new(0.14, 4.8 * sledSize, 4.8 * sledSize),
+		CFrame.new(0, -0.93, 0) * CFrame.Angles(0, 0, math.pi / 2), rarity.Color,
+		Enum.Material.Neon, capsule, Enum.PartType.Cylinder, false)
 	if rarity.Rank >= 4 then
 		local source = Instance.new("Attachment", pivot)
 		local top = Instance.new("Attachment", pivot)
-		top.Position = Vector3.new(0, rarity.Rank >= 6 and 10 or 7, 0)
+		top.Position = Vector3.new(0, 8 + (rarity.Rank - 4) * 3, 0)
 		local beam = Instance.new("Beam")
 		beam.Attachment0, beam.Attachment1 = source, top
-		beam.Width0, beam.Width1 = 1.8, 0.18
+		beam.Width0, beam.Width1 = rarity.Rank == 7 and 4.2 or 2.6, 0.28
 		beam.FaceCamera, beam.LightEmission = true, 0.75
 		beam.Color = ColorSequence.new(rarity.Color)
-		beam.Transparency = NumberSequence.new(0.81, 1)
+		beam.Transparency = NumberSequence.new(rarity.Rank == 7 and 0.52 or 0.72, 1)
 		beam.Parent = pivot
+		for _, side in ipairs({ -1, 1 }) do
+			local low = Instance.new("Attachment", pivot)
+			low.Position = Vector3.new(side * 2.2 * sledSize, -0.36, 0)
+			local high = Instance.new("Attachment", pivot)
+			high.Position = low.Position + Vector3.new(0, 0.3, 0)
+			local wake = Instance.new("Trail")
+			wake.Attachment0, wake.Attachment1 = low, high
+			wake.Lifetime, wake.LightEmission, wake.FaceCamera = 0.48, 0.85, true
+			wake.Color = ColorSequence.new(rarity.Color)
+			wake.Transparency = NumberSequence.new(0.3, 1)
+			wake.Parent = pivot
+		end
 	end
-	local brainrot = BrainrotModel.Create(record, CFrame.identity, capsule, true)
+	local brainrot = BrainrotModel.Create(record, CFrame.Angles(0, math.pi, 0), capsule, true)
 	brainrot:SetAttribute("VisualState", "Cargo")
 	capsule:PivotTo(frame)
 	capsule.Parent = self.World.Cargo

@@ -6,8 +6,10 @@
 - [x] Applied the latest phone control override. Run, Blink and Zap are direct
   controls. Removed the utility page and free bomb action, including server
   dispatch. Gear will come from supply boxes. Phone layout checks pass.
-- [ ] Make the live cargo ring and its brainrots the visual focus. Stage the
-  four official shots around carry/dock, index, raid and next rebirth.
+- [x] Strengthened the live cargo rail with larger rarity rails and bright
+  clamps. Cargo faces nearby shoppers on both sides, and Legendary+ sleds
+  have wider rims, wakes, beams, chimes and brief arrival notices.
+- [ ] Stage the cover at the cargo ring and review the other three presets.
 - [ ] Owner Studio pass at 1024×460 and 1280×720, cover at 768×432 judge scale,
   then latest publish and genuine captures.
 

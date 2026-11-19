@@ -118,6 +118,7 @@ function BillboardFx.Start()
 			for model in pairs(visuals) do restore(model) end
 			return
 		end
+		local camera = workspace.CurrentCamera
 		local revealPosition
 		for model in pairs(visuals) do
 			local dockedAt = model:GetAttribute("DockedAt")
@@ -131,7 +132,17 @@ function BillboardFx.Start()
 			local frame = model:GetAttribute("RestFrame")
 			local state = model:GetAttribute("VisualState")
 			if state == "Cargo" and model.Parent and model.Parent:IsA("Model") and model.Parent.PrimaryPart then
-				frame = model.Parent:GetPivot()
+				local sled = model.Parent:GetPivot()
+				local position = sled.Position
+				frame = sled * CFrame.Angles(0, math.pi, 0)
+				if camera then
+					local offset = camera.CFrame.Position - position
+					local direction = Vector3.new(offset.X, 0, offset.Z)
+					if direction.Magnitude > 1 and direction.Magnitude < 48 then
+						-- Let shoppers on either side of the orbit see the face.
+						frame = CFrame.lookAt(position, position + direction)
+					end
+				end
 			end
 			if model.Parent and model.PrimaryPart and frame and (state == "Pedestal" or state == "Cargo") then
 				local seed = model:GetAttribute("BrainrotId") or 0

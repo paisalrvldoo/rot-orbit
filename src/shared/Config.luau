@@ -44,7 +44,7 @@ local Config = {
 		MaxCapsules = 12,
 		Height = 2.2,
 		PreviewAffordableCount = 3,
-		SecretNoticeSeconds = 7,
+		RareNoticeSeconds = 5,
 	},
 	Meteor = { Interval = 90, Duration = 20, WarningSeconds = 2.5, ImpactRadius = 9,
 		WaveInterval = 2, MeteorsPerWave = 2, FallHeight = 72 },

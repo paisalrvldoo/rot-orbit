@@ -291,25 +291,40 @@ local function buildCargoRing(world)
 	local radius = Config.World.RailRadius
 	local y = Config.World.RailHeight
 	local track = folder("CargoTrack", world.Geometry)
-	WorldBuilder.Ring("TrackChassis", radius, 8.6, 0.56, CFrame.new(0, 0.23, 0),
+	WorldBuilder.Ring("TrackChassis", radius, 9.2, 0.6, CFrame.new(0, 0.28, 0),
 		palette.Ink, Enum.Material.Metal, track, Config.World.RailSegments, false)
 	for _, side in ipairs({ -1, 1 }) do
-		local rail = WorldBuilder.Ring("GuideRail", radius + side * 3.55, 0.58, 0.22,
+		local rail = WorldBuilder.Ring("GuideRail", radius + side * 3.55, 0.86, 0.27,
 			CFrame.new(0, y, 0), side == 1 and palette.Mint or palette.Teal, Enum.Material.Neon,
 			track, Config.World.RailSegments, false)
 		if side == 1 then
 			for index, segment in ipairs(rail:GetChildren()) do
 				local sector = math.floor((index - 1) * #Rarity.Order / Config.World.RailSegments) + 1
-				segment.Color = Rarity.ByName[Rarity.Order[sector]].Color:Lerp(palette.Teal, 0.36)
+				segment.Color = Rarity.ByName[Rarity.Order[sector]].Color:Lerp(palette.Teal, 0.13)
 			end
 		end
 	end
 	for index = 1, 28 do
 		local angle = (index - 1) * math.pi * 2 / 28
 		local frame = CFrame.Angles(0, -angle, 0) * CFrame.new(radius, 0.53, 0)
-		WorldBuilder.Part("TrackSleeper", Vector3.new(8.4, 0.2, 0.58), frame, palette.Teal,
+		WorldBuilder.Part("TrackSleeper", Vector3.new(8.8, 0.2, 0.67), frame, palette.Teal,
 			Enum.Material.Metal, track, nil, false)
 	end
+	-- Wide clamps and center lane marks keep the ring recognizable from above.
+	for index, name in ipairs(Rarity.Order) do
+		local angle = (index - 1) * math.pi * 2 / #Rarity.Order
+		local frame = CFrame.Angles(0, -angle, 0) * CFrame.new(radius, 0.64, 0)
+		local color = Rarity.ByName[name].Color
+		for _, side in ipairs({ -1, 1 }) do
+			WorldBuilder.Part("GuideClamp", Vector3.new(1.8, 0.58, 2.5),
+				frame * CFrame.new(side * 4.45, -0.2, 0), palette.White, Enum.Material.Metal, track, nil, false)
+		end
+		for tick = -1, 1 do
+			WorldBuilder.Part("LaneMark", Vector3.new(1.9, 0.06, 0.28),
+				frame * CFrame.new(0, -0.02, tick * 0.55), color, Enum.Material.Neon, track, nil, false)
+		end
+	end
+
 	for index = 1, 7 do
 		local phase = (index - 1) * math.pi * 2 / 7
 		local frame = CFrame.Angles(0, -phase, 0) * CFrame.new(radius + 3.55, y + 0.18, 0)
