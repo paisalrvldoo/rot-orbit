@@ -78,16 +78,28 @@ do
     assert(not skills:TargetableThief(user, {}, { Closing = true, Carry = { Stolen = true } }))
     assert(skills:TargetableThief(user, {}, { Carry = { Stolen = true } }))
 end
+local Format = ${moduleBody('src/shared/BrainrotTraits.luau', 'local Rarity =')}.Format
+local shineCount = 0
+local TweenInfo = { new = function() return {} end }
+local TweenService = { Create = function() return { Play = function() shineCount += 1 end } end }
 local CrewService = ${moduleBody('src/server/CrewService.luau', 'local CrewService =')}
 do
-    local rows = { { Name = 'Solar', Score = 0 }, { Name = 'Lunar', Score = 0 }, { Name = 'Comet', Score = 0 } }
-    local board = setmetatable({ Board = {}, Banners = {}, View = function() return { Rows = rows } end }, CrewService)
+    local rows, display = {}, {}
+    for rank, name in ipairs({ 'Solar', 'Lunar', 'Comet' }) do
+        rows[rank] = { Name = name, Id = rank, Score = 0, Raids = 0, Bosses = 0 }
+        display[rank] = { Rank = {}, Name = {}, Score = {}, Stats = {}, Strip = {} }
+    end
+    local board = setmetatable({ Board = {}, BoardRows = display, BoardShine = {}, Banners = {},
+        View = function() return { Rows = rows } end }, CrewService)
     board:Refresh()
-    assert(string.find(board.Board.Text, 'No raids yet') and not string.find(board.Board.Text, '0 / 0'))
-    for rank, row in ipairs(rows) do row.Score = 100 / rank end
+    assert(string.find(board.Board.Text, 'No raids yet') and not display[1].Rank.Visible and shineCount == 0)
+    rows[1].Score, rows[1].Raids, rows[2].Score = 1000, 5, 500
     board:Refresh()
-    local _, breaks = string.gsub(board.Board.Text, '\\n', '')
-    assert(breaks < 5 and not string.find(board.Board.Text, 'SYNCED'), 'physical board must have at most five separate lines')
+    assert(board.Board.Text == '' and display[1].Name.Text == 'Solar' and display[2].Rank.Visible)
+    assert(display[1].Score.Text == '1K PTS' and display[1].Stats.Text:find('5 RAIDS'))
+    assert(not display[3].Rank.Visible and not display[3].Score.Visible)
+    board:Refresh()
+    assert(shineCount == 1, 'periodic refresh should shine once per standings change')
 end
 local one, two, rival, far = {}, {}, {}, {}
 local crewPlayers = { [one] = { CrewId = 1 }, [two] = { CrewId = 1 }, [rival] = { CrewId = 2 }, [far] = { CrewId = 1 } }

@@ -336,12 +336,15 @@ local function startCrewPanel(hud)
 		local state = hud.GetState()
 		local view = state and state.Crew
 		if not view then return end
-		local compact = HudController.IsCompact() and state.SaveStatus ~= "STUDIO PREVIEW"
-		open.Visible = not compact or hud.Gui:GetAttribute("MobileMenuOpen") == true
+		local preview = state.SaveStatus == "STUDIO PREVIEW"
+		local compact = HudController.IsCompact()
+		open.Visible = not preview and (not compact or hud.Gui:GetAttribute("MobileMenuOpen") == true)
 		open.Position = compact and UDim2.fromOffset(24, 550) or UDim2.fromOffset(16, 365)
 		open.Size = compact and UDim2.fromOffset(240, 72) or UDim2.fromOffset(236, 44)
 		open:SetAttribute("Selected", panel.Visible)
-		open.Text = "CREWS [Y] · " .. (view.Current and Config.Crews.Teams[view.Current].Name or "JOIN A CREW")
+		open.TextSize = compact and 18 or 16
+		open.Text = compact and ("CREWS\n" .. (view.Current and Config.Crews.Teams[view.Current].Name or "JOIN A CREW"))
+			or "CREWS [Y]"
 		if not panel.Visible then return end
 		serverTab:SetAttribute("Selected", not global)
 		globalTab:SetAttribute("Selected", global)

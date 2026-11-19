@@ -1,7 +1,11 @@
 -- Original station crews: server-owned membership, friendly cargo and shared defence.
 local DataStoreService = game:GetService("DataStoreService")
 local HttpService = game:GetService("HttpService")
-local Config = require(game:GetService("ReplicatedStorage"):WaitForChild("Config"))
+local CollectionService = game:GetService("CollectionService")
+local TweenService = game:GetService("TweenService")
+local shared = game:GetService("ReplicatedStorage")
+local Config = require(shared:WaitForChild("Config"))
+local Format = require(shared:WaitForChild("BrainrotTraits")).Format
 local WorldBuilder = require(script.Parent:WaitForChild("WorldBuilder"))
 local CrewService = {}
 CrewService.__index = CrewService
@@ -213,25 +217,76 @@ function CrewService:View(player)
 end
 
 function CrewService:BuildBoard()
-	-- Face the hub from a real panel; text must never follow the camera or cover play.
-	local board = WorldBuilder.Part("CrewRankingBoard", Vector3.new(22, 12, 0.8),
-		CFrame.lookAt(Vector3.new(31, 7, 39), Vector3.new(0, 7, 0)),
-		Config.Palette.Ink, Enum.Material.SmoothPlastic, self.World.Geometry)
+	local palette = Config.Palette
+	local frame = CFrame.lookAt(Vector3.new(35, 7.5, 43), Vector3.new(0, 7.5, 0))
+	local board = WorldBuilder.Part("CrewRankingBoard", Vector3.new(26, 10.6, 0.8),
+		frame, palette.Ink, Enum.Material.Metal, self.World.Geometry)
+	local shine = WorldBuilder.Part("CrownLight", Vector3.new(25, 0.16, 0.14),
+		frame * CFrame.new(0, 4.98, -0.48), palette.Sun, Enum.Material.Neon, board, nil, false)
+	shine.Transparency = 0.48
+	self.BoardShine = shine
+	local medallions = { palette.Sun, Color3.fromRGB(192, 222, 239), Color3.fromRGB(219, 144, 106) }
+	local displayOrder = { 2, 1, 3 }
+	local crown = Instance.new("Model")
+	crown.Name = "CrewRankCrown"
+	local crownFrame = frame * CFrame.new(0, 6.32, -0.3)
+	local band = WorldBuilder.Part("GoldBand", Vector3.new(0.36, 2.5, 2.5),
+		crownFrame * CFrame.Angles(0, 0, math.pi / 2), palette.Sun,
+		Enum.Material.Metal, crown, Enum.PartType.Cylinder, false)
+	for index = 1, 5 do
+		local angle = index * math.pi * 2 / 5
+		local prong = crownFrame * CFrame.Angles(0, angle, 0) * CFrame.new(1, 0.42, 0)
+		WorldBuilder.Part("CrownProng", Vector3.new(0.35, 0.94, 0.42), prong,
+			palette.Sun, Enum.Material.Metal, crown, nil, false)
+		WorldBuilder.Part("CrownGem", Vector3.one * 0.48, prong * CFrame.new(0, 0.48, 0),
+			palette.Sun, Enum.Material.Neon, crown, Enum.PartType.Ball, false)
+	end
+	crown.PrimaryPart = band
+	band.PivotOffset = CFrame.Angles(0, 0, -math.pi / 2)
+	crown:SetAttribute("CrownFrame", crownFrame)
+	crown.Parent = board
+	CollectionService:AddTag(crown, "OrbitCrewCrown")
 	local surface = Instance.new("SurfaceGui")
 	surface.Name = "CrewRanks"
 	surface.Face = Enum.NormalId.Front
-	surface.CanvasSize = Vector2.new(660, 360)
+	surface.CanvasSize = Vector2.new(780, 318)
 	surface.AlwaysOnTop = false
 	surface.LightInfluence = 0
 	surface.MaxDistance = 90
 	surface.Parent = board
-	local label = Instance.new("TextLabel")
-	label.Position, label.Size = UDim2.fromOffset(24, 18), UDim2.fromOffset(612, 324)
-	label.BackgroundTransparency = 1
-	label.TextColor3, label.Font = Config.Palette.White, Enum.Font.GothamBold
-	label.TextSize, label.TextYAlignment = 26, Enum.TextYAlignment.Top
-	label.Parent = surface
-	self.Board = label
+	local function caption(name, x, y, width, height, size, color, value)
+		local label = Instance.new("TextLabel")
+		label.Name, label.Text = name, value or ""
+		label.Position, label.Size = UDim2.fromOffset(x, y), UDim2.fromOffset(width, height)
+		label.BackgroundTransparency = 1
+		label.TextColor3, label.Font = color, Enum.Font.GothamBold
+		label.TextSize = size
+		label.Parent = surface
+		return label
+	end
+	caption("Title", 0, 19, 780, 48, 39, palette.Sun, "CREW  RANKS")
+	self.Board = caption("Empty", 0, 120, 780, 65, 35, palette.White)
+	caption("Footer", 0, 268, 780, 37, 21, palette.Muted, "SERVER DEFENCE  ·  ALL-TIME IN CREWS [Y]")
+	self.BoardRows = {}
+	for column, rank in ipairs(displayOrder) do
+		local x = 7 + (column - 1) * 258
+		local y = rank == 1 and 86 or 109
+		local color = medallions[rank]
+		local podiumHeight = ({ 2.2, 1.5, 1.15 })[rank]
+		local display = WorldBuilder.Part("RankPodium" .. rank, Vector3.new(7.2, podiumHeight, 2.3),
+			frame * CFrame.new((column - 2) * 8.6, -7.5 + podiumHeight / 2, -0.25),
+			color, Enum.Material.Metal, board, nil, false)
+		local strip = WorldBuilder.Part("CrewColour" .. rank, Vector3.new(6.8, 0.18, 0.12),
+			display.CFrame * CFrame.new(0, podiumHeight * 0.29, -1.19),
+			color, Enum.Material.Neon, board, nil, false)
+		self.BoardRows[rank] = {
+			Rank = caption("Rank" .. rank, x, y, 250, 33, 28, color, "#" .. rank),
+			Name = caption("Crew" .. rank, x, y + 36, 250, 31, 24, color),
+			Score = caption("Score" .. rank, x, y + 71, 250, 32, 28, palette.White),
+			Stats = caption("Stats" .. rank, x, y + 107, 250, 25, 17, palette.Muted),
+			Strip = strip,
+		}
+	end
 	for id, crew in ipairs(self.Crews) do
 		local angle = (id - 1) * math.pi * 2 / #self.Crews
 		local pad = WorldBuilder.Part("Join" .. id, Vector3.new(6, 0.35, 6),
@@ -256,18 +311,28 @@ end
 
 function CrewService:Refresh()
 	local view = self:View(nil)
-	local lines = { "CREW RANKS · DEFENCE SCORE" }
-	local populated = false
-	for rank, row in ipairs(view.Rows) do
-		if row.Score > 0 then
-			populated = true
-			table.insert(lines, string.format("#%d %s · %d", rank, row.Name, row.Score))
+	local populated = view.Rows[1] and view.Rows[1].Score > 0
+	self.Board.Text = populated and "" or "No raids yet · be the first crew!"
+	local standings = {}
+	for rank, slot in ipairs(self.BoardRows) do
+		local row = view.Rows[rank]
+		local visible = row ~= nil and row.Score > 0
+		slot.Rank.Visible, slot.Name.Visible, slot.Score.Visible, slot.Stats.Visible = visible, visible, visible, visible
+		slot.Strip.Transparency = visible and 0 or 0.82
+		if visible then
+			slot.Name.Text, slot.Name.TextColor3 = row.Name, row.Color
+			slot.Strip.Color = row.Color
+			slot.Score.Text = Format.Number(row.Score) .. " PTS"
+			slot.Stats.Text = string.format("%d RAIDS   ·   %d BOSSES", row.Raids, row.Bosses)
+			standings[rank] = string.format("%d:%d:%d:%d", row.Id, row.Score, row.Raids, row.Bosses)
 		end
 	end
-	if not populated then table.insert(lines, "No raids yet · defend together!") end
-	-- Full global results and sync status have their own HUD tab.
-	table.insert(lines, "ALL-TIME RANKS · OPEN [Y]")
-	self.Board.Text = table.concat(lines, "\n")
+	local signature = table.concat(standings, "|")
+	if populated and signature ~= self.BoardSignature then
+		self.BoardShine.Transparency = 0.04
+		TweenService:Create(self.BoardShine, TweenInfo.new(0.9), { Transparency = 0.48 }):Play()
+	end
+	self.BoardSignature = signature
 	local leader = view.Rows[1]
 	for player, banner in pairs(self.Banners) do
 		local state = self.Bases.Players[player]
