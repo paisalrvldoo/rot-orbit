@@ -62,9 +62,11 @@ function ConveyorService.new(world, economy)
 				self:Spawn(record, -math.pi / 2)
 				local entry = Catalog.Get(record.Id)
 				if Rarity.ByName[entry.Rarity].Rank >= 4 then
+					local notice = entry.Rarity == "SECRET" and "SECRET INCOMING!"
+						or (string.upper(entry.Rarity) .. " ON THE RING")
 					economy:PublishEvent({
 						Name = "RareCargo",
-						Text = string.upper(entry.Rarity) .. " ON THE RING · " .. string.upper(Catalog.DisplayName(record)),
+						Text = notice .. " · " .. string.upper(Catalog.DisplayName(record)),
 						EndsAt = workspace:GetServerTimeNow() + Config.Conveyor.RareNoticeSeconds,
 						Priority = entry.Rarity == "SECRET" and 1.75 or 1.25,
 						Color = Rarity.ByName[entry.Rarity].Color,
@@ -116,10 +118,30 @@ function ConveyorService:Spawn(record, angle)
 		WorldBuilder.Part("SledClamp", Vector3.new(0.64, 0.48, 2.6),
 			CFrame.new(side * 2.75 * sledSize, -0.06, 0), Config.Palette.White,
 			Enum.Material.SmoothPlastic, capsule, nil, false)
+		-- Open glass wings frame the model and leave both shopping sides clear.
+		local canopy = WorldBuilder.Part("GlassCanopy", Vector3.new(0.29, 3.15, 3.5) * sledSize,
+			CFrame.new(side * 2.46 * sledSize, 0.8 * sledSize, 0) * CFrame.Angles(0, 0, side * 0.29),
+			rarity.Color:Lerp(Config.Palette.White, 0.5), Enum.Material.Glass, capsule, Enum.PartType.Ball, false)
+		canopy.Transparency = 0.62
+		canopy.CanQuery = false
 	end
 	WorldBuilder.Part("SledUnderglow", Vector3.new(0.14, 4.8 * sledSize, 4.8 * sledSize),
 		CFrame.new(0, -0.93, 0) * CFrame.Angles(0, 0, math.pi / 2), rarity.Color,
 		Enum.Material.Neon, capsule, Enum.PartType.Cylinder, false)
+	local exhaust = Instance.new("ParticleEmitter")
+	exhaust.Name = "IonDust"
+	exhaust.Texture = "rbxasset://textures/particles/sparkles_main.dds"
+	exhaust.Color = ColorSequence.new(rarity.Color)
+	exhaust.LightEmission = 0.8
+	exhaust.Size = NumberSequence.new(0.28, 0)
+	exhaust.Transparency = NumberSequence.new(0.28, 1)
+	exhaust.Lifetime = NumberRange.new(0.35, 0.65)
+	exhaust.Speed = NumberRange.new(0.4, 1.8)
+	exhaust.SpreadAngle = Vector2.new(25, 25)
+	exhaust.EmissionDirection = Enum.NormalId.Bottom
+	exhaust.Rate = rarity.Rank >= 4 and 10 or 4
+	exhaust.Enabled = not self.World.Root:GetAttribute("ScreenshotFrozen")
+	exhaust.Parent = pivot
 	if rarity.Rank >= 4 then
 		local source = Instance.new("Attachment", pivot)
 		local top = Instance.new("Attachment", pivot)
@@ -131,6 +153,7 @@ function ConveyorService:Spawn(record, angle)
 		beam.Color = ColorSequence.new(rarity.Color)
 		beam.Transparency = NumberSequence.new(rarity.Rank == 7 and 0.52 or 0.72, 1)
 		beam.Parent = pivot
+		if rarity.Rank >= 5 and exhaust.Enabled then exhaust:Emit(rarity.Rank == 7 and 24 or 12) end
 		for _, side in ipairs({ -1, 1 }) do
 			local low = Instance.new("Attachment", pivot)
 			low.Position = Vector3.new(side * 2.2 * sledSize, -0.36, 0)

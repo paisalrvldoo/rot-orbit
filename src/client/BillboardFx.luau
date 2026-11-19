@@ -7,7 +7,7 @@ local Config = require(game:GetService("ReplicatedStorage"):WaitForChild("Config
 local BillboardFx = {}
 local started = false
 
-local function updateCargoCards(visuals, frozen)
+local function updateCargoCards(visuals, frozen, hud)
 	local camera = workspace.CurrentCamera
 	local character = Players.LocalPlayer.Character
 	local playerRoot = character and character:FindFirstChild("HumanoidRootPart")
@@ -38,6 +38,19 @@ local function updateCargoCards(visuals, frozen)
 		local full = index == 1 and item.Distance <= Config.InteractionDistance
 		local width, height = full and 206 or (narrow and 128 or 148), full and 64 or 40
 		local overlaps = false
+		if hud then
+			for _, name in ipairs({ "Cash", "Income", "EventBanner" }) do
+				local chrome = hud:FindFirstChild(name)
+				if chrome and chrome.Visible then
+					local origin, size = chrome.AbsolutePosition, chrome.AbsoluteSize
+					if math.abs(item.Point.X - origin.X - size.X / 2) < (width + size.X) / 2 + 6
+						and math.abs(item.Point.Y - origin.Y - size.Y / 2) < (height + size.Y) / 2 + 6 then
+						overlaps = true
+						break
+					end
+				end
+			end
+		end
 		for _, other in ipairs(placed) do
 			if math.abs(item.Point.X - other.Point.X) < (width + other.Width) * 0.5 + 8
 				and math.abs(item.Point.Y - other.Point.Y) < (height + other.Height) * 0.5 + 8 then
@@ -88,6 +101,7 @@ function BillboardFx.Start()
 	end)
 	local cardElapsed = math.huge
 	local railFrozen
+	local playerGui = Players.LocalPlayer:WaitForChild("PlayerGui")
 	RunService.RenderStepped:Connect(function(dt)
 		local time = workspace:GetServerTimeNow()
 		local world = workspace:FindFirstChild("ROT_ORBIT")
@@ -115,7 +129,8 @@ function BillboardFx.Start()
 		railFrozen = frozen
 		cardElapsed += dt
 		if cardElapsed >= 0.07 then
-			updateCargoCards(visuals, frozen)
+			local screen = playerGui:FindFirstChild("RotOrbitHUD")
+			updateCargoCards(visuals, frozen, screen and screen:FindFirstChild("Canvas"))
 			cardElapsed = 0
 		end
 		if frozen then
@@ -151,8 +166,10 @@ function BillboardFx.Start()
 			if model.Parent and model.PrimaryPart and frame and (state == "Pedestal" or state == "Cargo") then
 				local seed = model:GetAttribute("BrainrotId") or 0
 				local zeroG = model:GetAttribute("Mutation") == "Zero-G"
-				local bob = math.sin(time * 2 + seed) * 0.16 + (zeroG and 0.65 or 0)
-				local rareWobble = (model:GetAttribute("RarityRank") or 1) >= 5 and 0.19 or 0.09
+				local cargo = state == "Cargo"
+				local bob = math.sin(time * (cargo and 4.8 or 2) + seed) * (cargo and 0.28 or 0.16)
+					+ (zeroG and 0.65 or 0)
+				local rareWobble = (model:GetAttribute("RarityRank") or 1) >= 5 and (cargo and 0.3 or 0.19) or 0.09
 				local spin = zeroG and time * 0.6 or math.sin(time * 0.8 + seed) * rareWobble
 				local age = time - (model:GetAttribute("DockedAt") or -math.huge)
 				local secret = (model:GetAttribute("RarityRank") or 1) == 7

@@ -53,7 +53,7 @@ local function billboard(record, root, scale, forSale)
 	stroke.Parent = card
 	if forSale then
 		gui.Size = UDim2.fromOffset(148, 40)
-		gui.MaxDistance = 42
+		gui.MaxDistance = 34
 		gui.Enabled = false -- BillboardFx reveals only cards with clear screen space.
 		corner.CornerRadius = UDim.new(0, 7)
 		stroke.Thickness = 1

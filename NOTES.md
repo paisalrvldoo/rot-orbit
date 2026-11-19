@@ -13,7 +13,10 @@ card and action feed, readable rarity and value cards, and earned progression.
   near spawn at 2.1 studs. Sleds and light chasers share the track plane.
   Graded rarity rails, lit supports and brighter gates distinguish the path.
   Replace upper reactor loops with a low rotating core clear of the title.
-- [ ] Improve cargo arrivals and podium readability, then refine sky and cover.
+- [x] Give pods open glass canopies, visible motion and small ion wakes.
+  Mythic and SECRET arrivals add a spark burst. Cargo cards check the actual
+  money and banner rectangles before appearing in live play.
+- [ ] Improve podium readability, then refine sky and cover.
 - [ ] Studio review at 1024×460 and 1280×720, with four genuine captures.
 
 ## Current 25-minute orbit continuation
