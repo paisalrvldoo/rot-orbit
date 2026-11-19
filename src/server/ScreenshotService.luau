@@ -20,6 +20,18 @@ end
 
 local function stageCover(state, root, meteors)
 	local effects = meteors.Effects
+	-- The sun is the key; two restrained studio lamps separate the hero silhouettes.
+	for _, lamp in ipairs({
+		{ "DockFill", Vector3.new(-22, 13, 30), Color3.fromRGB(203, 230, 255), 1.1 },
+		{ "DockRim", Vector3.new(14, 15, 1), Color3.fromRGB(255, 221, 163), 1.8 },
+	}) do
+		local mount = WorldBuilder.Part(lamp[1], Vector3.one, CFrame.new(lamp[2]),
+			Config.Palette.White, Enum.Material.SmoothPlastic, effects, nil, false)
+		mount.Transparency = 1
+		mount.CanQuery = false
+		local light = Instance.new("PointLight", mount)
+		light.Color, light.Brightness, light.Range = lamp[3], lamp[4], 55
+	end
 	local platform = CFrame.new(0, 0.3, 12)
 	local palette = Config.Palette
 	WorldBuilder.Part("ShowcaseDock", Vector3.new(48, 0.6, 12), platform,
@@ -52,7 +64,7 @@ local function stageCover(state, root, meteors)
 		Vector3.new(42, 18, -40), Vector3.new(-44, 20, -46) }) do
 		meteors:CreateMeteor(center, 2.5, Vector3.new(5, 10, -4))
 	end
-	return CFrame.lookAt(Vector3.new(0, 15, 45), Vector3.new(0, 7.5, 11)), 54
+	return CFrame.lookAt(Vector3.new(6, 14, 46), Vector3.new(0, 7, 11)), 54
 end
 
 function ScreenshotService.new(context)

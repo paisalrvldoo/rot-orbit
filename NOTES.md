@@ -131,6 +131,26 @@ then fill out the HUD, hazard feedback, and script outline.
 
 ## Decisions and open issues
 
+## Visual continuation (19 November, 20:30 WIB; 25-minute cap)
+
+Initial verification passed with a clean tree at `42a8eeb`; no recovered edits
+needed committing. Read the full owner research and the added visual guidance.
+The ten top-10 priorities above remain the plan: core systems precede polish;
+43 originals, six mutations, title, 24 scripts, staged cover, live HUD, quests
+and feed are implemented in source. Genuine captures and IDs remain pending.
+
+Visual order for this pass (compile/source checks here; Studio review pending):
+- [x] Save a three-quarter cover camera and restrained fill/rim lamps; freeze
+  client idle poses in screenshot mode for repeatable captures.
+- [ ] Improve lighting depth without darkening the sunny station.
+- [ ] Review character connections/silhouettes, fix the worst geometry defects.
+- [ ] Give controls focus, hover, press and honest unavailable states.
+- [ ] Choreograph income pops and recent-action entrances.
+- [ ] Review cover/title bounds and document Studio capture checks. No generated
+  image can replace a genuine Studio screenshot.
+
+## Decisions and open issues (continued)
+
 - Station milestone: avatars enabled; all scenery is built by WorldBuilder;
   six player docks, three rival crew docks, 72 initial pedestals, four safe domes,
   a two-rail cargo orbit, an orange striped planet, and a seeded starfield.

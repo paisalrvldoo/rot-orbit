@@ -18,6 +18,8 @@ function BillboardFx.Start()
 	end)
 	RunService.RenderStepped:Connect(function()
 		local time = workspace:GetServerTimeNow()
+		local world = workspace:FindFirstChild("ROT_ORBIT")
+		if world and world:GetAttribute("ScreenshotFrozen") then return end
 		for model in pairs(visuals) do
 			local frame = model:GetAttribute("RestFrame")
 			local state = model:GetAttribute("VisualState")
