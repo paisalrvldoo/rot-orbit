@@ -8,6 +8,7 @@ local ConveyorService = require(script.Parent:WaitForChild("ConveyorService"))
 local StealService = require(script.Parent:WaitForChild("StealService"))
 local MeteorEvent = require(script.Parent:WaitForChild("MeteorEvent"))
 local LockService = require(script.Parent:WaitForChild("LockService"))
+local GremlinRaid = require(script.Parent:WaitForChild("GremlinRaid"))
 local Config = require(ReplicatedStorage:WaitForChild("Config"))
 local Players = game:GetService("Players")
 
@@ -20,7 +21,9 @@ local conveyor = ConveyorService.new(world, economy)
 local stealing = StealService.new(bases, economy, network)
 local meteors = MeteorEvent.new(world, bases, economy)
 local locks = LockService.new(bases, economy)
-local actions = { Lock = function(player) locks:Activate(player) end }
+local gremlins = GremlinRaid.new(world, bases, economy, locks)
+local actions = { Lock = function(player) locks:Activate(player) end,
+	Zap = function(player) gremlins:Zap(player) end }
 local lastAction = {}
 network.Action.OnServerEvent:Connect(function(player, action)
 	if type(action) ~= "string" or not actions[action] then return end

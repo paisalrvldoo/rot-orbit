@@ -159,21 +159,26 @@ function BaseService:Drop(player)
 	local position = carry.Model:GetPivot().Position
 	carry.Model:Destroy()
 	self:SetSpeed(player)
+	self:SpawnDrop(carry.Record, position)
+	if self.Economy then self.Economy:Send(player) end
+end
+
+function BaseService:SpawnDrop(record, position)
 	if position.Y > -10 then
-		local dropped = BrainrotModel.Create(carry.Record, CFrame.new(position.X, 1, position.Z), self.World.Cargo)
+		local dropped = BrainrotModel.Create(record, CFrame.new(position.X, 1, position.Z), self.World.Cargo)
 		local prompt = Instance.new("ProximityPrompt")
 		prompt.ActionText = "Recover cargo"
-		prompt.ObjectText = Catalog.DisplayName(carry.Record)
+		prompt.ObjectText = Catalog.DisplayName(record)
 		prompt.MaxActivationDistance = Config.InteractionDistance
 		prompt.RequiresLineOfSight = false
 		prompt.Parent = dropped.PrimaryPart
 		prompt.Triggered:Connect(function(visitor)
 			if dropped.Parent and self:Near(visitor, dropped.PrimaryPart.Position)
-				and self:Carry(visitor, carry.Record) then dropped:Destroy() end
+				and self:Carry(visitor, record) then dropped:Destroy() end
 		end)
 		Debris:AddItem(dropped, Config.DropLifetime)
+		return dropped
 	end
-	if self.Economy then self.Economy:Send(player) end
 end
 
 function BaseService:Release(player)

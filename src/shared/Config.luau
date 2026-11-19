@@ -46,7 +46,8 @@ local Config = {
 		WaveInterval = 1.5, MeteorsPerWave = 2, FallHeight = 85 },
 	Steal = { HoldDuration = 0.7, RefillSeconds = 35 },
 	SolarFlare = { Interval = 150, Duration = 20, Multiplier = 2 },
-	Gremlin = { Interval = 120, Count = 4, Speed = 11, StunDuration = 5, ZapRadius = 24, ZapCooldown = 8 },
+	Gremlin = { Interval = 120, Duration = 35, Count = 4, Speed = 11, StunDuration = 5,
+		ZapRadius = 24, ZapCooldown = 8 },
 	Lock = { Duration = 40, Cooldown = 65 },
 	Upgrades = {
 		WalkSpeed = { BaseCost = 1200, CostGrowth = 2.2, Step = 3, MaxLevel = 5 },

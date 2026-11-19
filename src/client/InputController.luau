@@ -9,6 +9,7 @@ InputController.__index = InputController
 function InputController.Start(hud)
 	local self = setmetatable({ Hud = hud, Buttons = {}, Order = {} }, InputController)
 	self:Register("Lock", "LOCK [L]", Enum.KeyCode.L, function() hud.Network.Action:FireServer("Lock") end)
+	self:Register("Zap", "ZAP [F]", Enum.KeyCode.F, function() hud.Network.Action:FireServer("Zap") end)
 	RunService.RenderStepped:Connect(function()
 		local state = hud.GetState()
 		if not state then return end

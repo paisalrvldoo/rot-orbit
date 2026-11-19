@@ -61,7 +61,9 @@ ScreenshotMode and an exact rules-format TOUR only when those features exist.
   dropped cargo and a full-width countdown banner. Mythic survival activity hook.
 - [x] Lock [L] and touch/mouse button: 40s shield, then recharge countdown;
   locks deny theft, remote actions are rate-limited, leaving cleans up shields.
-- [ ] Gremlins with zap; solar flare.
+- [x] Green primitive gremlins raid player bays, steal and escape; locks block
+  them and ZAP [F] stuns nearby thieves, returning their loot as recoverable drops.
+- [ ] Solar flare.
 - [ ] Upgrades; rebirth; index; contracts; saving; final HUD polish.
 - [ ] ScreenshotMode/TOUR, README, genuine Studio pictures and published IDs.
 
