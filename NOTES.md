@@ -72,7 +72,8 @@ fails while starter images remain. Public-link checks do not approve pictures.
 ## Verification before every commit
 
 `node tools/verify.mjs` rebuilds `game.rbxl` using the required Rojo command,
-compiles every `.luau` file, and runs `main.ts` into a fresh gitignored scratch
+compiles every `.luau` file, runs the collection/save/rebirth, combat/crew and
+phone control regressions, and runs `main.ts` into a fresh gitignored scratch
 directory under `out/`. It checks that the dossier and copied artifacts exist.
 The kit check is `node cli/makefun.mjs check --kit . --repo
 /workspace/rbx/rot-orbit`, run from `/workspace/rbx/kit`; it reads a commit.

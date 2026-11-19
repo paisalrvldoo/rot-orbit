@@ -67,8 +67,9 @@ assert(menu.Visible and more.Visible and not input.Buttons.Lock.Visible and not 
 assert(input.Buttons.Blink.Visible and input.Buttons.Sprint.Visible and input.Buttons.Bomb.Visible)
 assert(not input.Buttons.Slam.Visible and not input.Buttons.Bubble.Visible)
 local scale = 460 / 720 -- Actual HUD scale at the reported 1024x460 phone viewport.
-local rectangles = {}
-for _, button in ipairs(hud.Gui.Children) do
+local function checkBounds()
+ local rectangles = {}
+ for _, button in ipairs(hud.Gui.Children) do
     if button.ClassName == 'TextButton' and button.Visible then
         assert(button.Size.X.Offset * scale >= 44 and button.Size.Y.Offset * scale >= 44,
             button.Name .. ' must have a 44px phone tap target')
@@ -81,8 +82,11 @@ for _, button in ipairs(hud.Gui.Children) do
         end
         table.insert(rectangles, { x = x, y = y, w = s.X.Offset, h = s.Y.Offset, name = button.Name })
     end
+ end
 end
+checkBounds()
 more.Activate(); frame()
+checkBounds()
 assert(input.Buttons.Slam.Visible and input.Buttons.Bubble.Visible and input.Buttons.Dash.Visible and not input.Buttons.Blink.Visible)
 local trap = hud.Gui:FindFirstChild('PlaceTrap')
 assert(trap.Visible)
@@ -93,6 +97,7 @@ assert(sent[#sent][3] == 'Trap', 'T and touch must place the same server-checked
 state.SkillReadyAt = { Bomb = 110 }; frame()
 assert(trap:GetAttribute('Unavailable') and input.Buttons.Bomb:GetAttribute('Unavailable'), 'throw/trap must share cooldown UI')
 menu.Activate(); frame()
+checkBounds()
 assert(input.Buttons.Lock.Visible and input.Buttons.Rebirth.Visible and hud.Gui:GetAttribute('MobileMenuOpen'))
 input.Buttons.Upgrades.Activate(); frame()
 assert(upgrades.Visible and not input.Buttons.Lock.Visible and not hud.Gui:GetAttribute('MobileMenuOpen'))

@@ -49,27 +49,31 @@ local economy = setmetatable({ Profiles = { [player] = profile }, Bases = bases,
 -- Use actual selection, reset orchestration and income functions: a mutation can
 -- make a lower-rarity cargo worth keeping over the higher-rarity gate unit.
 do
-    local user = {}
+    local user = { DisplayName = 'Test Pilot' }
     local kept = { Id = 11, Mutation = 'Supernova', Guid = 'keep-this-one' }
-    local function occupied(record) return { Occupant = { Record = record } } end
-    local s = { Found = { ['11'] = true, ['13'] = true }, Bay = { Slots = {
+    local destroyed = 0
+    local function occupied(record) return { Occupant = { Record = record,
+        Model = { Destroy = function() destroyed += 1 end } } } end
+    local s = { Found = { ['11'] = true, ['13'] = true }, Bay = { Index = 1, Floor = {}, Label = {},
+        Model = { SetAttribute = function() end, GetChildren = function() return {} end }, Slots = {
         occupied({ Id = 13, Guid = 'qualifies' }), occupied(kept) } } }
+    for i = 3, Config.World.InitialSlots do s.Bay.Slots[i] = {} end
     local p = { Cash = Config.Rebirth.Cost(0), Rebirths = 0, Multiplier = 1, Upgrades = {} }
     local b = setmetatable({ Players = { [user] = s } }, BaseService)
     local e = setmetatable({ Bases = b, Profiles = { [user] = p }, IncomeMultiplier = 1,
         Network = { Notice = { FireClient = function() end } }, Activity = function() end,
         Send = function() end }, EconomyService)
-    b.Reset = function() s.Bay.Slots = {} end
+    b.Economy = e
+    b.RefreshPedestal, b.SetSpeed = function() end, function() end
     b.AddSlot = function() table.insert(s.Bay.Slots, {}) end
     b.Restore = function(_, _, record, slot)
         assert(slot == 1 and record ~= kept and record.Guid == kept.Guid and record.Mutation == 'Supernova')
         s.Bay.Slots[slot] = occupied(record)
     end
-    b.ApplyRebirthLook = function() end
     local rebirth = UpgradeRebirthService.new(b, e)
     rebirth.Celebrate = function() end
     p.Cash = 0; rebirth:Perform(user)
-    assert(p.Rebirths == 0 and #s.Bay.Slots == 2, 'unaffordable rebirth must not clear cargo')
+    assert(p.Rebirths == 0 and #s.Bay.Slots == 8, 'unaffordable rebirth must not clear cargo')
     p.Cash = Config.Rebirth.Cost(0)
     for _, flag in ipairs({ 'Loading', 'Closing' }) do
         s[flag] = true; rebirth:Perform(user); s[flag] = nil
@@ -79,6 +83,14 @@ do
     assert(p.Rebirths == 0, 'preview must not reset real inventory')
     rebirth:Perform(user)
     assert(p.Rebirths == 1 and p.Cash == Config.StartingCash and s.Found['13'])
+    assert(destroyed == 2 and #s.Bay.Slots == 10 and not s.Bay.Slots[2].Occupant,
+        'actual reset must remove both old models, restore exactly one and grant R1 two pods')
+    assert(s.Bay.Floor.Color == Config.Rebirth.FloorColors[1])
+    b:ApplyRebirthLook(user, 4)
+    assert(s.Bay.Floor.Color == Config.Rebirth.FloorColors[4] and string.find(s.Bay.Label.Text, 'ORBIT ACE'))
+    b:ApplyRebirthLook(user, 0)
+    assert(s.Bay.Floor.Color == Config.Rebirth.FloorColors[0] and not string.find(s.Bay.Label.Text, 'ORBIT ACE'),
+        'releasing a high-rebirth bay must restore its default look')
     assert(e:Income(user) == Catalog.Income(kept) * Config.Rebirth.Multiplier(1),
         'kept cargo must earn immediately after rebirth with mutation and new multiplier')
     rebirth:Perform(user)
@@ -218,6 +230,7 @@ closingData:Close(first)
 assert(captured and closingData.Sessions[first] == nil)
 assert(closingBases:IsBayReady({}), "NPC bays remain raidable")
 print("Collection checks passed: unique variants, independent tabs, one-time rewards, preview/load guards, cap, save isolation.")
+print("Rebirth checks passed: actual reset, best mutated cargo, immediate income, two bonus pods, bay colour/title cleanup, Blink and guarded Mythic supply.")
 print("Screenshot discovery checks passed: 32/43, 10 Gold, owned SECRET and repeatable presets.")
 print("Save lease checks passed: same-server rejoin, stale write rejection, renewal, transient failure and queued release.")
 print("Departure checks passed: freeze before save, block raids/prompts/drops and retain NPC stealing.")
