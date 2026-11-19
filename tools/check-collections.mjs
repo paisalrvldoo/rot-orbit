@@ -213,6 +213,36 @@ for _, shot in ipairs({ "Cover", "Index", "Raid", "Upgrades", "Cover" }) do
     updateCargoCards(visuals, false)
     for _, capsule in ipairs(spawned) do assert(not capsule.Card.Enabled, "normal play resumes proximity selection") end
 end
+do
+    local visuals, cards = {}, {}
+    local function nearPod(distance, x, y)
+        local point = Vector3.new(x, y, 15)
+        local details = {}
+        local card = { MaxDistance = 45, StudsOffsetWorldSpace = 0,
+            FindFirstChildOfClass = function() return { Details = details } end, Details = details }
+        local position = setmetatable({}, {
+            __sub = function() return { Magnitude = distance } end,
+            __add = function() return point end,
+        })
+        visuals[{ Parent = true, PrimaryPart = { Position = position, FindFirstChild = function() return card end },
+            GetAttribute = function(_, key) if key == "VisualState" then return "Cargo" end end }] = true
+        table.insert(cards, card)
+    end
+    Players.LocalPlayer.Character = { FindFirstChild = function() return { Position = {} } end }
+    workspace.CurrentCamera = { ViewportSize = { X = 1024, Y = 460 }, CFrame = { Position = {} },
+        WorldToViewportPoint = function(_, point) return point, true end }
+    local banner = { Visible = true, Text = "METEOR", IsA = function() return true end,
+        AbsolutePosition = { X = 280, Y = 64 }, AbsoluteSize = { X = 464, Y = 30 } }
+    local hud = { FindFirstChild = function(_, name) if name == "EventBanner" then return banner end end }
+    nearPod(3, 390, 85)
+    nearPod(4, 15, 185)
+    nearPod(5, 510, 201)
+    nearPod(8, 815, 275)
+    updateCargoCards(visuals, false, hud)
+    assert(not cards[1].Enabled and not cards[2].Enabled, "blocked and clipped cargo cards must stay hidden")
+    assert(cards[3].Enabled and cards[3].Details.Visible, "next clear nearby pod must get the full card")
+    assert(cards[4].Enabled and not cards[4].Details.Visible, "only one card gets full pricing and income details")
+end
 -- Rejoining the same server must create a new lease identity.
 local document
 local store = { UpdateAsync = function(_, _, callback)

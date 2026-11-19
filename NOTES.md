@@ -1,5 +1,19 @@
 # ROT ORBIT build notes
 
+## Current build pass
+
+Recovered at clean `755d744`. Verification passed and `7c2dc16` records the
+checkpoint. The owner research puts the staged late-game cover and cargo orbit
+first, followed by 42–45 originals (43), four genuine captures, 20–24 purposeful
+scripts (25 with crews), a large world title, visible meteor hazards, six
+mutations, live HUD controls with quests and action feed, readable rarity and
+value cards, and earned progression. Core systems verified before polish.
+
+- [x] Keep live cargo cards inside the screen and clear of the HUD, including
+  quests, action feed and carrying. Give the full card to the first nearby pod
+  with room for it. Test at a 1024×460 viewport with an obstructed nearest pod.
+- [ ] Review the four presets in Studio and take genuine captures.
+
 ## Current recovery and Studio review
 
 Resumed at clean `196000f`; initial verification passed. Owner research is

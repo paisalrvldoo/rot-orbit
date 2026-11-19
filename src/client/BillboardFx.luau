@@ -33,38 +33,42 @@ local function updateCargoCards(visuals, frozen, hud)
 		if closeA then return a.Distance < b.Distance end
 		return a.Point.Z < b.Point.Z
 	end)
-	local narrow = camera and camera.ViewportSize.Y <= 540
-	for index, item in ipairs(candidates) do
-		local full = index == 1 and item.Distance <= Config.InteractionDistance
-		local width, height = full and 206 or (narrow and 128 or 148), full and 64 or 40
-		local overlaps = false
-		if hud then
-			for _, name in ipairs({ "Cash", "Income", "EventBanner" }) do
-				local chrome = hud:FindFirstChild(name)
-				if chrome and chrome.Visible then
-					local origin, size = chrome.AbsolutePosition, chrome.AbsoluteSize
-					if math.abs(item.Point.X - origin.X - size.X / 2) < (width + size.X) / 2 + 6
-						and math.abs(item.Point.Y - origin.Y - size.Y / 2) < (height + size.Y) / 2 + 6 then
-						overlaps = true
-						break
-					end
-				end
+	if #candidates == 0 then return end
+	local viewport = camera.ViewportSize
+	local narrow = viewport.Y <= 540
+	if hud then
+		for _, name in ipairs({ "Cash", "Income", "EventBanner", "CaptainHealth", "Counts",
+			"Carrying", "QuestCard", "ContractsTab", "Action1", "Action2", "Action3" }) do
+			local chrome = hud:FindFirstChild(name)
+			if chrome and chrome.Visible and (not chrome:IsA("TextLabel") or chrome.Text ~= "") then
+				local origin, size = chrome.AbsolutePosition, chrome.AbsoluteSize
+				table.insert(placed, { X = origin.X + size.X / 2, Y = origin.Y + size.Y / 2,
+					Width = size.X, Height = size.Y })
 			end
 		end
+	end
+	local function fits(point, width, height)
+		if point.X < width / 2 + 4 or point.X > viewport.X - width / 2 - 4
+			or point.Y < height / 2 + 4 or point.Y > viewport.Y - height / 2 - 4 then return false end
 		for _, other in ipairs(placed) do
-			if math.abs(item.Point.X - other.Point.X) < (width + other.Width) * 0.5 + 8
-				and math.abs(item.Point.Y - other.Point.Y) < (height + other.Height) * 0.5 + 8 then
-				overlaps = true
-				break
-			end
+			if math.abs(point.X - other.X) < (width + other.Width) / 2 + 8
+				and math.abs(point.Y - other.Y) < (height + other.Height) / 2 + 8 then return false end
 		end
-		if not overlaps then
+		return true
+	end
+	local fullPlaced, cardsPlaced = false, 0
+	for _, item in ipairs(candidates) do
+		local full = not fullPlaced and item.Distance <= Config.InteractionDistance and fits(item.Point, 206, 64)
+		local width, height = full and 206 or (narrow and 128 or 148), full and 64 or 40
+		if full or fits(item.Point, width, height) then
 			item.Gui.Size = UDim2.fromOffset(width, height)
 			local card = item.Gui:FindFirstChildOfClass("Frame")
 			card.Details.Visible = full
 			item.Gui.Enabled = true
-			table.insert(placed, { Point = item.Point, Width = width, Height = height })
-			if #placed >= (narrow and 2 or 4) then break end
+			table.insert(placed, { X = item.Point.X, Y = item.Point.Y, Width = width, Height = height })
+			fullPlaced = fullPlaced or full
+			cardsPlaced += 1
+			if cardsPlaced >= (narrow and 2 or 4) then break end
 		end
 	end
 end
