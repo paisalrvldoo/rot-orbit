@@ -93,7 +93,9 @@ function BaseService:AttachPlacePrompt(bay, pedestal)
 	prompt.HoldDuration = 0.2
 	prompt.MaxActivationDistance = Config.InteractionDistance
 	prompt.RequiresLineOfSight = false
-	prompt.Enabled = pedestal.Occupant == nil
+	prompt:SetAttribute("OwnerUserId", bay.Owner.UserId)
+	prompt:SetAttribute("SocketOpen", pedestal.Occupant == nil)
+	CollectionService:AddTag(prompt, "OrbitDockPrompt")
 	prompt.Parent = pedestal.Pad
 	pedestal.PlacePrompt = prompt
 	prompt.Triggered:Connect(function(visitor)
@@ -144,7 +146,7 @@ function BaseService:RefreshPedestal(pedestal)
 	local occupant = pedestal.Occupant
 	local rarity = occupant and Rarity.ByName[Catalog.Get(occupant.Record.Id).Rarity]
 	pedestal.Label.Visible = occupant == nil
-	if pedestal.PlacePrompt then pedestal.PlacePrompt.Enabled = occupant == nil end
+	if pedestal.PlacePrompt then pedestal.PlacePrompt:SetAttribute("SocketOpen", occupant == nil) end
 	WorldBuilder.ColorSocket(pedestal.Socket, rarity and rarity.Color or pedestal.EmptyColor)
 end
 

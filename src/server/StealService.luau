@@ -1,5 +1,6 @@
 -- Rival crews restock; player bays can also be raided until they raise a lock shield.
 local Config = require(game:GetService("ReplicatedStorage"):WaitForChild("Config"))
+local CollectionService = game:GetService("CollectionService")
 local Catalog = require(script.Parent:WaitForChild("BrainrotCatalog"))
 local StealService = {}
 StealService.__index = StealService
@@ -34,6 +35,8 @@ function StealService:Attach(bay, pedestal)
 	prompt.HoldDuration = Config.Steal.HoldDuration
 	prompt.MaxActivationDistance = Config.InteractionDistance
 	prompt.RequiresLineOfSight = false
+	prompt:SetAttribute("OwnerUserId", bay.Owner and bay.Owner.UserId or 0)
+	CollectionService:AddTag(prompt, "OrbitDockPrompt")
 	prompt.Parent = occupant.Model.PrimaryPart
 	prompt.Triggered:Connect(function(player)
 		if bay.Owner == player or pedestal.Occupant ~= occupant then return end

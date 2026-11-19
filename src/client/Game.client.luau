@@ -91,14 +91,46 @@ function InputController:Register(name, label, key, callback)
 	end, false, key)
 end
 
--- Start the controls and panels after creating the HUD.
-local function showOwnedRetirePrompt(prompt)
-	prompt.Enabled = prompt:GetAttribute("OwnerUserId") == localPlayer.UserId
+local function filterDockPrompts(hud)
+	local dockPrompts = {}
+	local carrying = false
+	local function update(prompt)
+		local own = prompt:GetAttribute("OwnerUserId") == localPlayer.UserId
+		if prompt.Name == "PlaceBrainrot" then
+			prompt.Enabled = own and carrying and prompt:GetAttribute("SocketOpen") == true
+		elseif prompt.Name == "StealCargo" then
+			prompt.Enabled = not own and not carrying
+		else
+			prompt.Enabled = own
+		end
+	end
+	local function watch(prompt)
+		if dockPrompts[prompt] then return end
+		dockPrompts[prompt] = { prompt:GetAttributeChangedSignal("OwnerUserId"):Connect(function() update(prompt) end),
+			prompt:GetAttributeChangedSignal("SocketOpen"):Connect(function() update(prompt) end) }
+		update(prompt)
+	end
+	for _, tag in ipairs({ "OrbitDockPrompt", "OrbitRetirePrompt" }) do
+		CollectionService:GetInstanceAddedSignal(tag):Connect(watch)
+		CollectionService:GetInstanceRemovedSignal(tag):Connect(function(prompt)
+			for _, connection in ipairs(dockPrompts[prompt] or {}) do connection:Disconnect() end
+			dockPrompts[prompt] = nil
+		end)
+		for _, prompt in ipairs(CollectionService:GetTagged(tag)) do watch(prompt) end
+	end
+	RunService.Heartbeat:Connect(function()
+		local state = hud.GetState()
+		local hasCargo = state and state.Carrying and true or false
+		if carrying == hasCargo then return end
+		carrying = hasCargo
+		for prompt in pairs(dockPrompts) do update(prompt) end
+	end)
 end
-CollectionService:GetInstanceAddedSignal("OrbitRetirePrompt"):Connect(showOwnedRetirePrompt)
-for _, prompt in ipairs(CollectionService:GetTagged("OrbitRetirePrompt")) do showOwnedRetirePrompt(prompt) end
+
+-- Start the controls and panels after creating the HUD.
 require(script.Parent:WaitForChild("BillboardFx")).Start()
-local hud = require(script.Parent:WaitForChild("HudController")).Start()
+local hud = HudController.Start()
+filterDockPrompts(hud)
 local input = InputController.Start(hud)
 local progression = require(script.Parent:WaitForChild("UpgradeRebirthContracts"))
 local upgrades = progression.StartUpgrades(hud, input)

@@ -240,4 +240,20 @@ Core systems precede more spectacle. This pass's remaining order:
   has no docking stamp and never replays the reward; screenshot mode restores
   normal scales and outlines before freezing. Compiles; Studio motion review
   remains necessary (no renderer available here).
-- [ ] Reverify, retry the Public link check, and leave a clean committed tree.
+- [x] Reverified the continuation baseline. Working tree was clean at `ebd2f2b`.
+
+## Capture readiness pass (19 November, 25-minute cap)
+
+Retain the owner research priorities above: late-game cover and four distinct
+captures, 43 originals, 24 feature-named scripts, a large station sign and dock
+status, readable meteors, six mutations and Aurora Surge, live HUD with quests
+and feed, rarity/value cards and stronger earned progression. Keep gameplay
+work ahead of capture polish. The four real captures and final Roblox publish
+remain the submission blockers.
+
+- [x] Filter dock prompts by owner and carry state. Visitors see Steal, owners
+  see Retire, and empty home sockets offer Dock only while carrying. Actual
+  interactions still check ownership, distance, cargo and lock on the server.
+  Check prompt replication with two Studio clients.
+- [ ] Review the screenshot presets and capture handoff against the kit rules.
+- [ ] Recheck the Public link and leave a clean committed tree.
