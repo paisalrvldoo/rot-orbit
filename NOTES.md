@@ -19,9 +19,9 @@ progression. Core systems already pass; no new side systems this pass.
   destruction of old pods, exactly one near-arc SECRET BUY card on Cover,
   camera-facing saved poses, and normal proximity-selection restoration.
   CAPTURE.md now lists the full Studio transition/render checklist.
-- [x] Cover stages a genuine Aurora SECRET pod and Diamond Cosmic on the near
-  ring and far arc respectively, facing the saved camera. One buyable SECRET card shows name/price/
-  rarity/income; the remaining cargo cards stay hidden. Other presets retain
+- [x] Cover stages a genuine Aurora SECRET pod on the near arc and Diamond
+  Cosmic on the far arc, both facing the saved camera. One buyable SECRET card
+  shows name/price/rarity/income; the remaining cargo cards stay hidden. Other presets retain
   the evenly spaced cargo orbit. Studio visual approval remains pending.
 
 - [x] Clean recovery checkpoint `0b6b79e`. Existing core gameplay passed verification.
@@ -45,20 +45,28 @@ over additional systems once gameplay checks pass.
 
 ## Resume here
 
-Latest gameplay checkpoint: `b0611f1`, 19 November 23:13 WIB. All recovered and
+Latest gameplay checkpoint: `93eb0d9`, 20 November continuation. All recovered and
 new working pieces have separate verified commits. `game.rbxl` matches all 25
-Luau sources (102,029 bytes). Normal verification now includes actual-function
+Luau sources (100,898 bytes). Normal verification now includes actual-function
 collection/save/rebirth, combat/crew and phone layout regressions as well as
-compilation, Rojo build and dossier export. All pass. Current-kit check at
-`e640584` passed 5/5, including the Public play link; site/recording/media
+compilation, Rojo build and dossier export. All pass. Fresh level-27 kit check
+at `93eb0d9` passed 5/5 with zero failures, including the Public play link; site/recording/media
 checks are separate. `--submission` still correctly fails for missing genuine
 JPEGs and remaining starter PNGs. No Studio render or live-server approval
 was possible here. README and CAPTURE.md contain the current controls/tests.
 
 NEXT: owner republish and check zero server errors, then the 1024×460 phone
-and two-player smoke tests in CAPTURE.md, especially rebirth income, bomb/trap
-shields and the new menu. Capture four real images and upload approved media.
+and two-player smoke tests in CAPTURE.md, especially rebirth income, the ring
+and the Run/Blink/Zap controls. Run all four presets and check the new cover at
+768px wide. Capture four real images and upload approved media.
 Fix any reported Studio errors before extending features.
+
+20 November final verification: `node tools/verify.mjs` passes all source,
+actual-function regression, Rojo and dossier checks. New cargo checks cover all
+four presets and repeated Cover calls. Final-capture validation still fails
+as expected: four JPEGs are missing and the starter PNGs remain. Fresh kit
+download/check is under ignored `out/current-kit/` (level 27); the earlier
+`/workspace/rbx/kit` copy is level 26. No submission or publishing was performed.
 
 Remaining code work from the newer research ordering (not claimed complete):
 - True shared squad bay: current crews protect separate personal bays and
