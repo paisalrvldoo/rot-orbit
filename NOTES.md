@@ -381,3 +381,18 @@ Final combat review: defence bonuses require an eligible player alive near
 their bay (90 studs); distant/dead clients cannot collect unattended rewards.
 Presets cancel an active raid and freeze server actions for every client,
 including other clients in a two-player Studio capture. Regression checks pass.
+
+## End-of-session handoff (19 November, 22:17 WIB)
+
+Every working piece was rebuilt, verified and committed; source/place match.
+- Final gameplay checkpoint f35f882: current-kit check passed 5/5, no failures,
+  including Public place/universe/description. Capture and site-only checks
+  are not approved by this result.
+- Actual-function collection/save and combat/skill/crew/global-score checks pass,
+  including API outage fallback, valid membership replication and switch guard.
+- Development verify passes: 25 Luau scripts, binary place under 90 KiB and
+  dossier export. --submission fails only because final JPEG captures are
+  missing and starter PNGs remain; this is intentional and still a blocker.
+- Next action is owner republish + zero-error live boot / two-client smoke
+  test, then four real pictures and approved icon/thumbnail. See CAPTURE.md.
+  Do not spend another pass adding unrelated systems before this playtest.

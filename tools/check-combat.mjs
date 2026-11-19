@@ -138,6 +138,25 @@ raid.Active, raid.Defeated, raid.Participants = true, raid.WaveCount, { [player]
 raid.Bases.Near = function() return false end
 raid:Finish()
 assert(players[player].RaidsDefended == 2, 'absent or dead players must not receive nearby defence rewards')
+local priorGlobal = { { Id = 1, Score = 77 } }
+local unavailable = setmetatable({ Crews = { {} }, Ledger = {}, Global = priorGlobal,
+    Ordered = { GetSortedAsync = function() error('API access unavailable') end },
+    WriteCrew = function() return false end }, CrewService)
+unavailable:SyncGlobal()
+assert(not unavailable.Syncing and unavailable.Global == priorGlobal
+    and unavailable.GlobalStatus == 'GLOBAL RETRYING · LOCAL PLAY CONTINUES',
+    'API outage must keep local play and the last successful global snapshot')
+local replicated
+one.SetAttribute = function(_, _, value) replicated = value end
+one.CharacterAdded = { Connect = function() return { Disconnect = function() end } end }
+crews.Crews[2].Name = 'Lunar Linguini'
+crews.Connections, crews.Raids.Active = {}, false
+crews.Paint, crews.Refresh = function() end, function() end
+crews:Join(one, 2)
+assert(crewPlayers[one].CrewId == 2 and replicated == 2 and crewPlayers[one].CrewReadyAt == 115,
+    'valid membership must replicate and start the switch cooldown')
+crews:Join(one, 1)
+assert(crewPlayers[one].CrewId == 2, 'switch cooldown cannot be bypassed')
 print('Global crew checks passed: combined servers, ambiguous ledger retry, ordered retry and monotonic publication.')
 print('Crew checks passed: friendly protection, nearby assist payout, outsider exclusion, once-per-crew raid score and membership guards.')
 print('Skill checks passed: invalid names, unlocks, upgrade/rebirth paths, cooldown spam and departure/preview guards.')

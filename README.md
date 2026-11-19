@@ -64,6 +64,9 @@ to also check all four final JPEGs and their TOUR presets.
 `node tools/check-collections.mjs` checks one-time collection payouts, save
 snapshot isolation and per-connection save leases using the real server
 functions in the Luau interpreter.
+`node tools/check-combat.mjs` exercises actual combat, skill unlock/cooldown,
+crew membership/reward and retry-safe global-score functions with deterministic
+server stubs. Live physics and multiplayer still need the CAPTURE.md smoke test.
 
 Run it as the grader does, writing `out/` in place of `/output`:
 
