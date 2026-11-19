@@ -189,6 +189,9 @@ function BaseService:Release(player)
 		pedestal.PlacePrompt = nil
 	end
 	state.Bay.Owner = nil
+	state.Bay.Model:SetAttribute("LockedUntil", 0)
+	local shield = state.Bay.Model:FindFirstChild("BayLockShield")
+	if shield then shield:Destroy() end
 	state.Bay.Model:SetAttribute("OwnerUserId", 0)
 	state.Bay.Label.Text = state.Bay.CrewName
 	self.Players[player] = nil

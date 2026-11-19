@@ -12,6 +12,7 @@ local Config = {
 	IncomeInterval = 1,
 	SnapshotInterval = 1,
 	InteractionDistance = 13,
+	ActionCooldown = 0.2,
 	CarryHeight = 4.6,
 	CarryTrailLifetime = 0.65,
 	DropLifetime = 35,

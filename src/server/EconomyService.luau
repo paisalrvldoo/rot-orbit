@@ -82,6 +82,8 @@ function EconomyService:Snapshot(player)
 		Rebirths = profile.Rebirths, Multiplier = profile.Multiplier, Upgrades = profile.Upgrades,
 		BayIndex = state.Bay.Index, BayPosition = state.Bay.SpawnFrame.Position,
 		Slots = #state.Bay.Slots, Inventory = inventory, Found = state.Found,
+		LockUntil = state.LockUntil or 0, LockReadyAt = state.LockReadyAt or 0,
+		ZapReadyAt = state.ZapReadyAt or 0,
 		Carrying = state.Carry and { Name = Catalog.DisplayName(state.Carry.Record),
 			Id = state.Carry.Record.Id, Mutation = state.Carry.Record.Mutation } or false,
 		Catalog = Catalog.Public(), Events = self.Events }

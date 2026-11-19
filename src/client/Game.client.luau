@@ -8,7 +8,9 @@ local player = Players.LocalPlayer
 local BillboardFx = require(script.Parent:WaitForChild("BillboardFx"))
 BillboardFx.Start()
 local HudController = require(script.Parent:WaitForChild("HudController"))
-HudController.Start()
+local hud = HudController.Start()
+local InputController = require(script.Parent:WaitForChild("InputController"))
+local input = InputController.Start(hud)
 
 local ARENA_WIDTH = 640
 local ARENA_HEIGHT = 480
