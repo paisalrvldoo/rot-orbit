@@ -12,7 +12,9 @@ GremlinRaid.__index = GremlinRaid
 function GremlinRaid.new(world, bases, economy, locks)
 	local self = setmetatable({ World = world, Bases = bases, Economy = economy,
 		Locks = locks, Gremlins = {}, Random = Random.new(), Active = false, Wave = 0,
+		NextPatrolAt = workspace:GetServerTimeNow() + Config.Gremlin.PatrolFirst,
 		NextRaidAt = workspace:GetServerTimeNow() + Config.Gremlin.FirstRaid }, GremlinRaid)
+	economy.Raids = self
 	RunService.Heartbeat:Connect(function(dt) self:Step(math.min(dt, 0.1)) end)
 	task.spawn(function()
 		while true do
@@ -44,7 +46,8 @@ function GremlinRaid:Spawn(bay, position, boss, health)
 	for _, side in ipairs({ -1, 1 }) do
 		part("PointyEar", Vector3.new(0.55, 0.9, 0.25), Vector3.new(side * 1, 2.45, 0), green)
 		part("Boot", Vector3.new(0.48, 0.3, 0.7), Vector3.new(side * 0.4, 0.15, -0.1), Config.Palette.Ink)
-		part("Eye", Vector3.new(0.38, 0.35, 0.1), Vector3.new(side * 0.4, 2.25, -0.56), Config.Palette.Sun)
+		local eye = part("Eye", Vector3.new(0.38, 0.35, 0.1), Vector3.new(side * 0.4, 2.25, -0.56), Config.Palette.Sun)
+		eye.Material = Enum.Material.Neon
 		part("Pupil", Vector3.new(0.16, 0.24, 0.08), Vector3.new(side * 0.4, 2.2, -0.63), Config.Palette.Ink)
 	end
 	part("Tooth", Vector3.new(0.35, 0.22, 0.1), Vector3.new(0, 1.93, -0.61), Config.Palette.White)
@@ -54,11 +57,11 @@ function GremlinRaid:Spawn(bay, position, boss, health)
 	end
 	model:PivotTo(CFrame.new(position))
 	model.Parent = self.World.Root
-	local label = WorldBuilder.Billboard(root, "SPACE GREMLIN · ZAP [F]", green,
+	local label = WorldBuilder.Billboard(root, boss and "CAPTAIN GREMLIN · FIGHT TOGETHER!" or "SPACE GREMLIN · ZAP [F]", green,
 		Vector3.new(0, boss and 8 or 4, 0), boss and 310 or 250, 34)
 	local maxHealth = health or Config.Gremlin.Health
 	local hp = WorldBuilder.Billboard(root, "", Config.Palette.White,
-		Vector3.new(0, boss and 7 or 3.5, 0), 180, 24)
+		Vector3.new(0, boss and 7 or 3.5, 0), boss and 360 or 180, boss and 30 or 24)
 	hp.Parent.Name = "EnemyHealth"
 	hp.BackgroundColor3 = Config.Palette.Ink
 	hp.BackgroundTransparency = 0.15
@@ -109,7 +112,8 @@ function GremlinRaid:Finish()
 		local defended = {}
 		for player, state in pairs(self.Bases.Players) do
 			local profile = self.Economy.Profiles[player]
-			if profile and not profile.Demo and not state.Loading and not state.Closing then
+			if profile and not profile.Demo and not state.Loading and not state.Closing
+				and (not self.Participants or self.Participants[player]) then
 				table.insert(defended, player)
 				state.RaidsDefended = (state.RaidsDefended or 0) + 1
 				profile.Cash = math.min(Config.MaxCash, profile.Cash + Config.Gremlin.DefendReward)
@@ -158,6 +162,10 @@ end
 function GremlinRaid:Step(dt)
 	if self.World.Root:GetAttribute("ScreenshotFrozen") then return end
 	local now = workspace:GetServerTimeNow()
+	if now >= self.NextPatrolAt then
+		self.NextPatrolAt = now + Config.Gremlin.PatrolInterval
+		self:Patrol()
+	end
 	for _, state in pairs(self.Gremlins) do
 		if now >= state.ExpiresAt then
 			self:Remove(state, true)
@@ -176,6 +184,39 @@ function GremlinRaid:Step(dt)
 			end
 		end
 	end
+end
+
+function GremlinRaid:BossView()
+	for _, enemy in pairs(self.Gremlins) do
+		if enemy.Boss and enemy.Health > 0 then
+			return { Health = enemy.Health, MaxHealth = enemy.MaxHealth, Wave = self.Wave }
+		end
+	end
+	return nil
+end
+
+function GremlinRaid:Patrol()
+	if self.Active then return end
+	local patrols = 0
+	for _, enemy in pairs(self.Gremlins) do if enemy.Patrol then patrols += 1 end end
+	if patrols >= Config.Gremlin.PatrolMax then return end
+	local targets = {}
+	for player, state in pairs(self.Bases.Players) do
+		local profile = self.Economy.Profiles[player]
+		if self.Bases:IsBayReady(state.Bay) and profile and not profile.Demo then
+			for _, pedestal in ipairs(state.Bay.Slots) do
+				if pedestal.Occupant then table.insert(targets, state.Bay); break end
+			end
+		end
+	end
+	if #targets == 0 or #self.World.RivalBays == 0 then return end
+	local bay = targets[self.Random:NextInteger(1, #targets)]
+	local rival = self.World.RivalBays[self.Random:NextInteger(1, #self.World.RivalBays)]
+	local enemy = self:Spawn(bay, (rival.Frame * CFrame.new(0, 1, -12)).Position)
+	enemy.Patrol = true
+	enemy.Model.Name = "RivalCrewThief"
+	enemy.Label.Text = "RIVAL THIEF! · ZAP [F]"
+	self.Economy.Network.Notice:FireClient(bay.Owner, "THIEF APPROACHING YOUR BAY! ZAP [F] OR LOCK [L]")
 end
 
 function GremlinRaid:Stun(gremlin, now)
@@ -318,6 +359,8 @@ function GremlinRaid:Start()
 	end
 	if #bays == 0 then return end
 	self.Active = true
+	self.Participants = {}
+	for _, bay in ipairs(bays) do self.Participants[bay.Owner] = true end
 	self.Wave += 1
 	self.Defeated = 0
 	self.WaveCount = Config.Gremlin.Count + math.min(4, #bays - 1)

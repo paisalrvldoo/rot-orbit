@@ -348,3 +348,10 @@ Combat layout follow-up: skill controls sit above the counts/carry strips, not
 over them. ZAP is a nearest-target blaster with a visible beam and small muzzle
 pulse; Slam remains the AoE. Captain rebirth HP growth is capped for solo waves.
 Studio rendering and combat balance remain unverified.
+
+- [x] Rival thieves now roam from NPC docks toward stocked player bays between
+  raids (first patrol at 30s, then every 45s, at most two), with a named warning
+  and recoverable stolen cargo. Captains get a large shared HUD health bar.
+  Joining an otherwise idle server schedules a raid within 75s of loading;
+  only players present at wave start qualify for its defence bonus.
+  Compile/actual-function checks pass; walking, aim and chase feel need Studio.

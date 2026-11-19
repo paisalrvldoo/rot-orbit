@@ -61,7 +61,7 @@ local Config = {
 		Aurora = { Tint = Color3.fromRGB(224, 255, 238), Sky = Color3.fromRGB(151, 241, 211),
 			Decay = Color3.fromRGB(169, 188, 255) },
 	},
-	Gremlin = { FirstRaid = 75, Interval = 135, Telegraph = 6, Duration = 48, Count = 4, Speed = 9, StunDuration = 3,
+	Gremlin = { PatrolFirst = 30, PatrolInterval = 45, PatrolMax = 2, FirstRaid = 75, Interval = 135, Telegraph = 6, Duration = 48, Count = 4, Speed = 9, StunDuration = 3,
 		Health = 4, BossHealth = 18, BossEvery = 3, KillReward = 140, BossReward = 1800,
 		DefendReward = 600, ZapDamage = 2, ZapRadius = 48, ZapCooldown = 3 },
 	Crews = { GlobalRefresh = 60, SwitchCooldown = 15, RewardRadius = 90, KillScore = 10, BossScore = 150, RaidScore = 100,

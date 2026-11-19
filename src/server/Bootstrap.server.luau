@@ -57,6 +57,9 @@ local function joined(player)
 		economy:AddPlayer(player)
 		contracts:AddPlayer(player)
 		data:Load(player)
+		if bases.Players[player] == state and not state.Loading then
+			gremlins.NextRaidAt = math.min(gremlins.NextRaidAt, workspace:GetServerTimeNow() + Config.Gremlin.FirstRaid)
+		end
 	end
 end
 Players.PlayerAdded:Connect(joined)

@@ -169,6 +169,18 @@ function HudController.Start()
 		UDim2.new(0.5, 0, 1, -120), UDim2.fromOffset(930, 24), 17, Config.Palette.Mint)
 	local hint = HudController.Text(gui, "Hint", "WASD MOVE  ·  E BUY CARGO  ·  E DOCK ON AN EMPTY PEDESTAL",
 		UDim2.new(0.5, 0, 1, -91), UDim2.fromOffset(940, 33), 17)
+	local boss = HudController.Text(gui, "CaptainHealth", "", UDim2.new(0.5, 0, 0, 156),
+		UDim2.fromOffset(640, 36), 22, Config.Palette.Sun)
+	boss.BackgroundColor3 = Config.Palette.Ink
+	boss.BackgroundTransparency = 0.12
+	boss.Visible = false
+	local healthFill = Instance.new("Frame")
+	healthFill.Name = "CaptainHealthFill"
+	healthFill.BackgroundColor3 = Config.Palette.Sun
+	healthFill.BorderSizePixel = 0
+	healthFill.Position = UDim2.fromScale(0, 0.9)
+	healthFill.Size = UDim2.fromScale(1, 0.1)
+	healthFill.Parent = boss
 	local feed = {}
 	local feedLabels = {}
 	local feedTweens = {}
@@ -235,6 +247,11 @@ function HudController.Start()
 	local function update(snapshot)
 		if not snapshot.Ready then return end
 		state = snapshot
+		boss.Visible = snapshot.Boss ~= nil
+		if snapshot.Boss then
+			boss.Text = "CAPTAIN · WAVE " .. snapshot.Boss.Wave .. " · " .. snapshot.Boss.Health .. "/" .. snapshot.Boss.MaxHealth .. " HP"
+			healthFill.Size = UDim2.fromScale(snapshot.Boss.Health / snapshot.Boss.MaxHealth, 0.1)
+		end
 		cash.Text = Format.Money(snapshot.Cash)
 		raidStatus.Text = "RAIDS DEFENDED  " .. (snapshot.RaidsDefended or 0)
 		save.Text = snapshot.SaveStatus == "SAVED" and "PROGRESS SAVED" or snapshot.SaveStatus
