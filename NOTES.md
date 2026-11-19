@@ -2,6 +2,29 @@
 
 ## Resume here
 
+Latest gameplay checkpoint: `b0611f1`, 19 November 23:13 WIB. All recovered and
+new working pieces have separate verified commits. `game.rbxl` matches all 25
+Luau sources (102,029 bytes). Normal verification now includes actual-function
+collection/save/rebirth, combat/crew and phone layout regressions as well as
+compilation, Rojo build and dossier export. All pass. Current-kit check at
+`e640584` passed 5/5, including the Public play link; site/recording/media
+checks are separate. `--submission` still correctly fails for missing genuine
+JPEGs and remaining starter PNGs. No Studio render or live-server approval
+was possible here. README and CAPTURE.md contain the current controls/tests.
+
+NEXT: owner republish and check zero server errors, then the 1024×460 phone
+and two-player smoke tests in CAPTURE.md, especially rebirth income, bomb/trap
+shields and the new menu. Capture four real images and upload approved media.
+Fix any reported Studio errors before extending features.
+
+Remaining code work from the newer research ordering (not claimed complete):
+- True shared squad bay: current crews protect separate personal bays and
+  share nearby combat rewards/ranks; Squad currently opens the crew picker.
+- Clockwork Orbit event rotation, high-value steal announcements, item-box
+  weapons, Rot King/Hard Orbit and its R5 summon key, then Daily Crate.
+  Existing meteor/solar/Aurora events work independently; they are not the
+  proposed new clockwork rotation. Keep these behind core/playtest correctness.
+
 Recovery continuation, 19 November 22:52 WIB (~25-minute cap): verified the
 interrupted raid/bomb work and immediately committed it as `129afc6`.
 Read owner's refs.md. Preserve its ten priorities: staged late-game cover,
