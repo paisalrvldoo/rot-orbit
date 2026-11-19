@@ -256,4 +256,8 @@ remain the submission blockers.
   interactions still check ownership, distance, cargo and lock on the server.
   Check prompt replication with two Studio clients.
 - [ ] Review the screenshot presets and capture handoff against the kit rules.
+- [x] Contextual first-dock guidance replaces the generic controls hint until
+  the player owns income cargo; a full bay explains retirement/slot upgrades.
+  Carry guidance shows distance home, then the docking action near the bay.
+  Screenshot presets retain their specified carry caption.
 - [ ] Recheck the Public link and leave a clean committed tree.

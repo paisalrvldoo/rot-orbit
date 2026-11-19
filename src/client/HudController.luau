@@ -293,7 +293,16 @@ function HudController.Start()
 		if state and root then
 			local distance = math.floor((root.Position - state.BayPosition).Magnitude)
 			home.Text = "YOUR BAY " .. string.format("%02d", state.BayIndex) .. " ↓  " .. distance .. "m"
-			hint.Text = "E BUY CARGO  ·  E STEAL FROM RIVAL BAYS  ·  E DOCK AT HOME"
+			if state.Carrying and state.SaveStatus ~= "STUDIO PREVIEW" then
+				carrying.Text = "CARRYING " .. state.Carrying.Name .. " → "
+					.. (distance > 23 and ("YOUR BAY · " .. distance .. "m") or "E AT AN EMPTY HOME PEDESTAL")
+			elseif not state.Carrying and #state.Inventory == 0 then
+				hint.Text = "FIRST DOCK: E BUY A COMMON ON THE RING → FOLLOW YOUR BAY BEACON → E TO DOCK"
+			elseif #state.Inventory >= state.Slots then
+				hint.Text = "BAY FULL · HOLD G AT HOME TO RETIRE CARGO · OR U TO ADD PEDESTALS"
+			else
+				hint.Text = "E BUY OR STEAL CARGO · E DOCK AT HOME · L SHIELD YOUR COLLECTION"
+			end
 		end
 	end)
 	task.spawn(function()
