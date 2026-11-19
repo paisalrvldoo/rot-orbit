@@ -34,7 +34,7 @@ end
 function EconomyService:Income(player)
 	local state = self.Bases.Players[player]
 	local profile = self.Profiles[player]
-	if not state or not profile then return 0 end
+	if not state or not profile or state.Loading then return 0 end
 	local income = 0
 	for _, pedestal in ipairs(state.Bay.Slots) do
 		if pedestal.Occupant then income += Catalog.Income(pedestal.Occupant.Record) end
@@ -73,13 +73,14 @@ end
 function EconomyService:Snapshot(player)
 	local profile = self.Profiles[player]
 	local state = self.Bases.Players[player]
-	if not profile or not state then return { Ready = false } end
+	if not profile or not state or state.Loading then return { Ready = false } end
 	local inventory = {}
 	for _, pedestal in ipairs(state.Bay.Slots) do
 		if pedestal.Occupant then table.insert(inventory, pedestal.Occupant.Record) end
 	end
 	return { Ready = true, Cash = profile.Cash, Income = self:Income(player),
 		Rebirths = profile.Rebirths, Multiplier = profile.Multiplier, Upgrades = profile.Upgrades,
+		SaveStatus = profile.SaveStatus or "SESSION ONLY",
 		BayIndex = state.Bay.Index, BayPosition = state.Bay.SpawnFrame.Position,
 		Slots = #state.Bay.Slots, Inventory = inventory, Found = state.Found,
 		LockUntil = state.LockUntil or 0, LockReadyAt = state.LockReadyAt or 0,

@@ -118,7 +118,7 @@ end
 function BaseService:CanCarry(player)
 	local state = self.Players[player]
 	local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-	return state and not state.Carry and root and self:Near(player, root.Position)
+	return state and not state.Loading and not state.Carry and root and self:Near(player, root.Position)
 		and self:FreeSlot(player) ~= nil
 end
 
@@ -223,6 +223,21 @@ function BaseService:Reset(player)
 	local shield = state.Bay.Model:FindFirstChild("BayLockShield")
 	if shield then shield:Destroy() end
 	self:SetSpeed(player)
+end
+
+function BaseService:Restore(player, record, slotIndex)
+	local state = self.Players[player]
+	if not state then return false end
+	local pedestal = state.Bay.Slots[slotIndex]
+	if not pedestal or pedestal.Occupant then pedestal = self:FreeSlot(player) end
+	if not pedestal then return false end
+	pedestal.Occupant = { Record = record,
+		Model = BrainrotModel.Create(record, pedestal.Frame, state.Bay.Model) }
+	pedestal.Label.Visible = false
+	pedestal.PlacePrompt.Enabled = false
+	state.Found[tostring(record.Id)] = true
+	if self.OnPlaced then self.OnPlaced(state.Bay, pedestal) end
+	return true
 end
 
 function BaseService:Release(player)

@@ -53,6 +53,8 @@ function HudController.Start()
 	local detail = HudController.Text(gui, "Income", "ARRIVING AT YOUR DOCK...", UDim2.new(0.5, 0, 0, 63), UDim2.fromOffset(660, 26), 18)
 	local logo = HudController.Text(gui, "Logo", "ROT\nORBIT", UDim2.new(1, -85, 0, 28), UDim2.fromOffset(140, 60), 23, Config.Palette.Mint)
 	logo.Font = Enum.Font.GothamBlack
+	local save = HudController.Text(gui, "SaveStatus", "", UDim2.new(1, -98, 0, 89),
+		UDim2.fromOffset(176, 18), 11, Config.Palette.Muted)
 	local carrying = HudController.Text(gui, "Carrying", "", UDim2.new(0.5, 0, 0, 140), UDim2.fromOffset(940, 34), 19, Config.Palette.Mint)
 	carrying.BackgroundColor3 = Config.Palette.Ink
 	carrying.BackgroundTransparency = 0.12
@@ -83,6 +85,7 @@ function HudController.Start()
 		if not snapshot.Ready then return end
 		state = snapshot
 		cash.Text = Format.Money(snapshot.Cash)
+		save.Text = snapshot.SaveStatus == "SAVED" and "PROGRESS SAVED" or snapshot.SaveStatus
 		detail.Text = Format.Money(snapshot.Income) .. "/s  ·  REBIRTH " .. snapshot.Rebirths
 			.. "  ·  x" .. snapshot.Multiplier .. " INCOME  ·  BAY " .. string.format("%02d", snapshot.BayIndex)
 		carrying.Visible = snapshot.Carrying ~= false

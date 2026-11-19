@@ -57,7 +57,7 @@ local Config = {
 	},
 	Rebirth = { BaseCost = 100000, CostGrowth = 5, MaxLevel = 15,
 		Multipliers = { 1, 1.5, 2, 3, 4.5, 6, 8, 10 } },
-	Data = { StoreName = "RotOrbit_v1", AutosaveSeconds = 60, Version = 1 },
+	Data = { StoreName = "RotOrbit_v1", AutosaveSeconds = 60, Version = 1, LeaseSeconds = 180 },
 	Contracts = { Tracks = {
 		{ { Kind = "Dock", Goal = 3, Reward = 1200, Title = "Dock 3 brainrots" },
 			{ Kind = "Buy", MinRank = 2, Goal = 5, Reward = 8500, Title = "Buy 5 Rare or better" },

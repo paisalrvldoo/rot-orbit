@@ -13,6 +13,7 @@ local SolarFlareEvent = require(script.Parent:WaitForChild("SolarFlareEvent"))
 local UpgradeService = require(script.Parent:WaitForChild("UpgradeService"))
 local RebirthService = require(script.Parent:WaitForChild("RebirthService"))
 local ContractService = require(script.Parent:WaitForChild("ContractService"))
+local DataService = require(script.Parent:WaitForChild("DataService"))
 local Config = require(ReplicatedStorage:WaitForChild("Config"))
 local Players = game:GetService("Players")
 
@@ -30,6 +31,7 @@ local solarFlare = SolarFlareEvent.new(world, economy)
 local upgrades = UpgradeService.new(bases, economy)
 local rebirth = RebirthService.new(bases, economy)
 local contracts = ContractService.new(economy)
+local data = DataService.new(bases, economy)
 local actions = { Lock = function(player) locks:Activate(player) end,
 	Zap = function(player) gremlins:Zap(player) end,
 	Upgrade = function(player, name) upgrades:Buy(player, name) end,
@@ -37,6 +39,7 @@ local actions = { Lock = function(player) locks:Activate(player) end,
 local lastAction = {}
 network.Action.OnServerEvent:Connect(function(player, action, argument)
 	if type(action) ~= "string" or not actions[action] then return end
+	if not bases.Players[player] or bases.Players[player].Loading then return end
 	local now = workspace:GetServerTimeNow()
 	if now - (lastAction[player] or 0) < Config.ActionCooldown then return end
 	lastAction[player] = now
@@ -47,15 +50,16 @@ local function joined(player)
 	if bases:Assign(player) then
 		economy:AddPlayer(player)
 		contracts:AddPlayer(player)
-		economy:Send(player)
+		data:Load(player)
 	end
 end
 Players.PlayerAdded:Connect(joined)
 Players.PlayerRemoving:Connect(function(player)
+	data:Close(player)
 	bases:Release(player)
 	economy.Profiles[player] = nil
 	lastAction[player] = nil
 end)
-for _, player in ipairs(Players:GetPlayers()) do joined(player) end
+for _, player in ipairs(Players:GetPlayers()) do task.spawn(joined, player) end
 
 print("ROT ORBIT station ready:", world.Root:GetFullName(), network.Snapshot.Name)

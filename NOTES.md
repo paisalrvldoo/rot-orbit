@@ -72,7 +72,11 @@ ScreenshotMode and an exact rules-format TOUR only when those features exist.
   rarity counts and coloured found icons / dark undiscovered silhouettes.
 - [x] Three simultaneous contracts, rotating through nine missions with cash
   rewards. U/R show contracts beside upgrades/rebirth. All rewards are server-owned.
-- [ ] Saving; final HUD polish.
+- [x] Pcall-safe progress saving: cash, rebirths, upgrades, inventory, discoveries,
+  contracts; autosave/leave/shutdown, validated loads and renewable server leases.
+  API-disabled Studio sessions play without saving; failed loads cannot overwrite
+  real saves. Reconnecting docks owned carried cargo into a free home slot.
+- [ ] Final HUD polish.
 - [ ] ScreenshotMode/TOUR, README, genuine Studio pictures and published IDs.
 
 NPC stealing; meteor warnings/impacts and safe domes; solar flare; green gremlin
