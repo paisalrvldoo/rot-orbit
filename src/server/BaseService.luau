@@ -53,9 +53,13 @@ function BaseService:SetSpeed(player)
 	if humanoid then
 		local profile = self.Economy and self.Economy.Profiles[player]
 		local upgrades = profile and profile.Upgrades or {}
-		humanoid.WalkSpeed = state and state.Carry
+		local speed = state and state.Carry
 			and (Config.BaseCarrySpeed + (upgrades.CarrySpeed or 0) * Config.Upgrades.CarrySpeed.Step)
 			or (Config.BaseWalkSpeed + (upgrades.WalkSpeed or 0) * Config.Upgrades.WalkSpeed.Step)
+		if state and state.SprintUntil and state.SprintUntil > workspace:GetServerTimeNow() then
+			speed *= state.Carry and Config.Skills.Sprint.CarrySpeed or Config.Skills.Sprint.Speed
+		end
+		humanoid.WalkSpeed = speed
 		humanoid.UseJumpPower = true
 		humanoid.JumpPower = Config.JumpPower
 	end
@@ -83,6 +87,7 @@ function BaseService:Assign(player)
 		local root = character:WaitForChild("HumanoidRootPart", 10)
 		local humanoid = character:WaitForChild("Humanoid", 10)
 		if not root or not humanoid or self.Players[player] ~= state then return end
+		state.SprintUntil = nil
 		character:PivotTo(bay.SpawnFrame)
 		self:SetSpeed(player)
 		humanoid.Died:Connect(function() self:Drop(player) end)

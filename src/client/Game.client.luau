@@ -22,16 +22,51 @@ function InputController.Start(hud)
 			hud.Network.Action:FireServer("Skill", name)
 		end)
 	end
+	local utility = false
+	local more = Instance.new("TextButton")
+	more.Name = "SkillPage"
+	more.AnchorPoint = Vector2.new(0.5, 0)
+	more.TextColor3, more.BackgroundColor3 = Config.Palette.White, Config.Palette.Ink
+	more.Font, more.TextSize = Enum.Font.GothamBold, 14
+	more.Visible = false
+	more.Parent = hud.Gui
+	Instance.new("UICorner", more).CornerRadius = UDim.new(0, 10)
+	HudController.ButtonFeedback(more, function() utility = not utility end)
+	local lastLayout
 	local previous
 	RunService.RenderStepped:Connect(function()
 		local state = hud.GetState()
 		if not state then return end
 		local now = workspace:GetServerTimeNow()
+		local compact = HudController.IsCompact() and state.SaveStatus ~= "STUDIO PREVIEW"
+		local layout = compact and (utility and "utility" or "primary") or "all"
+		if layout ~= lastLayout then
+			lastLayout = layout
+			local skills = not compact and Config.Skills.Order
+				or (utility and Config.Skills.TouchUtility or Config.Skills.TouchPrimary)
+			local slots = compact and (#Config.Skills.TouchPrimary + 1) or #skills
+			local spacing = 1000 / slots
+			for _, name in ipairs(Config.Skills.Order) do
+				local button = self.Buttons[name]
+				local index = table.find(skills, name)
+				button.Visible = index ~= nil
+				if index then
+					button.Position = UDim2.new(0.5, (index - (slots + 1) / 2) * spacing, 1, -168)
+					button.Size = UDim2.fromOffset(spacing - 14, 48)
+				end
+			end
+			more.Visible = compact
+			more.Text = utility and "MAIN SKILLS" or "MORE SKILLS"
+			more.Size = UDim2.fromOffset(spacing - 14, 48)
+			more.Position = UDim2.new(0.5, (slots - 1) / 2 * spacing, 1, -168)
+			more:SetAttribute("Selected", utility)
+		end
 		for _, name in ipairs(Config.Skills.Order) do
 			local skill, button = Config.Skills[name], self.Buttons[name]
 			local unlocked = Config.Skills.Unlocked(name, state)
 			local left = math.max(0, ((state.SkillReadyAt or {})[name] or 0) - now)
-			button.Text = skill.Name .. " [" .. skill.Key .. "]\n" .. (not unlocked and skill.Unlock
+			button.Text = skill.Name .. (compact and "" or (" [" .. (skill.KeyLabel or skill.Key) .. "]"))
+				.. "\n" .. (not unlocked and skill.Unlock
 				or (left > 0 and (math.ceil(left) .. "s") or "READY"))
 			button:SetAttribute("Unavailable", not unlocked or left > 0)
 			local ring = button:FindFirstChild("CooldownRing")

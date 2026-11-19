@@ -427,3 +427,7 @@ The live boot check still takes first priority if a new Studio error arrives.
   solid geometry, the deck edge and shield entry on the server. Gravity Slam
   moved to V. Touch gets the same cooldown and activation. Studio still needs
   to check crossing thin walls, locked bays and domes from both sides.
+- Sprint [Shift] boosts movement for four seconds with a weaker carry boost
+  and an ion trail. Docking or dropping cargo during the boost recalculates
+  speed; respawning clears it. Phone skill pages keep the main combat and
+  movement actions visible and move Dash/Bubble to More Skills.

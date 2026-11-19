@@ -326,6 +326,30 @@ function GremlinRaid:BlinkTarget(player, root, distance)
 	return position
 end
 
+function GremlinRaid:Sprint(player, state, root, now, skill)
+	local ends = now + skill.Duration
+	state.SprintUntil = ends
+	self.Bases:SetSpeed(player)
+	local a, b = Instance.new("Attachment", root), Instance.new("Attachment", root)
+	a.Position, b.Position = Vector3.new(-0.8, 0, 0.6), Vector3.new(0.8, 0, 0.6)
+	local trail = Instance.new("Trail")
+	trail.Name = "SprintIonTrail"
+	trail.Attachment0, trail.Attachment1 = a, b
+	trail.Color = ColorSequence.new(Config.Palette.Mint, Config.Palette.Teal)
+	trail.Transparency = NumberSequence.new(0.4, 1)
+	trail.Lifetime = 0.23
+	trail.MinLength = 0.2
+	trail.LightEmission = 0.6
+	trail.Parent = root
+	for _, effect in ipairs({ trail, a, b }) do Debris:AddItem(effect, skill.Duration) end
+	task.delay(skill.Duration, function()
+		if self.Bases.Players[player] == state and state.SprintUntil == ends then
+			state.SprintUntil = nil
+			self.Bases:SetSpeed(player)
+		end
+	end)
+end
+
 function GremlinRaid:Skill(player, name)
 	if type(name) ~= "string" or not table.find(Config.Skills.Order, name) then return end
 	local state, profile = self.Bases.Players[player], self.Economy.Profiles[player]
@@ -358,6 +382,8 @@ function GremlinRaid:Skill(player, name)
 		self:Pulse(root.Position, 2.5, violet, "BlinkDeparture")
 		root.CFrame += blinkTarget - root.Position
 		self:Pulse(blinkTarget, 3, violet, "BlinkArrival")
+	elseif name == "Sprint" then
+		self:Sprint(player, state, root, now, skill)
 	elseif name == "Dash" then
 		local direction = root.CFrame.LookVector * Vector3.new(1, 0, 1)
 		if direction.Magnitude > 0.01 then
