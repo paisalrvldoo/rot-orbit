@@ -328,3 +328,8 @@ Core fixes and combat take priority over more visual polish.
 - [ ] Same-server crew joining, friendly theft protection and shared defence.
 - [ ] Server/global crew ranks with throttled pcall-safe persistence.
 - [ ] Four genuine Studio captures, approved icon/thumbnail and latest publish.
+
+Combat layout follow-up: skill controls sit above the counts/carry strips, not
+over them. ZAP is a nearest-target blaster with a visible beam and small muzzle
+pulse; Slam remains the AoE. Captain rebirth HP growth is capped for solo waves.
+Studio rendering and combat balance remain unverified.

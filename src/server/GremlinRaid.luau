@@ -193,21 +193,22 @@ function GremlinRaid:Zap(player)
 	local now = workspace:GetServerTimeNow()
 	if now < (state.ZapReadyAt or 0) then return end
 	state.ZapReadyAt = now + Config.Gremlin.ZapCooldown
-	local count = 0
-	local recovered = 0
+	local count, recovered, nearest, distance = 0, 0, nil, Config.Gremlin.ZapRadius
 	for _, gremlin in pairs(self.Gremlins) do
-		if (gremlin.Position - root.Position).Magnitude <= Config.Gremlin.ZapRadius then
-			count += 1
-			if self:Stun(gremlin, now) then recovered += 1 end
-			self:Damage(gremlin, player, Config.Gremlin.ZapDamage)
-		end
+		local gap = (gremlin.Position - root.Position).Magnitude
+		if gap <= distance then nearest, distance = gremlin, gap end
 	end
-	local pulse = WorldBuilder.Part("ZapPulse", Vector3.one * 2, root.CFrame,
-		Config.Palette.Mint, Enum.Material.Neon, self.World.Root, Enum.PartType.Ball, false)
-	pulse.Transparency = 0.75
-	TweenService:Create(pulse, TweenInfo.new(0.35),
-		{ Size = Vector3.one * Config.Gremlin.ZapRadius * 2, Transparency = 1 }):Play()
-	Debris:AddItem(pulse, 0.4)
+	if nearest then
+		count = 1
+		if self:Stun(nearest, now) then recovered = 1 end
+		self:Damage(nearest, player, Config.Gremlin.ZapDamage)
+		local from, to = root.Position, nearest.Position + Vector3.new(0, 2, 0)
+		local beam = WorldBuilder.Part("ZapBlasterBeam", Vector3.new(0.25, 0.25, (to - from).Magnitude),
+			CFrame.lookAt((from + to) / 2, to), Config.Palette.Mint, Enum.Material.Neon, self.World.Root, nil, false)
+		beam.CanQuery = false
+		Debris:AddItem(beam, 0.18)
+	end
+	self:Pulse(root.Position, 3, Config.Palette.Mint, "ZapMuzzle")
 	local message = count > 0 and ("ZAPPED · " .. count .. " HITS · KEEP FIRING TO DEFEAT") or "ZAP MISSED · MOVE CLOSER"
 	if recovered > 0 then message ..= " · E TO RECOVER " .. recovered end
 	self.Economy.Network.Notice:FireClient(player, message)
@@ -334,7 +335,7 @@ function GremlinRaid:Start()
 			local profile = self.Economy.Profiles[bay.Owner]
 			local rebirths = profile and profile.Rebirths or 0
 			local captain = boss and index == 1
-			local health = captain and (Config.Gremlin.BossHealth + #bays * 4 + rebirths * 2)
+			local health = captain and (Config.Gremlin.BossHealth + #bays * 4 + math.min(rebirths, 6) * 2)
 				or (Config.Gremlin.Health + math.min(rebirths, 6))
 			local enemy = self:Spawn(bay, Vector3.new((index - (self.WaveCount + 1) / 2) * 4, 0.9, -58), captain, health)
 			enemy.Wave = self.Wave
