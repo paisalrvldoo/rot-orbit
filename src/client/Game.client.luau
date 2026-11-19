@@ -16,11 +16,30 @@ function InputController.Start(hud)
 	local self = setmetatable({ Hud = hud, Buttons = {}, Order = {} }, InputController)
 	self:Register("Lock", "LOCK [L]", Enum.KeyCode.L, function() hud.Network.Action:FireServer("Lock") end)
 	self:Register("Zap", "ZAP [F]", Enum.KeyCode.F, function() hud.Network.Action:FireServer("Zap") end)
+	for _, name in ipairs(Config.Skills.Order) do
+		local definition = Config.Skills[name]
+		self:Register(name, definition.Name, Enum.KeyCode[definition.Key], function()
+			hud.Network.Action:FireServer("Skill", name)
+		end)
+	end
 	local previous
 	RunService.RenderStepped:Connect(function()
 		local state = hud.GetState()
 		if not state then return end
 		local now = workspace:GetServerTimeNow()
+		for _, name in ipairs(Config.Skills.Order) do
+			local skill, button = Config.Skills[name], self.Buttons[name]
+			local unlocked = Config.Skills.Unlocked(name, state)
+			local left = math.max(0, ((state.SkillReadyAt or {})[name] or 0) - now)
+			button.Text = skill.Name .. " [" .. skill.Key .. "]\n" .. (not unlocked and skill.Unlock
+				or (left > 0 and (math.ceil(left) .. "s") or "READY"))
+			button:SetAttribute("Unavailable", not unlocked or left > 0)
+			local ring = button:FindFirstChild("CooldownRing")
+			if ring then
+				ring.Text = not unlocked and "-" or (left > 0 and tostring(math.ceil(left)) or "+")
+				ring.BackgroundTransparency = left > 0 and (0.15 + 0.65 * left / skill.Cooldown) or 0.15
+			end
+		end
 		local lock = self.Buttons.Lock
 		if (state.LockUntil or 0) > now then
 			lock.Text = "LOCK [L]\nLOCKED · " .. math.ceil(state.LockUntil - now) .. "s"
@@ -76,13 +95,36 @@ function InputController:Register(name, label, key, callback)
 	stroke.Color = Config.Palette.Teal
 	stroke.Thickness = 2
 	local activate = HudController.ButtonFeedback(button, callback,
-		(name == "Lock" or name == "Zap") and 0.35 or nil)
+		(name == "Lock" or name == "Zap" or Config.Skills[name]) and 0.35 or nil)
 	self.Buttons[name] = button
 	table.insert(self.Order, name)
 	local priority = { Lock = 1, Upgrades = 2, Rebirth = 3, Index = 4, Zap = 5 }
 	table.sort(self.Order, function(a, b) return (priority[a] or 9) < (priority[b] or 9) end)
 	for index, action in ipairs(self.Order) do
-		self.Buttons[action].Position = UDim2.new(0.5, (index - (#self.Order + 1) / 2) * 188, 1, -53)
+		local skillIndex = table.find(Config.Skills.Order, action)
+		if skillIndex then
+			self.Buttons[action].Position = UDim2.new(0.5, (skillIndex - 2) * 254, 1, -110)
+			self.Buttons[action].Size = UDim2.fromOffset(244, 48)
+			self.Buttons[action].TextSize = 13
+		else
+			self.Buttons[action].Position = UDim2.new(0.5, (index - 3) * 188, 1, -53)
+		end
+	end
+	if table.find(Config.Skills.Order, name) then
+		local ring = Instance.new("TextLabel")
+		ring.Name = "CooldownRing"
+		ring.Size = UDim2.fromOffset(28, 28)
+		ring.Position = UDim2.new(1, -17, 0, -10)
+		ring.Text = "+"
+		ring.TextColor3 = Config.Palette.White
+		ring.BackgroundColor3 = Config.Palette.Teal
+		ring.Font = Enum.Font.GothamBold
+		ring.TextSize = 14
+		ring.Parent = button
+		Instance.new("UICorner", ring).CornerRadius = UDim.new(1, 0)
+		local rim = Instance.new("UIStroke", ring)
+		rim.Color = Config.Palette.Mint
+		rim.Thickness = 2
 	end
 	ContextActionService:BindAction("RotOrbit" .. name, function(_, inputState)
 		if UserInputService:GetFocusedTextBox() then return Enum.ContextActionResult.Pass end

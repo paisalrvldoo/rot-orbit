@@ -131,7 +131,7 @@ function EconomyService:Snapshot(player)
 		Variants = state.Variants, MutationMilestones = profile.MutationMilestones,
 		LockUntil = state.LockUntil or 0, LockReadyAt = state.LockReadyAt or 0,
 		ZapReadyAt = state.ZapReadyAt or 0,
-		RaidsDefended = state.RaidsDefended or 0,
+		RaidsDefended = state.RaidsDefended or 0, SkillReadyAt = state.SkillReadyAt or {},
 		Carrying = state.Carry and { Name = Catalog.DisplayName(state.Carry.Record),
 			Id = state.Carry.Record.Id, Mutation = state.Carry.Record.Mutation } or false,
 		Catalog = Catalog.Public(), Events = self.Events,

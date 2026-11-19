@@ -45,6 +45,34 @@ raid.Active, raid.Defeated = true, 1
 raid:Finish()
 assert(profiles[player].Cash == paid, 'escaped wave cannot earn defended reward')
 assert(recovered == 2 and sends == 2)
+local skillState = { Bay = {}, SkillReadyAt = {} }
+local skillProfile = { Rebirths = 0, Upgrades = {} }
+local avatar = { FindFirstChild = function() return { Position = {} } end }
+local user = { Character = avatar }
+local uses = 0
+local skills = setmetatable({ Bases = { Players = { [user] = skillState }, Near = function() return true end },
+    Economy = { Profiles = { [user] = skillProfile }, Network = { Notice = { FireClient = function() end } },
+        Send = function() uses += 1 end }, Gremlins = {}, Pulse = function() end }, GremlinRaid)
+skills:Skill(user, 'Unknown')
+skills:Skill(user, {})
+skills:Skill(user, 'Slam')
+assert(uses == 0 and not skillState.SkillReadyAt.Slam, 'locked/malformed skills must be denied')
+skillProfile.Upgrades.CarrySpeed = 1
+skills:Skill(user, 'Slam')
+assert(uses == 1 and skillState.SkillReadyAt.Slam == 112, 'upgrade must unlock server-owned cooldown')
+skills:Skill(user, 'Slam')
+assert(uses == 1, 'spam must not bypass cooldown')
+skillState.SkillReadyAt.Slam = 0
+skillState.Closing = true
+skills:Skill(user, 'Slam')
+assert(uses == 1, 'departing profiles must not activate skills')
+skillState.Closing, skillProfile.Demo = false, true
+skills:Skill(user, 'Slam')
+assert(uses == 1, 'capture staging must not invoke live skills')
+assert(Config.Skills.Unlocked('Bubble', { Rebirths = 2 }))
+assert(not Config.Skills.Unlocked('Bubble', { Rebirths = 1 }))
+assert(Config.Skills.Unlocked('Dash', {}))
+print('Skill checks passed: invalid names, unlocks, upgrade/rebirth paths, cooldown spam and departure/preview guards.')
 print('Combat checks passed: damage, stun, death once, boss reward, cargo recovery, wave reward once, cash cap and profile guards.')
 `;
 mkdirSync('out/combat-check', { recursive: true });

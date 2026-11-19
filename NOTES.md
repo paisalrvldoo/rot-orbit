@@ -318,7 +318,13 @@ Core fixes and combat take priority over more visual polish.
   includes a large crowned captain; HP scales with players/rebirths. HUD tracks
   session raids defended. Actual damage/reward regressions pass; Studio combat
   timing, effects and two-player test remain required.
-- [ ] Original skills with authoritative cooldowns, mobile controls and VFX.
+- [x] Four combat actions: existing ZAP plus X Jet Dash (collision-checked),
+  Q Gravity Slam (AoE damage/knockback) and C Bay Bubble (12s emergency lock).
+  Slam/Bubble unlock through upgrades or rebirths. Server checks unlock, living
+  character, profile readiness and cooldown; touch buttons show locked reason,
+  READY or countdown with circular badges. Expanding VFX and built-in ping need
+  Studio visual/audio/mobile confirmation. Actual unlock/spam/preview/departure
+  regressions pass. No new script modules were needed (still 24).
 - [ ] Same-server crew joining, friendly theft protection and shared defence.
 - [ ] Server/global crew ranks with throttled pcall-safe persistence.
 - [ ] Four genuine Studio captures, approved icon/thumbnail and latest publish.

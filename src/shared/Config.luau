@@ -64,6 +64,14 @@ local Config = {
 	Gremlin = { FirstRaid = 75, Interval = 135, Telegraph = 6, Duration = 48, Count = 4, Speed = 9, StunDuration = 3,
 		Health = 4, BossHealth = 18, BossEvery = 3, KillReward = 140, BossReward = 1800,
 		DefendReward = 600, ZapDamage = 2, ZapRadius = 48, ZapCooldown = 3 },
+	Skills = {
+		Order = { "Dash", "Slam", "Bubble" },
+		Dash = { Name = "JET DASH", Key = "X", Cooldown = 7, Distance = 18, Unlock = "FREE" },
+		Slam = { Name = "GRAVITY SLAM", Key = "Q", Cooldown = 12, Radius = 24, Damage = 4,
+			Rebirth = 1, Upgrade = "CarrySpeed", Unlock = "CARRY UPGRADE 1 / REBIRTH 1" },
+		Bubble = { Name = "BAY BUBBLE", Key = "C", Cooldown = 45, Duration = 12, Radius = 38,
+			Rebirth = 2, Upgrade = "LockDuration", Unlock = "LOCK UPGRADE 1 / REBIRTH 2" },
+	},
 	Lock = { Duration = 40, Cooldown = 65 },
 	Upgrades = {
 		WalkSpeed = { BaseCost = 1200, CostGrowth = 2.2, Step = 3, MaxLevel = 5 },
@@ -126,6 +134,12 @@ end
 function Config.Rebirth.RequiredRank(level)
 	local ranks = Config.Rebirth.DockRanks
 	return ranks[math.min(level + 1, #ranks)]
+end
+
+function Config.Skills.Unlocked(name, profile)
+	local skill = Config.Skills[name]
+	return skill ~= nil and (not skill.Rebirth or (profile.Rebirths or 0) >= skill.Rebirth
+		or ((profile.Upgrades or {})[skill.Upgrade] or 0) >= 1)
 end
 
 return table.freeze(Config)

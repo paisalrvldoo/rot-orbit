@@ -33,6 +33,7 @@ local screenshots = ScreenshotService.new({ Bases = bases, Economy = economy, Da
 	Meteors = meteors, Gremlins = gremlins, Conveyor = conveyor })
 local actions = { Lock = function(player) locks:Activate(player) end,
 	Zap = function(player) gremlins:Zap(player) end,
+	Skill = function(player, name) gremlins:Skill(player, name) end,
 	Upgrade = function(player, name) upgrades:Buy(player, name) end,
 	Rebirth = function(player) upgrades:Perform(player) end,
 	Screenshot = function(player, shot) screenshots:Prepare(player, shot) end }
