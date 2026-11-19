@@ -5,6 +5,8 @@ local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
 local player = Players.LocalPlayer
+local BillboardFx = require(script.Parent:WaitForChild("BillboardFx"))
+BillboardFx.Start()
 
 local ARENA_WIDTH = 640
 local ARENA_HEIGHT = 480
