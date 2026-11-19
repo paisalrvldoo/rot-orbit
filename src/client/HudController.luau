@@ -119,7 +119,8 @@ local function startEventBanner(gui, network)
 		end
 		banner.Visible = selected ~= nil or nextMeteorAt ~= nil
 		if selected then
-			banner.Text = selected.Text .. "  ·  " .. (selected.FrozenSeconds or math.ceil(selected.EndsAt - now)) .. "s"
+			local countdown = selected.FrozenSeconds or math.ceil(selected.EndsAt - now)
+			banner.Text = selected.HideCountdown and selected.Text or (selected.Text .. "  ·  " .. countdown .. "s")
 			banner.TextColor3 = selected.Color or Config.Palette.Sun
 		elseif nextMeteorAt then
 			local seconds = math.max(0, math.ceil(nextMeteorAt - now))

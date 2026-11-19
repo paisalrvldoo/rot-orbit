@@ -6,6 +6,7 @@ local Config = require(shared:WaitForChild("Config"))
 local Traits = require(shared:WaitForChild("BrainrotTraits"))
 local Format = Traits.Format
 local Mutation = Traits.Mutation
+local Rarity = Traits.Rarity
 local Catalog = require(script.Parent:WaitForChild("BrainrotCatalog"))
 local BrainrotModel = require(script.Parent:WaitForChild("BrainrotModel"))
 local WorldBuilder = require(script.Parent:WaitForChild("WorldBuilder"))
@@ -52,6 +53,17 @@ function ConveyorService.new(world, economy)
 					if surge then record.Mutation = Mutation.Roll(self.Random, true) end
 				end
 				self:Spawn(record, -math.pi / 2)
+				local entry = Catalog.Get(record.Id)
+				if entry.Rarity == "SECRET" then
+					economy:PublishEvent({
+						Name = "SecretCargo",
+						Text = "SECRET ON THE RING · " .. string.upper(Catalog.DisplayName(record)),
+						EndsAt = workspace:GetServerTimeNow() + Config.Conveyor.SecretNoticeSeconds,
+						Priority = 1.75,
+						Color = Rarity.ByName.SECRET.Color,
+						HideCountdown = true,
+					})
+				end
 			end
 		end
 	end)
@@ -78,7 +90,7 @@ function ConveyorService:Spawn(record, angle)
 		CFrame.new(0, -0.3, 0) * CFrame.Angles(0, 0, math.pi / 2), Config.Palette.Ink,
 		Enum.Material.SmoothPlastic, capsule, Enum.PartType.Cylinder, false)
 	WorldBuilder.Ring("CapsuleHalo", 2.65, 0.16, 0.12, CFrame.identity,
-		Config.Palette.Mint, Enum.Material.Neon, capsule, 20, false)
+		Rarity.ByName[Catalog.Get(record.Id).Rarity].Color, Enum.Material.Neon, capsule, 20, false)
 	local brainrot = BrainrotModel.Create(record, CFrame.identity, capsule, true)
 	brainrot:SetAttribute("VisualState", "Cargo")
 	capsule:PivotTo(frame)

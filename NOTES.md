@@ -190,7 +190,8 @@ originals, six mutations, station title, 24 scripts, dense HUD and staged cover.
   multiplayer prompt visibility still needs a playtest.
 - [x] Docks and the index use the billboard rarity palette. Socket colors
   reset on theft, retirement and rebirth and are restored with saved cargo.
-- [ ] Improve the live rare cargo reveal.
+- [x] SECRET arrivals get a named announcement, yielding to safety banners.
+  Moving sleds use the same rarity rim color as the docks.
 - [ ] Improve progression feedback using the research priorities for earned
   rewards, the index and rebirth while preserving old saves.
 - [ ] Source-review the four staged shots and make the owner capture handoff clear.
