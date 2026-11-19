@@ -66,7 +66,9 @@ ScreenshotMode and an exact rules-format TOUR only when those features exist.
 - [x] Solar flare: all dock income doubles for 20s every 150s, with a banner.
 - [x] Upgrade [U] panel: walk/carry speed, lock duration, +2 slots up to 16;
   server recomputes costs and enforces upgrade caps.
-- [ ] Rebirth; index; contracts; saving; final HUD polish.
+- [x] Rebirth [R] opens the upgrade panel; a second click confirms resetting
+  cash/upgrades/bay for permanent income. Found index entries survive resets.
+- [ ] Index; contracts; saving; final HUD polish.
 - [ ] ScreenshotMode/TOUR, README, genuine Studio pictures and published IDs.
 
 NPC stealing; meteor warnings/impacts and safe domes; solar flare; green gremlin

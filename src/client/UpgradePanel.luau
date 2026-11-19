@@ -44,4 +44,37 @@ function UpgradePanel.Start(hud, input)
 	return panel
 end
 
+function UpgradePanel.AddRebirth(hud, input, panel)
+	Style.Text(panel, "REBIRTH · PERMANENT INCOME", 22, 320, 510, 24, 18, Config.Palette.Sun)
+	local detail = Style.Text(panel, "", 22, 350, 304, 34, 16)
+	Style.Text(panel, "Reset cash, upgrades and bay. Keep your discoveries.", 22, 393, 516, 20, 13, Config.Palette.Muted)
+	local confirmUntil = 0
+	local button = Style.Button(panel, "REBIRTH", 336, 350, 202, 36, function()
+		local state = hud.GetState()
+		if not state or state.Rebirths >= Config.Rebirth.MaxLevel then return end
+		local now = os.clock()
+		if now < confirmUntil then
+			confirmUntil = 0
+			hud.Network.Action:FireServer("Rebirth")
+		else confirmUntil = now + 4 end
+	end)
+	button.TextSize = 14
+	input:Register("Rebirth", "REBIRTH [R]", Enum.KeyCode.R, function() panel.Visible = true end)
+	local elapsed = 0
+	RunService.Heartbeat:Connect(function(dt)
+		elapsed += dt
+		if elapsed < 0.25 then return end
+		elapsed = 0
+		local state = hud.GetState()
+		if not state then return end
+		local nextLevel = state.Rebirths + 1
+		local multipliers = Config.Rebirth.Multipliers
+		local multiplier = multipliers[nextLevel + 1] or (multipliers[#multipliers] + (nextLevel + 1 - #multipliers) * 2)
+		detail.Text = "LEVEL " .. state.Rebirths .. " → " .. nextLevel .. " · x" .. multiplier
+		button.Text = state.Rebirths >= Config.Rebirth.MaxLevel and "MAX REBIRTH"
+			or (os.clock() < confirmUntil and "RESET BAY? CONFIRM"
+				or ("REBIRTH · " .. Format.Money(Config.Rebirth.BaseCost * Config.Rebirth.CostGrowth ^ state.Rebirths)))
+	end)
+end
+
 return UpgradePanel

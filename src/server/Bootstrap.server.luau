@@ -11,6 +11,7 @@ local LockService = require(script.Parent:WaitForChild("LockService"))
 local GremlinRaid = require(script.Parent:WaitForChild("GremlinRaid"))
 local SolarFlareEvent = require(script.Parent:WaitForChild("SolarFlareEvent"))
 local UpgradeService = require(script.Parent:WaitForChild("UpgradeService"))
+local RebirthService = require(script.Parent:WaitForChild("RebirthService"))
 local Config = require(ReplicatedStorage:WaitForChild("Config"))
 local Players = game:GetService("Players")
 
@@ -26,9 +27,11 @@ local locks = LockService.new(bases, economy)
 local gremlins = GremlinRaid.new(world, bases, economy, locks)
 local solarFlare = SolarFlareEvent.new(world, economy)
 local upgrades = UpgradeService.new(bases, economy)
+local rebirth = RebirthService.new(bases, economy)
 local actions = { Lock = function(player) locks:Activate(player) end,
 	Zap = function(player) gremlins:Zap(player) end,
-	Upgrade = function(player, name) upgrades:Buy(player, name) end }
+	Upgrade = function(player, name) upgrades:Buy(player, name) end,
+	Rebirth = function(player) rebirth:Perform(player) end }
 local lastAction = {}
 network.Action.OnServerEvent:Connect(function(player, action, argument)
 	if type(action) ~= "string" or not actions[action] then return end

@@ -22,6 +22,7 @@ function LockService:Activate(player)
 	end
 	local duration = Config.Lock.Duration + (profile.Upgrades.LockDuration or 0) * Config.Upgrades.LockDuration.Step
 	state.LockUntil = now + duration
+	local lockedUntil = state.LockUntil
 	state.LockReadyAt = state.LockUntil + Config.Lock.Cooldown
 	local bay = state.Bay
 	bay.Model:SetAttribute("LockedUntil", state.LockUntil)
@@ -34,7 +35,7 @@ function LockService:Activate(player)
 	self.Economy:Send(player)
 	task.delay(duration, function()
 		shield:Destroy()
-		if bay.Owner == player and bay.Model:GetAttribute("LockedUntil") == state.LockUntil then
+		if bay.Owner == player and bay.Model:GetAttribute("LockedUntil") == lockedUntil then
 			bay.Model:SetAttribute("LockedUntil", 0)
 		end
 	end)

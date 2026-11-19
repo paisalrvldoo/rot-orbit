@@ -55,7 +55,8 @@ local Config = {
 		LockDuration = { BaseCost = 2500, CostGrowth = 2.5, Step = 8, MaxLevel = 5 },
 		BaySlots = { BaseCost = 4000, CostGrowth = 3, Step = 2, MaxLevel = 4 },
 	},
-	Rebirth = { BaseCost = 100000, CostGrowth = 5, Multipliers = { 1, 1.5, 2, 3, 4.5, 6, 8, 10 } },
+	Rebirth = { BaseCost = 100000, CostGrowth = 5, MaxLevel = 15,
+		Multipliers = { 1, 1.5, 2, 3, 4.5, 6, 8, 10 } },
 	Data = { StoreName = "RotOrbit_v1", AutosaveSeconds = 60, Version = 1 },
 	Palette = {
 		Deck = Color3.fromRGB(237, 245, 247),

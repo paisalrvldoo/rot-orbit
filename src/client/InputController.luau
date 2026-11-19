@@ -54,6 +54,8 @@ function InputController:Register(name, label, key, callback)
 	button.Activated:Connect(callback)
 	self.Buttons[name] = button
 	table.insert(self.Order, name)
+	local priority = { Lock = 1, Upgrades = 2, Rebirth = 3, Index = 4, Zap = 5 }
+	table.sort(self.Order, function(a, b) return (priority[a] or 9) < (priority[b] or 9) end)
 	for index, action in ipairs(self.Order) do
 		self.Buttons[action].Position = UDim2.new(0.5, (index - (#self.Order + 1) / 2) * 188, 1, -52)
 	end

@@ -199,6 +199,32 @@ function BaseService:SpawnDrop(record, position)
 	end
 end
 
+function BaseService:Reset(player)
+	local state = self.Players[player]
+	if not state then return end
+	if state.Carry then state.Carry.Model:Destroy(); state.Carry = nil end
+	for index = #state.Bay.Slots, 1, -1 do
+		local pedestal = state.Bay.Slots[index]
+		if pedestal.Occupant then pedestal.Occupant.Model:Destroy() end
+		pedestal.Occupant = nil
+		if index > Config.World.InitialSlots then
+			pedestal.Pad:Destroy()
+			local ring = state.Bay.Model:FindFirstChild("SocketGlow_" .. index)
+			if ring then ring:Destroy() end
+			state.Bay.Slots[index] = nil
+		else
+			pedestal.Label.Visible = true
+			pedestal.PlacePrompt.Enabled = true
+		end
+	end
+	state.LockUntil = 0
+	state.LockReadyAt = 0
+	state.Bay.Model:SetAttribute("LockedUntil", 0)
+	local shield = state.Bay.Model:FindFirstChild("BayLockShield")
+	if shield then shield:Destroy() end
+	self:SetSpeed(player)
+end
+
 function BaseService:Release(player)
 	local state = self.Players[player]
 	if not state then return end
