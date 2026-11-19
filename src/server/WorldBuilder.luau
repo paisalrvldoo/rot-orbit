@@ -328,10 +328,11 @@ local function buildDomes(world)
 		dome.CanQuery = false
 		WorldBuilder.Ring("DomeRim", Config.World.DomeRadius, 0.35, 0.12,
 			CFrame.new(center + Vector3.new(0, 0.07, 0)), palette.Mint, Enum.Material.Neon, parent, 48, false)
-		local label = WorldBuilder.Billboard(dome, "SHIELD DOME · SAFE", palette.Mint,
-			Vector3.new(0, Config.World.DomeRadius + 1.5, 0), 220, 35)
-		label.TextSize = 16
-		table.insert(world.Domes, { Part = dome, Center = center, Radius = Config.World.DomeRadius })
+		local label = WorldBuilder.Billboard(dome, "SAFE ZONE", palette.Mint,
+			Vector3.new(0, Config.World.DomeRadius + 1.5, 0), 120, 28)
+		label.TextSize = 15
+		label.Parent.MaxDistance = 20
+		table.insert(world.Domes, { Part = dome, Label = label.Parent, Center = center, Radius = Config.World.DomeRadius })
 	end
 end
 
@@ -366,7 +367,6 @@ function WorldBuilder.Build()
 	spawn.Neutral = true
 	spawn.Duration = 0
 	spawn.Parent = geometry
-	WorldBuilder.Billboard(spawn, "WELCOME TO ROT ORBIT", palette.White, Vector3.new(0, 5.5, 0), 300)
 	built = { Root = root, Geometry = geometry, Spawn = spawn,
 		PlayerBays = {}, RivalBays = {}, Domes = {}, Cargo = folder("CargoRing", root) }
 	buildCargoRing(built)

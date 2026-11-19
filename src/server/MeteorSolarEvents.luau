@@ -77,6 +77,7 @@ function MeteorSolarEvents:SetShowerLook(active, still)
 	self.DomePulses = {}
 	for _, dome in ipairs(self.World.Domes) do
 		dome.Part.Transparency = active and 0.71 or 0.84
+		if dome.Label then dome.Label.MaxDistance = active and not still and 60 or 20 end
 		if active and not still then
 			local pulse = TweenService:Create(dome.Part, TweenInfo.new(0.85, Enum.EasingStyle.Sine,
 				Enum.EasingDirection.InOut, -1, true), { Transparency = 0.54 })

@@ -396,3 +396,21 @@ Every working piece was rebuilt, verified and committed; source/place match.
 - Next action is owner republish + zero-error live boot / two-client smoke
   test, then four real pictures and approved icon/thumbnail. See CAPTURE.md.
   Do not spend another pass adding unrelated systems before this playtest.
+
+## Orbit readability and playtest follow-up
+
+Started from clean b3975f6. Initial build, all 25 scripts and dossier verified.
+Owner research priorities remain the checklist above: 43 distinct originals,
+six mutations, a large world title, about 20–24 purposeful scripts (25 with crew
+support), big sunny late-game cover, four genuine captures, visible hazards,
+live controls with quests and feed, readable cargo value, and earned progression.
+The live boot check still takes first priority if a new Studio error arrives.
+
+- Cargo cards now show compact name and price, with full details on one nearby
+  pod. Projected card bounds prevent competing cards, with a lower phone cap.
+  Dome signs are short and local outside meteor showers. The duplicate welcome
+  sign is gone. Staged portraits keep the hero cards and hide buyable cargo cards.
+  Studio checks pending at 1024×460 and 1280×720.
+- Next: collapse phone quests, trim repeated hints, improve the ring silhouette
+  and pod motion, then follow up on squad flow and thief movement from the owner
+  notes. Title entry, item boxes and the Rot King endgame are queued behind them.

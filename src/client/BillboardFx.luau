@@ -1,10 +1,60 @@
 -- Visual animation stays on the client; cash and interaction decisions stay on the server.
 local CollectionService = game:GetService("CollectionService")
+local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 local Config = require(game:GetService("ReplicatedStorage"):WaitForChild("Config"))
 local BillboardFx = {}
 local started = false
+
+local function updateCargoCards(visuals, frozen)
+	local camera = workspace.CurrentCamera
+	local character = Players.LocalPlayer.Character
+	local playerRoot = character and character:FindFirstChild("HumanoidRootPart")
+	local candidates, placed = {}, {}
+	for model in pairs(visuals) do
+		local root = model.PrimaryPart
+		local gui = root and root:FindFirstChild("BrainrotBillboard")
+		if model.Parent and gui and model:GetAttribute("VisualState") == "Cargo" then
+			gui.Enabled = false
+			if camera and playerRoot and not frozen and (root.Position - camera.CFrame.Position).Magnitude < gui.MaxDistance then
+				local point, onScreen = camera:WorldToViewportPoint(root.Position + gui.StudsOffsetWorldSpace)
+				if onScreen then
+					table.insert(candidates, { Gui = gui, Point = point,
+						Distance = (root.Position - playerRoot.Position).Magnitude })
+				end
+			end
+		end
+	end
+	table.sort(candidates, function(a, b)
+		-- Close cargo is the focus. Beyond prompt range, favour what is in front.
+		local closeA, closeB = a.Distance <= Config.InteractionDistance, b.Distance <= Config.InteractionDistance
+		if closeA ~= closeB then return closeA end
+		if closeA then return a.Distance < b.Distance end
+		return a.Point.Z < b.Point.Z
+	end)
+	local narrow = camera and camera.ViewportSize.Y <= 540
+	for index, item in ipairs(candidates) do
+		local full = index == 1 and item.Distance <= Config.InteractionDistance
+		local width, height = full and 206 or (narrow and 128 or 148), full and 64 or 40
+		local overlaps = false
+		for _, other in ipairs(placed) do
+			if math.abs(item.Point.X - other.Point.X) < (width + other.Width) * 0.5 + 8
+				and math.abs(item.Point.Y - other.Point.Y) < (height + other.Height) * 0.5 + 8 then
+				overlaps = true
+				break
+			end
+		end
+		if not overlaps then
+			item.Gui.Size = UDim2.fromOffset(width, height)
+			local card = item.Gui:FindFirstChildOfClass("Frame")
+			card.Details.Visible = full
+			item.Gui.Enabled = true
+			table.insert(placed, { Point = item.Point, Width = width, Height = height })
+			if #placed >= (narrow and 2 or 4) then break end
+		end
+	end
+end
 
 function BillboardFx.Start()
 	if started then return end
@@ -26,10 +76,17 @@ function BillboardFx.Start()
 		restore(model)
 		visuals[model] = nil
 	end)
-	RunService.RenderStepped:Connect(function()
+	local cardElapsed = math.huge
+	RunService.RenderStepped:Connect(function(dt)
 		local time = workspace:GetServerTimeNow()
 		local world = workspace:FindFirstChild("ROT_ORBIT")
-		if world and world:GetAttribute("ScreenshotFrozen") then
+		local frozen = world and world:GetAttribute("ScreenshotFrozen")
+		cardElapsed += dt
+		if cardElapsed >= 0.07 then
+			updateCargoCards(visuals, frozen)
+			cardElapsed = 0
+		end
+		if frozen then
 			for model in pairs(visuals) do restore(model) end
 			return
 		end

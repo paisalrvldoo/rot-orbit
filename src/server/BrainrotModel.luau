@@ -51,6 +51,21 @@ local function billboard(record, root, scale, forSale)
 	stroke.Color = rarity.Color
 	stroke.Thickness = 2
 	stroke.Parent = card
+	if forSale then
+		gui.Size = UDim2.fromOffset(148, 40)
+		gui.MaxDistance = 42
+		gui.Enabled = false -- BillboardFx reveals only cards with clear screen space.
+		corner.CornerRadius = UDim.new(0, 7)
+		stroke.Thickness = 1
+		local name = label(card, "Name", Catalog.DisplayName(record), 1, 20, 14, rarity.Color)
+		name.TextTruncate = Enum.TextTruncate.AtEnd
+		label(card, "Price", "BUY " .. Format.Money(Catalog.Price(record)), 20, 18, 13, Config.Palette.White)
+		local details = label(card, "Details", string.upper(entry.Rarity)
+			.. (record.Mutation and (" · ×" .. Mutation.Multiplier(record.Mutation)) or "")
+			.. " · " .. Format.Money(Catalog.Income(record)) .. "/s", 39, 24, 13, Config.Palette.Mint)
+		details.Visible = false
+		return gui
+	end
 	local name = label(card, "Name", Catalog.DisplayName(record), 4, 34, 19, Config.Palette.White)
 	name.TextScaled = true
 	name.TextWrapped = true
@@ -61,9 +76,7 @@ local function billboard(record, root, scale, forSale)
 	label(card, "Rarity", string.upper(entry.Rarity) .. (record.Mutation
 		and ("  ·  ×" .. Mutation.Multiplier(record.Mutation)) or ""),
 		39, 20, 15, rarity.Color)
-	local value = Format.Money(Catalog.Income(record)) .. "/s"
-	if forSale then value = "BUY " .. Format.Money(Catalog.Price(record)) .. "  ·  " .. value end
-	label(card, "Value", value, 61, 24, 17, Config.Palette.Mint)
+	label(card, "Value", Format.Money(Catalog.Income(record)) .. "/s", 61, 24, 17, Config.Palette.Mint)
 	return gui
 end
 
