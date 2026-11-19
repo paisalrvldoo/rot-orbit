@@ -63,7 +63,7 @@ ScreenshotMode and an exact rules-format TOUR only when those features exist.
   locks deny theft, remote actions are rate-limited, leaving cleans up shields.
 - [x] Green primitive gremlins raid player bays, steal and escape; locks block
   them and ZAP [F] stuns nearby thieves, returning their loot as recoverable drops.
-- [ ] Solar flare.
+- [x] Solar flare: all dock income doubles for 20s every 150s, with a banner.
 - [ ] Upgrades; rebirth; index; contracts; saving; final HUD polish.
 - [ ] ScreenshotMode/TOUR, README, genuine Studio pictures and published IDs.
 
