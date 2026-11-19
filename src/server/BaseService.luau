@@ -2,6 +2,7 @@ local shared = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local Debris = game:GetService("Debris")
 local HttpService = game:GetService("HttpService")
+local CollectionService = game:GetService("CollectionService")
 local Config = require(shared:WaitForChild("Config"))
 local Catalog = require(script.Parent:WaitForChild("BrainrotCatalog"))
 local BrainrotModel = require(script.Parent:WaitForChild("BrainrotModel"))
@@ -124,6 +125,35 @@ function BaseService:CanCarry(player)
 		and self:FreeSlot(player) ~= nil
 end
 
+function BaseService:AttachRetirePrompt(player, pedestal)
+	local occupant = pedestal.Occupant
+	local prompt = Instance.new("ProximityPrompt")
+	prompt.Name = "RetireCargo"
+	prompt.ActionText = "Retire · frees slot"
+	prompt.ObjectText = Catalog.DisplayName(occupant.Record)
+	prompt.KeyboardKeyCode = Enum.KeyCode.G
+	prompt.GamepadKeyCode = Enum.KeyCode.ButtonY
+	prompt.Exclusivity = Enum.ProximityPromptExclusivity.OnePerButton
+	prompt.HoldDuration = Config.RetireHoldDuration
+	prompt.MaxActivationDistance = Config.InteractionDistance
+	prompt.RequiresLineOfSight = false
+	prompt:SetAttribute("OwnerUserId", player.UserId)
+	CollectionService:AddTag(prompt, "OrbitRetirePrompt")
+	prompt.Parent = occupant.Model.PrimaryPart
+	prompt.Triggered:Connect(function(visitor)
+		local state = self.Players[visitor]
+		if visitor ~= player or not state or state.Loading or state.Bay.Owner ~= visitor
+			or state.Bay.Slots[pedestal.Index] ~= pedestal or pedestal.Occupant ~= occupant
+			or not self:Near(visitor, pedestal.Pad.Position) then return end
+		pedestal.Occupant = nil
+		occupant.Model:Destroy()
+		pedestal.Label.Visible = true
+		pedestal.PlacePrompt.Enabled = true
+		self.Network.Notice:FireClient(visitor, "RETIRED " .. Catalog.DisplayName(occupant.Record) .. " · SLOT OPEN")
+		self.Economy:Send(visitor)
+	end)
+end
+
 function BaseService:Carry(player, record)
 	if not self:CanCarry(player) then return false end
 	local state = self.Players[player]
@@ -162,6 +192,7 @@ function BaseService:Place(player, pedestal)
 	pedestal.Occupant = { Record = record, Model = BrainrotModel.Create(record, pedestal.Frame, state.Bay.Model) }
 	pedestal.Label.Visible = false
 	pedestal.PlacePrompt.Enabled = false
+	self:AttachRetirePrompt(player, pedestal)
 	local discovered = not state.Found[tostring(record.Id)]
 	state.Found[tostring(record.Id)] = true
 	if self.OnPlaced then self.OnPlaced(state.Bay, pedestal) end
@@ -243,6 +274,7 @@ function BaseService:Restore(player, record, slotIndex)
 		Model = BrainrotModel.Create(record, pedestal.Frame, state.Bay.Model) }
 	pedestal.Label.Visible = false
 	pedestal.PlacePrompt.Enabled = false
+	self:AttachRetirePrompt(player, pedestal)
 	state.Found[tostring(record.Id)] = true
 	if self.OnPlaced then self.OnPlaced(state.Bay, pedestal) end
 	return true

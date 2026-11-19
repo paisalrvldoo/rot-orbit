@@ -2,6 +2,8 @@
 local ContextActionService = game:GetService("ContextActionService")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
+local CollectionService = game:GetService("CollectionService")
+local localPlayer = game:GetService("Players").LocalPlayer
 local shared = game:GetService("ReplicatedStorage")
 local Config = require(shared:WaitForChild("Config"))
 local Traits = require(shared:WaitForChild("BrainrotTraits"))
@@ -90,6 +92,11 @@ function InputController:Register(name, label, key, callback)
 end
 
 -- Start the controls and panels after creating the HUD.
+local function showOwnedRetirePrompt(prompt)
+	prompt.Enabled = prompt:GetAttribute("OwnerUserId") == localPlayer.UserId
+end
+CollectionService:GetInstanceAddedSignal("OrbitRetirePrompt"):Connect(showOwnedRetirePrompt)
+for _, prompt in ipairs(CollectionService:GetTagged("OrbitRetirePrompt")) do showOwnedRetirePrompt(prompt) end
 require(script.Parent:WaitForChild("BillboardFx")).Start()
 local hud = require(script.Parent:WaitForChild("HudController")).Start()
 local input = InputController.Start(hud)

@@ -176,3 +176,19 @@ Visual order for this pass (compile/source checks here; Studio review pending):
   snapshots and effects, never choose their own rewards or prices.
 - Stop spending on a single problem after 20 minutes; record a simpler choice
   here and continue.
+
+## Continuation checkpoint (19 November, 25-minute cap)
+
+Started from clean `0c2a7e1`. Initial verification passed for all 24 scripts.
+Reviewed both owner research files. Keep the first ten priorities above as the
+submission checklist, with genuine 16:9 captures and the published play link
+still open. Finish gameplay gaps before adding polish. Keep the existing 43
+originals, six mutations, station title, 24 scripts, dense HUD and staged cover.
+
+- [x] Owners can hold G near docked cargo to retire it and free a pedestal.
+  Retirement leaves index discoveries intact and awards no cash. Studio
+  multiplayer prompt visibility still needs a playtest.
+- [ ] Bring rarity colors onto the docks and improve the live rare cargo reveal.
+- [ ] Improve progression feedback using the research priorities for earned
+  rewards, the index and rebirth while preserving old saves.
+- [ ] Source-review the four staged shots and make the owner capture handoff clear.

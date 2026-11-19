@@ -58,7 +58,7 @@ function EconomyService:Purchase(player, record, position)
 	local profile = self.Profiles[player]
 	if not profile or not self.Bases:Near(player, position) then return false end
 	if not self.Bases:CanCarry(player) then
-		self.Network.Notice:FireClient(player, "Dock your cargo first, and keep an empty pedestal.")
+		self.Network.Notice:FireClient(player, "Dock your cargo or hold G at home to retire one and free a slot.")
 		return false
 	end
 	local price = Catalog.Price(record)
