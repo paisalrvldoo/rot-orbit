@@ -110,7 +110,8 @@ The research is prose guidance, not source or reusable names. Rank is not guaran
    screen is gone.
 5. [x] Built a two-sided 40-stud lit station title and player dock signs with live
    OPEN/LOCKED badges beside the owner's name.
-6. Strengthen meteor streaks/warnings, dome glow, drop feedback and between-event timer.
+6. [x] Meteor streaks, red warnings, warmer sky, pulsing domes, a cargo drop
+   marker and the between-event countdown are implemented.
 7. [x] Sixth mutation Aurora at x7, with three coloured orbit ribbons.
    [ ] Short positive mutation-spawn event.
 8. [x] Edge HUD has live upgrade/found/cost/cooldown buttons, a three-action feed,

@@ -18,7 +18,8 @@ local function pose(pedestal, frame)
 	return model.PrimaryPart.BrainrotBillboard
 end
 
-local function stageCover(state, root, effects)
+local function stageCover(state, root, meteors)
+	local effects = meteors.Effects
 	local platform = CFrame.new(0, 0.3, 12)
 	local palette = Config.Palette
 	WorldBuilder.Part("ShowcaseDock", Vector3.new(48, 0.6, 12), platform,
@@ -48,18 +49,7 @@ local function stageCover(state, root, effects)
 	end
 	for _, center in ipairs({ Vector3.new(-28, 15, -20), Vector3.new(30, 16, -13),
 		Vector3.new(42, 18, -40), Vector3.new(-44, 20, -46) }) do
-		local meteor = WorldBuilder.Part("PreviewMeteor", Vector3.one * 2.5, CFrame.new(center),
-			palette.Planet, Enum.Material.Neon, effects, Enum.PartType.Ball, false)
-		local head = Instance.new("Attachment", meteor)
-		local tail = Instance.new("Attachment", meteor)
-		tail.Position = Vector3.new(5, 10, -4)
-		local streak = Instance.new("Beam", meteor)
-		streak.Attachment0, streak.Attachment1 = head, tail
-		streak.FaceCamera = true
-		streak.Width0, streak.Width1 = 2.3, 0
-		streak.LightEmission = 1
-		streak.Color = ColorSequence.new(palette.Sun, palette.Planet)
-		streak.Transparency = NumberSequence.new(0.1, 0.9)
+		meteors:CreateMeteor(center, 2.5, Vector3.new(5, 10, -4))
 	end
 	return CFrame.lookAt(Vector3.new(0, 15, 45), Vector3.new(0, 7.5, 11)), 54
 end
@@ -89,6 +79,7 @@ function ScreenshotService:Prepare(player, shot)
 	world.Root:SetAttribute("ScreenshotFrozen", true)
 	self.Meteors.Active = false
 	self.Meteors.Effects:ClearAllChildren()
+	self.Meteors:SetShowerLook(shot == "Cover", true)
 	for _, gremlin in pairs(self.Gremlins.Gremlins) do self.Gremlins:Remove(gremlin, false) end
 	self.Economy.Events = {}
 	self.Economy.IncomeMultiplier = 1
@@ -122,7 +113,7 @@ function ScreenshotService:Prepare(player, shot)
 	local target = (state.Bay.Frame * CFrame.new(0, 6, 2)).Position
 	local camera, fieldOfView = CFrame.lookAt(cameraPosition, target), 64
 	if shot == "Cover" then
-		camera, fieldOfView = stageCover(state, root, self.Meteors.Effects)
+		camera, fieldOfView = stageCover(state, root, self.Meteors)
 		self.Economy:PublishEvent({ Name = "Meteor", Text = "METEOR SHOWER! GET UNDER THE SHIELD DOME",
 			EndsAt = workspace:GetServerTimeNow() + 60, FrozenSeconds = 18, Priority = 3 })
 	elseif shot == "Raid" then

@@ -179,8 +179,9 @@ function BaseService:Drop(player)
 	local position = carry.Model:GetPivot().Position
 	carry.Model:Destroy()
 	self:SetSpeed(player)
-	self:SpawnDrop(carry.Record, position)
+	local dropped = self:SpawnDrop(carry.Record, position)
 	if self.Economy then self.Economy:Send(player) end
+	return dropped
 end
 
 function BaseService:SpawnDrop(record, position)

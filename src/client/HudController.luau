@@ -46,6 +46,7 @@ local function startEventBanner(gui, network)
 	textLimit.MinTextSize = 18
 	textLimit.MaxTextSize = 40
 	local active = {}
+	local nextMeteorAt
 	network.Event.OnClientEvent:Connect(function(event)
 		if type(event) == "table" and type(event.Name) == "string" then
 			active[event.Name] = event
@@ -53,6 +54,7 @@ local function startEventBanner(gui, network)
 	end)
 	network.Snapshot.OnClientEvent:Connect(function(snapshot)
 		active = snapshot.Events or active
+		if snapshot.Ready then nextMeteorAt = snapshot.NextMeteorAt end
 	end)
 	RunService.RenderStepped:Connect(function()
 		local now = workspace:GetServerTimeNow()
@@ -61,10 +63,14 @@ local function startEventBanner(gui, network)
 			if event.EndsAt <= now and not event.FrozenSeconds then active[name] = nil
 			elseif not selected or (event.Priority or 0) > (selected.Priority or 0) then selected = event end
 		end
-		banner.Visible = selected ~= nil
+		banner.Visible = selected ~= nil or nextMeteorAt ~= nil
 		if selected then
 			banner.Text = selected.Text .. "  ·  " .. (selected.FrozenSeconds or math.ceil(selected.EndsAt - now)) .. "s"
 			banner.TextColor3 = selected.Color or Config.Palette.Sun
+		elseif nextMeteorAt then
+			local seconds = math.max(0, math.ceil(nextMeteorAt - now))
+			banner.Text = string.format("NEXT METEOR SHOWER  %d:%02d", math.floor(seconds / 60), seconds % 60)
+			banner.TextColor3 = Config.Palette.Muted
 		end
 	end)
 	return banner

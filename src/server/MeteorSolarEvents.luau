@@ -1,6 +1,7 @@
 -- Telegraph every impact; a carrying astronaut can always run for a mint dome.
 local TweenService = game:GetService("TweenService")
 local Debris = game:GetService("Debris")
+local Lighting = game:GetService("Lighting")
 local Config = require(game:GetService("ReplicatedStorage"):WaitForChild("Config"))
 local WorldBuilder = require(script.Parent:WaitForChild("WorldBuilder"))
 local MeteorSolarEvents = {}
@@ -12,9 +13,11 @@ function MeteorSolarEvents.new(world, bases, economy)
 	self.Effects = Instance.new("Folder")
 	self.Effects.Name = "MeteorEffects"
 	self.Effects.Parent = world.Root
+	economy.NextMeteorAt = workspace:GetServerTimeNow() + Config.Meteor.Interval
 	task.spawn(function()
 		while true do
 			task.wait(Config.Meteor.Interval)
+			economy.NextMeteorAt = workspace:GetServerTimeNow() + Config.Meteor.Interval
 			task.spawn(function() self:Start() end)
 		end
 	end)
@@ -34,22 +37,57 @@ function MeteorSolarEvents:IsProtected(position)
 	return false
 end
 
+function MeteorSolarEvents:SetShowerLook(active, still)
+	for _, tween in ipairs(self.DomePulses or {}) do tween:Cancel() end
+	self.DomePulses = {}
+	local grade = Lighting:FindFirstChild("SunnyOrbit")
+	if grade then
+		grade.TintColor = active and Color3.fromRGB(255, 230, 214) or Color3.fromRGB(255, 249, 237)
+	end
+	for _, dome in ipairs(self.World.Domes) do
+		dome.Part.Transparency = active and 0.71 or 0.84
+		if active and not still then
+			local pulse = TweenService:Create(dome.Part, TweenInfo.new(0.85, Enum.EasingStyle.Sine,
+				Enum.EasingDirection.InOut, -1, true), { Transparency = 0.54 })
+			table.insert(self.DomePulses, pulse)
+			pulse:Play()
+		end
+	end
+end
+
+function MeteorSolarEvents:CreateMeteor(position, size, streakOffset)
+	local palette = Config.Palette
+	local meteor = WorldBuilder.Part("FallingMeteor", Vector3.one * size, CFrame.new(position),
+		palette.Planet, Enum.Material.Neon, self.Effects, Enum.PartType.Ball, false)
+	meteor.CanQuery = false
+	local head = Instance.new("Attachment", meteor)
+	local tail = Instance.new("Attachment", meteor)
+	tail.Position = streakOffset
+	local streak = Instance.new("Beam", meteor)
+	streak.Attachment0, streak.Attachment1 = head, tail
+	streak.FaceCamera = true
+	streak.Width0, streak.Width1 = size * 0.9, 0.08
+	streak.LightEmission = 1
+	streak.Color = ColorSequence.new(palette.Sun, palette.Planet)
+	streak.Transparency = NumberSequence.new(0.08, 0.94)
+	local light = Instance.new("PointLight", meteor)
+	light.Color = palette.Sun
+	light.Brightness = 2.3
+	light.Range = 22
+	return meteor
+end
+
 function MeteorSolarEvents:Impact(position)
-	local warning = WorldBuilder.Ring("ImpactWarning", Config.Meteor.ImpactRadius, 0.32, 0.15,
-		CFrame.new(position), Config.Palette.Sun, Enum.Material.Neon, self.Effects, 28, false)
+	local danger = Color3.fromRGB(255, 80, 76)
+	local warning = WorldBuilder.Ring("ImpactWarning", Config.Meteor.ImpactRadius, 0.42, 0.15,
+		CFrame.new(position), danger, Enum.Material.Neon, self.Effects, 28, false)
 	local target = WorldBuilder.Part("WarningCore", Vector3.new(0.12, 2.5, 2.5),
 		CFrame.new(position) * CFrame.Angles(0, 0, math.pi / 2), Config.Palette.Planet,
 		Enum.Material.Neon, warning, Enum.PartType.Cylinder, false)
 	WorldBuilder.Billboard(target, "IMPACT! RUN TO A DOME", Config.Palette.Sun,
 		Vector3.new(0, 2.8, 0), 260, 30)
-	local meteor = WorldBuilder.Part("FallingMeteor", Vector3.one * 3,
-		CFrame.new(position + Vector3.new(12, Config.Meteor.FallHeight, -7)), Config.Palette.Planet,
-		Enum.Material.Neon, self.Effects, Enum.PartType.Ball, false)
-	local light = Instance.new("PointLight")
-	light.Color = Config.Palette.Sun
-	light.Brightness = 2
-	light.Range = 22
-	light.Parent = meteor
+	local approach = Vector3.new(28, Config.Meteor.FallHeight, -16)
+	local meteor = self:CreateMeteor(position + approach, 3.4, approach.Unit * 12)
 	TweenService:Create(meteor, TweenInfo.new(Config.Meteor.WarningSeconds, Enum.EasingStyle.Linear),
 		{ Position = position + Vector3.new(0, 1.5, 0) }):Play()
 	task.delay(Config.Meteor.WarningSeconds, function()
@@ -67,8 +105,14 @@ function MeteorSolarEvents:Impact(position)
 			if root and state.Carry and not self:IsProtected(root.Position) then
 				local horizontal = Vector3.new(root.Position.X - position.X, 0, root.Position.Z - position.Z)
 				if horizontal.Magnitude <= Config.Meteor.ImpactRadius then
-					self.Bases:Drop(player)
-					self.Economy.Network.Notice:FireClient(player, "METEOR HIT! Your cargo dropped. Recover it with E!")
+					local dropped = self.Bases:Drop(player)
+					if dropped then
+						local warningLabel = WorldBuilder.Billboard(dropped.PrimaryPart, "DROPPED!  ·  E TO RECOVER",
+							danger, Vector3.new(0, 2, 0), 270, 32)
+						warningLabel.Parent.AlwaysOnTop = true
+						Debris:AddItem(warningLabel.Parent, 5)
+					end
+					self.Economy.Network.Notice:FireClient(player, "DROPPED! Meteor hit. Recover your cargo with E.")
 				end
 			end
 		end
@@ -78,6 +122,7 @@ end
 function MeteorSolarEvents:Start()
 	if self.Active or self.World.Root:GetAttribute("ScreenshotFrozen") then return end
 	self.Active = true
+	self:SetShowerLook(true)
 	local endsAt = workspace:GetServerTimeNow() + Config.Meteor.Duration
 	self.Economy:PublishEvent({ Name = "Meteor", Text = "METEOR SHOWER! GET UNDER THE SHIELD DOME",
 		EndsAt = endsAt, Priority = 3, Color = Config.Palette.Sun })
@@ -107,6 +152,8 @@ function MeteorSolarEvents:Start()
 	end
 	task.wait(math.max(0, endsAt - workspace:GetServerTimeNow()))
 	self.Active = false
+	if self.World.Root:GetAttribute("ScreenshotFrozen") then return end
+	self:SetShowerLook(false)
 	for player, guid in pairs(holding) do
 		local state = self.Bases.Players[player]
 		if state and state.Carry and state.Carry.Record.Guid == guid then
