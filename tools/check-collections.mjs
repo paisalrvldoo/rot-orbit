@@ -14,11 +14,13 @@ local Config = ${moduleBody('src/shared/Config.luau', 'local Config =')}
 local Traits = ${moduleBody('src/shared/BrainrotTraits.luau', 'local Rarity =')}
 local Format = Traits.Format
 local Mutation = Traits.Mutation
-local Catalog = { Entries = {} }
+local Rarity = Traits.Rarity
+local Catalog = ${moduleBody('src/server/BrainrotCatalog.luau', 'local Catalog =')}
 local guid = 0
 local HttpService = { GenerateGUID = function() guid += 1; return tostring(guid) end }
 local BaseService = ${moduleBody('src/server/BaseService.luau', 'local BaseService =')}
 local EconomyService = ${moduleBody('src/server/EconomyService.luau', 'local EconomyService =')}
+local UpgradeRebirthService = ${moduleBody('src/server/UpgradeRebirthService.luau', 'local UpgradeRebirthService =')}
 local DataService = ${moduleBody('src/server/DataService.luau', 'local DataService =')}
 local ScreenshotService = ${moduleBody('src/server/ScreenshotService.luau', 'local ScreenshotService =')}
 local MeteorSolarEvents = ${moduleBody('src/server/MeteorSolarEvents.luau', 'local MeteorSolarEvents =')}
@@ -43,6 +45,42 @@ local profile = { Cash = 0, IndexMilestone = 0, MutationMilestones = {}, Upgrade
 local bases = setmetatable({ Players = { [player] = state } }, BaseService)
 local economy = setmetatable({ Profiles = { [player] = profile }, Bases = bases,
     Network = { Notice = { FireClient = function(_, _, message) table.insert(notices, message) end } } }, EconomyService)
+-- Use actual selection, reset orchestration and income functions: a mutation can
+-- make a lower-rarity cargo worth keeping over the higher-rarity gate unit.
+do
+    local user = {}
+    local kept = { Id = 11, Mutation = 'Supernova', Guid = 'keep-this-one' }
+    local function occupied(record) return { Occupant = { Record = record } } end
+    local s = { Found = { ['11'] = true, ['13'] = true }, Bay = { Slots = {
+        occupied({ Id = 13, Guid = 'qualifies' }), occupied(kept) } } }
+    local p = { Cash = Config.Rebirth.Cost(0), Rebirths = 0, Multiplier = 1, Upgrades = {} }
+    local b = setmetatable({ Players = { [user] = s } }, BaseService)
+    local e = setmetatable({ Bases = b, Profiles = { [user] = p }, IncomeMultiplier = 1,
+        Network = { Notice = { FireClient = function() end } }, Activity = function() end,
+        Send = function() end }, EconomyService)
+    b.Reset = function() s.Bay.Slots = {} end
+    b.AddSlot = function() table.insert(s.Bay.Slots, {}) end
+    b.Restore = function(_, _, record, slot)
+        assert(slot == 1 and record ~= kept and record.Guid == kept.Guid and record.Mutation == 'Supernova')
+        s.Bay.Slots[slot] = occupied(record)
+    end
+    local rebirth = UpgradeRebirthService.new(b, e)
+    p.Cash = 0; rebirth:Perform(user)
+    assert(p.Rebirths == 0 and #s.Bay.Slots == 2, 'unaffordable rebirth must not clear cargo')
+    p.Cash = Config.Rebirth.Cost(0)
+    for _, flag in ipairs({ 'Loading', 'Closing' }) do
+        s[flag] = true; rebirth:Perform(user); s[flag] = nil
+        assert(p.Rebirths == 0, 'inactive profiles must not rebirth')
+    end
+    p.Demo = true; rebirth:Perform(user); p.Demo = nil
+    assert(p.Rebirths == 0, 'preview must not reset real inventory')
+    rebirth:Perform(user)
+    assert(p.Rebirths == 1 and p.Cash == Config.StartingCash and s.Found['13'])
+    assert(e:Income(user) == Catalog.Income(kept) * Config.Rebirth.Multiplier(1),
+        'kept cargo must earn immediately after rebirth with mutation and new multiplier')
+    rebirth:Perform(user)
+    assert(p.Rebirths == 1, 'repeated confirm cannot rebirth twice without the next cash gate')
+end
 for id = 1, 10 do
     local fresh, variant = bases:Discover(state, { Id = id, Mutation = "Gold" })
     assert(fresh and variant, "first docking should discover both forms")

@@ -30,7 +30,9 @@ end
 
 function UpgradeRebirthService:Perform(player)
 	local profile = self.Economy.Profiles[player]
-	if not profile or profile.Rebirths >= Config.Rebirth.MaxLevel then return end
+	local state = self.Bases.Players[player]
+	if not profile or profile.Demo or not state or state.Loading or state.Closing
+		or profile.Rebirths >= Config.Rebirth.MaxLevel then return end
 	local cost = Config.Rebirth.Cost(profile.Rebirths)
 	if profile.Cash < cost then
 		self.Economy.Network.Notice:FireClient(player, "You need more cash before rebirthing.")
@@ -41,13 +43,16 @@ function UpgradeRebirthService:Perform(player)
 		self.Economy.Network.Notice:FireClient(player, "Dock higher rarity cargo to qualify for rebirth.")
 		return
 	end
+	local kept = self.Bases:BestDocked(player)
 	profile.Rebirths += 1
 	profile.Multiplier = Config.Rebirth.Multiplier(profile.Rebirths)
 	profile.Cash = Config.StartingCash
 	profile.Upgrades = {}
 	self.Bases:Reset(player)
 	for _ = 1, Config.Rebirth.BonusSlots(profile.Rebirths) do self.Bases:AddSlot(player) end
-	self.Economy.Network.Notice:FireClient(player, "REBIRTH! Permanent income is now x" .. profile.Multiplier .. ". Your index is kept.")
+	if kept then self.Bases:Restore(player, kept, 1) end
+	self.Economy.Network.Notice:FireClient(player, "REBIRTH! x" .. profile.Multiplier
+		.. " income · best brainrot kept and earning · index kept.")
 	self.Economy:Activity(player, "Rebirth")
 	self.Economy:Send(player)
 end

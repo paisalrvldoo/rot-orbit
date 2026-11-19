@@ -16,7 +16,10 @@ Newest phone feedback takes precedence over extra features this pass:
   compact right-thumb arc for Blink/Sprint/Bomb/Zap, secondary skills behind
   More. Preserve keyboard bindings, cooldowns and full staged/desktop controls.
   Phone rendering/touch approval remains pending; no Studio exists here.
-- [ ] Keep the best cargo earning after rebirth; verify actual reset/income.
+- [x] Rebirth keeps the highest-income docked cargo (including its mutation
+  and stable ID), restores it to pod 1 and immediately includes it in income.
+  Actual selection/orchestration/income regressions cover preview/loading/
+  departure guards, insufficient cash, repeat confirmation and mutation value.
 - [ ] Owner: 1024×460 phone render/playtest (Studio unavailable here), then
   publish and four genuine screenshots. Source checks cannot approve rendering.
 

@@ -120,7 +120,7 @@ function Progression.AddRebirth(hud, input, panel)
 	Style.Text(panel, "REBIRTH · PERMANENT REWARDS", 22, 313, 510, 24, 18, Config.Palette.Sun)
 	local detail = Style.Text(panel, "", 22, 337, 510, 26, 16)
 	local gate = Style.Text(panel, "", 22, 364, 307, 23, 15)
-	Style.Text(panel, "Reset cash, upgrades and bay. Keep your discoveries.", 22, 393, 516, 20, 13, Config.Palette.Muted)
+	Style.Text(panel, "Reset cash/upgrades. Keep your best brainrot + index.", 22, 393, 516, 20, 13, Config.Palette.Muted)
 	local confirmUntil = 0
 	local button = Style.Button(panel, "REBIRTH", 336, 350, 202, 36, function()
 		local state = hud.GetState()
@@ -159,7 +159,7 @@ function Progression.AddRebirth(hud, input, panel)
 		if maxed or state.Cash < cost or not dockReady then confirmUntil = 0 end
 		button:SetAttribute("Selected", os.clock() < confirmUntil)
 		button.Text = maxed and "MAX REBIRTH"
-			or (os.clock() < confirmUntil and "RESET BAY? CONFIRM"
+			or (os.clock() < confirmUntil and "KEEP BEST? CONFIRM"
 				or ((state.Cash >= cost and "REBIRTH · " or "NEED · ") .. Format.Money(cost)))
 		button.BackgroundColor3 = not maxed and state.Cash >= cost and dockReady
 			and Config.Palette.Teal or Color3.fromRGB(43, 67, 83)

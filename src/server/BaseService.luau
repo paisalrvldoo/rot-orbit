@@ -154,6 +154,21 @@ function BaseService:HighestDockRank(player)
 	return highest
 end
 
+function BaseService:BestDocked(player)
+	local state = self.Players[player]
+	local best, income = nil, -1
+	if state then
+		for _, pedestal in ipairs(state.Bay.Slots) do
+			local record = pedestal.Occupant and pedestal.Occupant.Record
+			if record and Catalog.Income(record) > income then
+				best, income = record, Catalog.Income(record)
+			end
+		end
+	end
+	-- Keep the stable identity and mutation without retaining the destroyed model.
+	return best and table.clone(best) or nil
+end
+
 function BaseService:CanCarry(player)
 	local state = self.Players[player]
 	local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
