@@ -7,9 +7,12 @@ import { fileURLToPath } from 'node:url';
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const source = path => readFileSync(join(root, path), 'utf8');
 const moduleBody = (path, marker) => `(function()\n${source(path).slice(source(path).indexOf(marker))}\nend)()`;
+const billboardSource = source('src/client/BillboardFx.luau');
 const harness = `
 local Color3 = { fromRGB = function(...) return {...} end }
-local Vector3 = { new = function(...) return {...} end }
+local Vector3 = { new = function(x, y, z) return { X = x, Y = y, Z = z } end }
+local CFrame = { lookAt = function(position, target) return { Position = position, Target = target } end }
+local UDim2 = { fromOffset = function(x, y) return { Width = x, Height = y } end }
 local Config = ${moduleBody('src/shared/Config.luau', 'local Config =')}
 local Traits = ${moduleBody('src/shared/BrainrotTraits.luau', 'local Rarity =')}
 local Format = Traits.Format
@@ -161,6 +164,55 @@ screenshots:StageDiscoveries(state)
 found = 0
 for _ in pairs(state.Found) do found += 1 end
 assert(found == 32, "switching presets must not accumulate discoveries")
+-- Run the actual cargo staging and frozen-card selector across all presets.
+local spawned = {}
+local conveyor = { Capsules = {} }
+function conveyor:Spawn(record, angle)
+    local details = { Visible = false }
+    local card = { FindFirstChildOfClass = function() return { Details = details } end }
+    local part = { BrainrotBillboard = card, FindFirstChild = function() return card end }
+    local model = { PrimaryPart = part, Attributes = { VisualState = "Cargo" }, Parent = true }
+    function model:IsA(class) return class == "Model" end
+    function model:SetAttribute(key, value) self.Attributes[key] = value end
+    function model:GetAttribute(key) return self.Attributes[key] end
+    function model:PivotTo(frame) self.Frame = frame end
+    local capsule = { Record = record, Angle = angle, Model = model, Card = card, Details = details }
+    function capsule:GetChildren() return { { IsA = function() return false end }, model } end
+    function capsule:GetPivot() return { Position = Vector3.new(math.cos(angle) * 42, 2.2, math.sin(angle) * 42) } end
+    function capsule:Destroy() self.Destroyed = true; self.Model.Parent = false end
+    self.Capsules[capsule] = true
+    table.insert(spawned, capsule)
+    return capsule
+end
+screenshots.Conveyor = conveyor
+local Players = { LocalPlayer = {} }
+local workspace = {}
+${billboardSource.slice(billboardSource.indexOf('local function updateCargoCards'), billboardSource.indexOf('function BillboardFx.Start'))}
+for _, shot in ipairs({ "Cover", "Index", "Raid", "Upgrades", "Cover" }) do
+    local previous = spawned
+    spawned = {}
+    screenshots:StageCargo(shot)
+    for _, old in ipairs(previous) do assert(old.Destroyed, "preset transition must remove old pods") end
+    assert(#spawned == 6, "staging must not accumulate cargo")
+    local visuals, cards = {}, 0
+    for _, capsule in ipairs(spawned) do visuals[capsule.Model] = true end
+    updateCargoCards(visuals, true)
+    for _, capsule in ipairs(spawned) do
+        if capsule.Card.Enabled then
+            cards += 1
+            assert(shot == "Cover" and Catalog.Get(capsule.Record.Id).Rarity == "SECRET")
+            assert(math.sin(capsule.Angle) > 0, "buyable hero must be on the near arc")
+            assert(capsule.Details.Visible and capsule.Card.MaxDistance == 80)
+        end
+        if shot == "Cover" then
+            assert(capsule.Model.Frame.Target.Z == 64, "frozen cargo faces the saved camera")
+            assert(capsule.Model:GetAttribute("RestFrame") == capsule.Model.Frame)
+        end
+    end
+    assert(cards == (shot == "Cover" and 1 or 0), "exactly one cover BUY card, none on other presets")
+    updateCargoCards(visuals, false)
+    for _, capsule in ipairs(spawned) do assert(not capsule.Card.Enabled, "normal play resumes proximity selection") end
+end
 -- Rejoining the same server must create a new lease identity.
 local document
 local store = { UpdateAsync = function(_, _, callback)
@@ -232,6 +284,7 @@ assert(closingBases:IsBayReady({}), "NPC bays remain raidable")
 print("Collection checks passed: unique variants, independent tabs, one-time rewards, preview/load guards, cap, save isolation.")
 print("Rebirth checks passed: actual reset, best mutated cargo, immediate income, two bonus pods, bay colour/title cleanup, Blink and guarded Mythic supply.")
 print("Screenshot discovery checks passed: 32/43, 10 Gold, owned SECRET and repeatable presets.")
+print("Screenshot cargo checks passed: six pods, near-arc SECRET, saved poses, one BUY card and clean transitions across all four presets.")
 print("Save lease checks passed: same-server rejoin, stale write rejection, renewal, transient failure and queued release.")
 print("Departure checks passed: freeze before save, block raids/prompts/drops and retain NPC stealing.")
 `;

@@ -6,7 +6,7 @@
 passed; committed checkpoint `1205c14` immediately. Read owner refs.md and
 retained its top ten priorities in order: staged late-game cover; 42–45
 originals (43 implemented); four genuine captures; about 20–24 purposeful
-scripts (25 with crew support); big world title; readable meteors/dom es;
+scripts (25 with crew support); big world title; readable meteors/domes;
 six mutations; live HUD/quests/feed; readable rarity/value cards; earned
 progression. Core systems already pass; no new side systems this pass.
 
@@ -15,6 +15,10 @@ progression. Core systems already pass; no new side systems this pass.
   Increase hero spacing and card range for the saved camera. Source staging
   only; Studio framing, silhouettes and judge-scale readability remain pending.
 - [ ] Review preset transitions and freeze behaviour, then document owner checks.
+- [x] Cover stages a genuine Aurora SECRET pod and Diamond Cosmic on the near
+  ring arc, facing the saved camera. One buyable SECRET card shows name/price/
+  rarity/income; the remaining cargo cards stay hidden. Other presets retain
+  the evenly spaced cargo orbit. Studio visual approval remains pending.
 
 - [x] Clean recovery checkpoint `0b6b79e`. Existing core gameplay passed verification.
 - [x] Applied the latest phone control override. Run, Blink and Zap are direct

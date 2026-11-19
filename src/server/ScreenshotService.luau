@@ -21,6 +21,46 @@ function ScreenshotService:StageDiscoveries(state)
 	for id = 1, 7 do state.Variants.Gold[tostring(id)] = true end
 end
 
+function ScreenshotService:StageCargo(shot)
+	for capsule in pairs(self.Conveyor.Capsules) do
+		self.Conveyor.Capsules[capsule] = nil
+		capsule:Destroy()
+	end
+	local records = shot == "Cover" and {
+		{ Id = 30, Mutation = "Aurora", Angle = math.pi * 0.75, Card = true },
+		{ Id = 40, Mutation = "Diamond", Angle = math.pi * 0.25 },
+		{ Id = 7, Angle = math.pi * 1.1 }, { Id = 18, Mutation = "Gold", Angle = math.pi * 1.3 },
+		{ Id = 23, Angle = math.pi * 1.6 }, { Id = 27, Mutation = "Gold", Angle = math.pi * 1.8 },
+	} or {
+		{ Id = 7 }, { Id = 11, Mutation = "Gold" }, { Id = 15 },
+		{ Id = 18, Mutation = "Gold" }, { Id = 23 }, { Id = 27, Mutation = "Gold" },
+	}
+	for index, record in ipairs(records) do
+		local capsule = self.Conveyor:Spawn({ Id = record.Id, Mutation = record.Mutation },
+			record.Angle or index * math.pi / 3)
+		if shot == "Cover" then
+			for _, model in ipairs(capsule:GetChildren()) do
+				if model:IsA("Model") and model.PrimaryPart then
+					local position = capsule:GetPivot().Position
+					local frame = CFrame.lookAt(position, Vector3.new(5, position.Y, 64))
+					model:PivotTo(frame)
+					model:SetAttribute("RestFrame", frame)
+					-- Only this genuine buyable pod gets a staged card; the client
+					-- keeps every other cargo card hidden while the world is frozen.
+					model:SetAttribute("ScreenshotCard", record.Card == true)
+					if record.Card then
+						local card = model.PrimaryPart.BrainrotBillboard
+						card.Size = UDim2.fromOffset(164, 64)
+						card.MaxDistance = 80
+						card.StudsOffsetWorldSpace = Vector3.new(0, -0.6, 1)
+						card:FindFirstChildOfClass("Frame").Details.Visible = true
+					end
+				end
+			end
+		end
+	end
+end
+
 local function pose(pedestal, frame)
 	local model = pedestal.Occupant.Model
 	model:SetAttribute("RestFrame", frame)
@@ -140,11 +180,7 @@ function ScreenshotService:Prepare(player, shot)
 	self:StageDiscoveries(state)
 	root.Anchored = true
 	root.CFrame = state.Bay.Frame * CFrame.new(9, 3.8, -6) * CFrame.Angles(0, math.pi, 0)
-	for capsule in pairs(self.Conveyor.Capsules) do self.Conveyor.Capsules[capsule] = nil; capsule:Destroy() end
-	for index, id in ipairs({ 7, 11, 15, 18, 23, 27 }) do
-		local angle = shot == "Cover" and (index + 1) * math.pi / 8 + math.pi or index * math.pi / 3
-		self.Conveyor:Spawn({ Id = id, Mutation = index % 2 == 0 and "Gold" or nil }, angle)
-	end
+	self:StageCargo(shot)
 	local cameraPosition = (state.Bay.Frame * CFrame.new(12, 18, 38)).Position
 	local target = (state.Bay.Frame * CFrame.new(0, 6, 2)).Position
 	local camera, fieldOfView = CFrame.lookAt(cameraPosition, target), 64

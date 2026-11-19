@@ -16,7 +16,7 @@ local function updateCargoCards(visuals, frozen)
 		local root = model.PrimaryPart
 		local gui = root and root:FindFirstChild("BrainrotBillboard")
 		if model.Parent and gui and model:GetAttribute("VisualState") == "Cargo" then
-			gui.Enabled = false
+			gui.Enabled = frozen and model:GetAttribute("ScreenshotCard") == true or false
 			if camera and playerRoot and not frozen and (root.Position - camera.CFrame.Position).Magnitude < gui.MaxDistance then
 				local point, onScreen = camera:WorldToViewportPoint(root.Position + gui.StudsOffsetWorldSpace)
 				if onScreen then
