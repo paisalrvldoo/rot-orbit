@@ -113,7 +113,8 @@ The research is prose guidance, not source or reusable names. Rank is not guaran
 6. [x] Meteor streaks, red warnings, warmer sky, pulsing domes, a cargo drop
    marker and the between-event countdown are implemented.
 7. [x] Sixth mutation Aurora at x7, with three coloured orbit ribbons.
-   [ ] Short positive mutation-spawn event.
+   [x] Aurora Surge guarantees mutations for newly spawned cargo for 20 seconds
+   every 270 seconds, including an affordable Gold capsule in the rotation.
 8. [x] Edge HUD has live upgrade/found/cost/cooldown buttons, a three-action feed,
    larger money and event text, and a right quest card with saved completion.
 9. Larger billboards, BUY price, Cosmic beam and SECRET crown/light pillar;

@@ -41,14 +41,17 @@ function Mutation.Multiplier(name)
 	return mutation and mutation.Multiplier or 1
 end
 
-function Mutation.Roll(random)
-	local roll = random:NextNumber(0, 100)
+local mutationChance = 0
+for _, name in ipairs(Mutation.Order) do mutationChance += Mutation.ByName[name].Chance end
+
+function Mutation.Roll(random, guaranteed)
+	local roll = random:NextNumber(0, guaranteed and mutationChance or 100)
 	local cumulative = 0
 	for _, name in ipairs(Mutation.Order) do
 		cumulative += Mutation.ByName[name].Chance
 		if roll < cumulative then return name end
 	end
-	return nil
+	return guaranteed and Mutation.Order[#Mutation.Order] or nil
 end
 
 local Format = {}

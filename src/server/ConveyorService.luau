@@ -5,6 +5,7 @@ local HttpService = game:GetService("HttpService")
 local Config = require(shared:WaitForChild("Config"))
 local Traits = require(shared:WaitForChild("BrainrotTraits"))
 local Format = Traits.Format
+local Mutation = Traits.Mutation
 local Catalog = require(script.Parent:WaitForChild("BrainrotCatalog"))
 local BrainrotModel = require(script.Parent:WaitForChild("BrainrotModel"))
 local WorldBuilder = require(script.Parent:WaitForChild("WorldBuilder"))
@@ -42,8 +43,14 @@ function ConveyorService.new(world, economy)
 			if count < Config.Conveyor.MaxCapsules and not world.Root:GetAttribute("ScreenshotFrozen") then
 				spawnCount += 1
 				-- Regular starter cargo prevents a run of unaffordable rolls stranding newcomers.
-				local record = spawnCount % 3 == 0 and { Id = self.Random:NextInteger(1, 4) }
-					or Catalog.Roll(self.Random)
+				local surge = (world.Root:GetAttribute("AuroraSurgeUntil") or 0) > workspace:GetServerTimeNow()
+				local record
+				if spawnCount % 3 == 0 then
+					record = surge and { Id = 1, Mutation = "Gold" } or { Id = self.Random:NextInteger(1, 4) }
+				else
+					record = Catalog.Roll(self.Random)
+					if surge then record.Mutation = Mutation.Roll(self.Random, true) end
+				end
 				self:Spawn(record, -math.pi / 2)
 			end
 		end

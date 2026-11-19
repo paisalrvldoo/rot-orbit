@@ -27,6 +27,17 @@ function MeteorSolarEvents.new(world, bases, economy)
 			task.spawn(function() self:StartSolarFlare() end)
 		end
 	end)
+	task.spawn(function()
+		while true do
+			task.wait(Config.AuroraSurge.Interval)
+			if not world.Root:GetAttribute("ScreenshotFrozen") then
+				local endsAt = workspace:GetServerTimeNow() + Config.AuroraSurge.Duration
+				world.Root:SetAttribute("AuroraSurgeUntil", endsAt)
+				economy:PublishEvent({ Name = "AuroraSurge", Text = "AURORA SURGE! NEW CARGO MUTATES",
+					EndsAt = endsAt, Priority = 1.5, Color = Config.Palette.Mint })
+			end
+		end
+	end)
 	return self
 end
 
