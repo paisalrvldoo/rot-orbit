@@ -54,6 +54,8 @@ ScreenshotMode and an exact rules-format TOUR only when those features exist.
 - [x] Moving cargo and buy prompts; money HUD, carrying strip and income pops.
   Minimum loop is implemented; Studio playtest still required. Follow the mint
   YOUR BAY beacon; buy Common cargo on the ring, then E at a free home pedestal.
+  Source review corrected capsule pivot orientation and moved responsive HUD
+  scaling onto a fixed-size GuiObject canvas.
 - [ ] Rival stealing; meteors/domes; solar flare; gremlins with lock/zap.
 - [ ] Upgrades; rebirth; index; contracts; saving; final HUD polish.
 - [ ] ScreenshotMode/TOUR, README, genuine Studio pictures and published IDs.

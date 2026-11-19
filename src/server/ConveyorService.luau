@@ -60,10 +60,14 @@ function ConveyorService:Spawn(record, angle)
 	local frame = self:Frame(angle)
 	local capsule = Instance.new("Model")
 	capsule.Name = "CargoCapsule"
+	local pivot = WorldBuilder.Part("CapsulePivot", Vector3.one * 0.2, CFrame.identity,
+		Config.Palette.White, Enum.Material.SmoothPlastic, capsule, nil, false)
+	pivot.Transparency = 1
+	pivot.CanQuery = false
+	capsule.PrimaryPart = pivot
 	local pad = WorldBuilder.Part("HoverSled", Vector3.new(0.45, 5.4, 5.4),
 		CFrame.new(0, -0.3, 0) * CFrame.Angles(0, 0, math.pi / 2), Config.Palette.Ink,
 		Enum.Material.SmoothPlastic, capsule, Enum.PartType.Cylinder, false)
-	capsule.PrimaryPart = pad
 	WorldBuilder.Ring("CapsuleHalo", 2.65, 0.16, 0.12, CFrame.identity,
 		Config.Palette.Mint, Enum.Material.Neon, capsule, 20, false)
 	local brainrot = BrainrotModel.Create(record, CFrame.identity, capsule)

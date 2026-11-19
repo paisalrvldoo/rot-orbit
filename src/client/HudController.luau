@@ -30,12 +30,19 @@ end
 function HudController.Start()
 	local player = Players.LocalPlayer
 	local network = Remotes.Get()
-	local gui = Instance.new("ScreenGui")
-	gui.Name = "RotOrbitHUD"
-	gui.ResetOnSpawn = false
-	gui.IgnoreGuiInset = true
-	gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-	gui.Parent = player:WaitForChild("PlayerGui")
+	local screen = Instance.new("ScreenGui")
+	screen.Name = "RotOrbitHUD"
+	screen.ResetOnSpawn = false
+	screen.IgnoreGuiInset = true
+	screen.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	screen.Parent = player:WaitForChild("PlayerGui")
+	local gui = Instance.new("Frame")
+	gui.Name = "Canvas"
+	gui.AnchorPoint = Vector2.new(0.5, 0.5)
+	gui.Position = UDim2.fromScale(0.5, 0.5)
+	gui.Size = UDim2.fromOffset(1280, 720)
+	gui.BackgroundTransparency = 1
+	gui.Parent = screen
 	local scale = Instance.new("UIScale", gui)
 	local function resize()
 		local camera = workspace.CurrentCamera
