@@ -7,6 +7,14 @@ Read `git log`, `git status`, and this file before continuing. Extend the existi
 files in small patches; do not restart the game. All game code is authored in
 the recorded session, with no downloaded packages or uploaded assets.
 
+Latest checkpoint: 19 November, capture-readiness pass. Core systems and top-10
+source targets are implemented (43 originals, six mutations, 24 scripts).
+Start with Studio error reports if any. Otherwise the next unfinished brief
+item is the four genuine Studio captures in CAPTURE.md, followed by publishing
+the latest game.rbxl and approved icon/cover thumbnail. Local development
+verification passes; `--submission` intentionally fails until starter images
+are replaced. Do not treat a passing kit Public-link check as media approval.
+
 ## First pass
 
 1. Keep the starter publishable and document the build/check workflow.
@@ -283,3 +291,7 @@ remain the submission blockers.
   without altering the installed kit, recording process or vendored library.
   Its check at `2bb1e6d` passed 5/5, including Public link; no stale-kit warning.
   Submission-time transcript/repository/media checks remain outside this check.
+- [x] Capture checker exercised with scratch JPEG fixtures: valid progressive
+  frames pass; wrong dimensions, truncation and oversize files fail. Repository
+  images stayed untouched. Both normal verify and the actual-function
+  collection/save regressions pass. Every working piece committed.

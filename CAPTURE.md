@@ -55,3 +55,9 @@ observe income, retire with G, steal from a rival, lock with L, zap with F,
 shelter through meteors, purchase an upgrade, rebirth with the confirmation,
 inspect mutation tabs, then rejoin to confirm saved discoveries and offline haul.
 Use two players to test theft and the owner's retirement prompt visibility.
+An empty socket should offer Dock only to its owner while carrying; owned cargo
+offers Retire and rival cargo offers Steal. Check that the world sign's lock
+countdown agrees with the HUD. With DataStore API access, try a quick rejoin:
+a still-held save lease should ask you to rejoin shortly, and an old connection
+must not overwrite the new session. A departing player's final save freezes
+raids and carried-cargo drops until their bay is released.

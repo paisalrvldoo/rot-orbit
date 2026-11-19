@@ -14,6 +14,7 @@ docks earn a 25% offline haul for up to two hours away.
 
 WASD moves; E buys, steals, recovers and docks; L locks; F zaps; U opens upgrades
 and contracts; R opens rebirth (click again to confirm); B opens the index.
+Hold G beside your docked cargo to retire it and free the slot; discoveries stay.
 
 - `main.ts` (Node 22, standard library only) hands the game in: it copies `game.rbxl`, `src/`, `screenshots/` and
   `PLAY.json` to `/output`, leaving out every name that starts with a dot (such as `.gitkeep` or `.DS_Store`, which
