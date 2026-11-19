@@ -28,7 +28,8 @@ function BillboardFx.Start()
 				local seed = model:GetAttribute("BrainrotId") or 0
 				local zeroG = model:GetAttribute("Mutation") == "Zero-G"
 				local bob = math.sin(time * 2 + seed) * 0.16 + (zeroG and 0.65 or 0)
-				local spin = zeroG and time * 0.6 or math.sin(time * 0.8 + seed) * 0.09
+				local rareWobble = (model:GetAttribute("RarityRank") or 1) >= 5 and 0.19 or 0.09
+				local spin = zeroG and time * 0.6 or math.sin(time * 0.8 + seed) * rareWobble
 				model:PivotTo(frame * CFrame.new(0, bob, 0) * CFrame.Angles(0, spin, 0))
 			end
 		end

@@ -27,15 +27,15 @@ local function label(parent, name, text, y, height, size, color)
 	return result
 end
 
-local function billboard(model, record, root, scale)
+local function billboard(record, root, scale, forSale)
 	local entry = Catalog.Get(record.Id)
 	local rarity = Rarity.ByName[entry.Rarity]
 	local gui = Instance.new("BillboardGui")
 	gui.Name = "BrainrotBillboard"
 	gui.Adornee = root
-	gui.Size = UDim2.fromOffset(236, 94)
-	gui.StudsOffsetWorldSpace = Vector3.new(0, 4.8 * scale, 0)
-	gui.MaxDistance = 115
+	gui.Size = UDim2.fromOffset(248, 90)
+	gui.StudsOffsetWorldSpace = Vector3.new(0, 5.3 * scale, 0)
+	gui.MaxDistance = 48
 	gui.AlwaysOnTop = false
 	gui.Parent = root
 	local card = Instance.new("Frame")
@@ -51,21 +51,23 @@ local function billboard(model, record, root, scale)
 	stroke.Color = rarity.Color
 	stroke.Thickness = 2
 	stroke.Parent = card
-	local name = label(card, "Name", Catalog.DisplayName(record), 4, 31, 18, Config.Palette.White)
+	local name = label(card, "Name", Catalog.DisplayName(record), 4, 34, 19, Config.Palette.White)
 	name.TextScaled = true
+	name.TextWrapped = true
 	local limit = Instance.new("UITextSizeConstraint")
 	limit.MinTextSize = 12
-	limit.MaxTextSize = 18
+	limit.MaxTextSize = 20
 	limit.Parent = name
 	label(card, "Rarity", string.upper(entry.Rarity) .. (record.Mutation
-		and (" · x" .. Mutation.Multiplier(record.Mutation) .. " MUTATION") or " · ORIGINAL"),
-		37, 19, 13, rarity.Color)
-	label(card, "Value", Format.Money(Catalog.Price(record)) .. " · "
-		.. Format.Money(Catalog.Income(record)) .. "/s", 62, 25, 17, Config.Palette.Mint)
+		and ("  ·  ×" .. Mutation.Multiplier(record.Mutation)) or ""),
+		39, 20, 15, rarity.Color)
+	local value = Format.Money(Catalog.Income(record)) .. "/s"
+	if forSale then value = "BUY " .. Format.Money(Catalog.Price(record)) .. "  ·  " .. value end
+	label(card, "Value", value, 61, 24, 17, Config.Palette.Mint)
 	return gui
 end
 
-function BrainrotModel.Create(record, frame, parent)
+function BrainrotModel.Create(record, frame, parent, forSale)
 	local entry = assert(Catalog.Get(record.Id), "Unknown brainrot ID")
 	local rarity = Rarity.ByName[entry.Rarity]
 	local mutation = Mutation.Get(record.Mutation)
@@ -353,6 +355,22 @@ function BrainrotModel.Create(record, frame, parent)
 			jewel.Material = Enum.Material.Neon
 		end
 	end
+	if rarity.Rank >= 6 then
+		local secret = rarity.Rank == 7
+		local foot = Instance.new("Attachment", root)
+		local sky = Instance.new("Attachment", root)
+		foot.Position = Vector3.new(0, 0.08, 0.9) * scale
+		sky.Position = Vector3.new(0, secret and 10.5 or 6.5, 0.9) * scale
+		local pillar = Instance.new("Beam", root)
+		pillar.Name = secret and "SecretLightPillar" or "CosmicBeacon"
+		pillar.Attachment0, pillar.Attachment1 = foot, sky
+		pillar.FaceCamera = true
+		pillar.Width0 = (secret and 2 or 0.85) * scale
+		pillar.Width1 = (secret and 1 or 0.12) * scale
+		pillar.LightEmission = 1
+		pillar.Color = ColorSequence.new(glow, rarity.Color)
+		pillar.Transparency = NumberSequence.new(0.67, 1)
+	end
 	local halo = Instance.new("Highlight")
 	halo.Name = "RarityGlow"
 	halo.FillColor = glow
@@ -385,11 +403,12 @@ function BrainrotModel.Create(record, frame, parent)
 	end
 	model:SetAttribute("BrainrotId", record.Id)
 	model:SetAttribute("Rarity", entry.Rarity)
+	model:SetAttribute("RarityRank", rarity.Rank)
 	model:SetAttribute("Mutation", record.Mutation or "")
 	model:SetAttribute("VisualState", "Pedestal")
 	model:SetAttribute("RestFrame", frame)
 	model:SetAttribute("VisualScale", scale)
-	billboard(model, record, root, scale)
+	billboard(record, root, scale, forSale)
 	model:PivotTo(frame)
 	model.Parent = parent
 	CollectionService:AddTag(model, "OrbitBrainrot")

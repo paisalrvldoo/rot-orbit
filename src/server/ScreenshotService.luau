@@ -39,10 +39,11 @@ local function stageCover(state, root, meteors)
 		WorldBuilder.Ring("ShowcaseSocket", 2.8, 0.2, 0.13, center * CFrame.new(0, 0.56, 0),
 			color, Enum.Material.Neon, effects, 18, false)
 		local card = pose(pedestal, center * CFrame.new(0, 0.55, 0) * CFrame.Angles(0, math.pi, 0))
-		card.Size = UDim2.fromOffset(184, 94)
+		card.Size = UDim2.fromOffset(174, 90)
+		card.StudsOffsetWorldSpace = Vector3.new(0, -0.48, 1)
 		card.Enabled = true
 	end
-	root.CFrame = CFrame.new(5.5, 3.4, 25) * CFrame.Angles(0, math.rad(152), 0)
+	root.CFrame = CFrame.new(3.1, 3.4, 25) * CFrame.Angles(0, math.rad(152), 0)
 	for _, offset in ipairs({ Vector3.new(-26, 0.16, 12), Vector3.new(28, 0.16, 10), Vector3.new(23, 0.16, -12) }) do
 		WorldBuilder.Ring("PreviewWarning", 7, 0.34, 0.15, CFrame.new(offset),
 			palette.Sun, Enum.Material.Neon, effects, 24, false)

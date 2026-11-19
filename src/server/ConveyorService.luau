@@ -79,7 +79,7 @@ function ConveyorService:Spawn(record, angle)
 		Enum.Material.SmoothPlastic, capsule, Enum.PartType.Cylinder, false)
 	WorldBuilder.Ring("CapsuleHalo", 2.65, 0.16, 0.12, CFrame.identity,
 		Config.Palette.Mint, Enum.Material.Neon, capsule, 20, false)
-	local brainrot = BrainrotModel.Create(record, CFrame.identity, capsule)
+	local brainrot = BrainrotModel.Create(record, CFrame.identity, capsule, true)
 	brainrot:SetAttribute("VisualState", "Cargo")
 	capsule:PivotTo(frame)
 	capsule.Parent = self.World.Cargo
