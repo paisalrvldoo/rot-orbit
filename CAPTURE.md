@@ -22,7 +22,7 @@ Public-link verification passes. The published starter still needs the latest
 | 01-cover.jpg | `require(game.ReplicatedStorage.ScreenshotMode).Cover(0)` | $867.5M, live income, rebirth 3, 18s meteor banner, Diamond Cosmo Cornetto carry, five heroes with the Supernova SECRET in the middle, station title and orange planet. |
 | 02-index.jpg | `require(game.ReplicatedStorage.ScreenshotMode).Index(0)` | Exactly 32/43 FOUND, seven rarity counts, undiscovered silhouettes, six mutation tabs and next cash reward. |
 | 03-raid.jpg | `require(game.ReplicatedStorage.ScreenshotMode).Raid(0)` | 27s raid banner, crowned captain escaping with cargo (18/32 HP, wave 3), one zapped gremlin and dropped recoverable cargo, shared captain health bar. |
-| 04-upgrades.jpg | `require(game.ReplicatedStorage.ScreenshotMode).Upgrades(0)` | Five upgrade tracks with levels/costs; rebirth x3 → x4.5, +3s shield, +1 slot; three contracts with progress/rewards and 4/15 done. |
+| 04-upgrades.jpg | `require(game.ReplicatedStorage.ScreenshotMode).Upgrades(0)` | Five upgrade tracks with levels/costs; rebirth x3 → x4.5, +3s shield, next Orbit Ace aura and keep-best text; three contracts with progress/rewards and 4/15 done. |
 
 Check the cover at 768 pixels wide and the three secondary pictures at 253
 pixels wide. Keep the title and SECRET face clear of the HUD; confirm names,
@@ -51,7 +51,7 @@ Before final submission, use the current kit and rerun:
     node cli/makefun.mjs check --kit . --repo /workspace/rbx/rot-orbit
 
 Normal-play smoke test on the owner laptop: buy a Common, carry and dock it,
-observe income, retire with G, steal from a rival, lock with L, zap with F,
+observe income, retire with H, steal from a rival, lock with L, zap with F,
 shelter through meteors, purchase an upgrade, rebirth with the confirmation,
 inspect mutation tabs, then rejoin to confirm saved discoveries and offline haul.
 Use two players to test theft and the owner's retirement prompt visibility.
@@ -63,6 +63,23 @@ must not overwrite the new session. A departing player's final save freezes
 raids and carried-cargo drops until their bay is released.
 
 Live recovery / combat smoke test (19 November continuation):
+
+- At **1024×460**, confirm the physical CREW RANKS board faces the hub without
+  following the camera. Empty scores say No raids yet. The home marker should
+  be small, respect world occlusion and hide inside 24 studs of home.
+- Phone Menu reveals lock/upgrades/rebirth/index/crew/contracts; closing it
+  clears the left side. Blink/Sprint/Bomb/Zap sit in a compact right-thumb arc;
+  More opens Dash/Slam/Bubble/Trap. Confirm taps, cooldowns and the Roblox jump
+  button do not compete. Local bounds tests pass; real Studio rendering is open.
+- G throws, T plants a trap. Check the arc against a wall, fuse flash, blast,
+  shared cooldown, two-trap cap and cleanup on leave. A rival stolen-cargo
+  carrier drops cargo; self, friendly crew and players with bought cargo do not.
+  Repeat across a lock bubble and a dome: no blast should cross their shield.
+- Rebirth with several docked cargo, including a valuable mutation. Confirm
+  exactly one best-income cargo survives, its original mutation remains, and
+  $/s is nonzero immediately. Rejoin to check persistence. R1 has 10 base pods;
+  R2 Blink goes farther, R3 periodically adds shared Mythic supply, R4 has a
+  title/aura. Check mint/blue/gold/rose bays, announcement and fireworks.
 
 - Republish the rebuilt place first. Confirm **zero server errors**, the sunny
   deck, planet and bays all spawning. FallenPartsDestroyHeight is now authored

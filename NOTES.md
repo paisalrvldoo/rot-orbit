@@ -43,7 +43,7 @@ Read `git log`, `git status`, and this file before continuing. Extend the existi
 files in small patches; do not restart the game. All game code is authored in
 the recorded session, with no downloaded packages or uploaded assets.
 
-Latest checkpoint: 19 November, live recovery / combat / crews pass (25-minute
+Earlier checkpoint: 19 November, live recovery / combat / crews pass (25-minute
 session beginning 21:55 WIB). Fixed the reported live boot blocker in code;
 FallenPartsDestroyHeight now lives in default.project.json. Added earlier combat
 raids, captain waves, roaming rival thieves, four skills, touch cooldowns, three

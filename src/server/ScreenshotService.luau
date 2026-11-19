@@ -118,6 +118,7 @@ function ScreenshotService:Prepare(player, shot)
 	profile.MutationMilestones = { Gold = 1 }
 	profile.Cash = 867500000
 	profile.Rebirths = 3
+	self.Bases:ApplyRebirthLook(player)
 	local extraSlots = Config.World.SlotsPerUpgrade + Config.Rebirth.BonusSlots(profile.Rebirths)
 	for _ = 1, extraSlots do self.Bases:AddSlot(player) end
 	profile.Multiplier = Config.Rebirth.Multiplier(profile.Rebirths)

@@ -98,6 +98,7 @@ function InputController.Start(hud)
 				local index = table.find(skills, name)
 				button.Visible = index ~= nil
 				if index then
+					button.TextSize = compact and 16 or 13
 					button.Position = compact and UDim2.new(1, arc[index].X, 1, arc[index].Y)
 						or UDim2.new(0.5, (index - (#skills + 1) / 2) * spacing, 1, -168)
 					button.Size = compact and UDim2.fromOffset(92, 72) or UDim2.fromOffset(spacing - 14, 48)
@@ -147,8 +148,8 @@ function InputController.Start(hud)
 			lock.Text = "LOCK [L]\nREADY"
 			lock.BackgroundColor3 = Config.Palette.Ink
 		end
-		self.Buttons.Zap.Text = "ZAP [F]\n" .. ((state.ZapReadyAt or 0) > now
-			and ("RECHARGE · " .. math.ceil(state.ZapReadyAt - now) .. "s") or "READY")
+		self.Buttons.Zap.Text = (compact and "ZAP\n" or "ZAP [F]\n") .. ((state.ZapReadyAt or 0) > now
+			and ((compact and "" or "RECHARGE · ") .. math.ceil(state.ZapReadyAt - now) .. "s") or "READY")
 		lock:SetAttribute("Unavailable", (state.LockReadyAt or 0) > now)
 		self.Buttons.Zap:SetAttribute("Unavailable", (state.ZapReadyAt or 0) > now)
 		for action, panelName in pairs({ Upgrades = "UpgradePanel", Rebirth = "UpgradePanel", Index = "IndexPanel" }) do

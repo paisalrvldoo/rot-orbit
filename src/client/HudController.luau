@@ -236,6 +236,7 @@ function HudController.Start()
 	beacon.Size = UDim2.fromOffset(140, 30)
 	beacon.AlwaysOnTop = false
 	beacon.MaxDistance = 190
+	beacon.Enabled = false
 	beacon.Parent = marker
 	local home = HudController.Text(beacon, "Home", "YOUR BAY ↓", UDim2.fromScale(0.5, 0), UDim2.fromScale(1, 1), 15, Config.Palette.Mint)
 	local function showNotice(message)

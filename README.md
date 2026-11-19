@@ -18,7 +18,11 @@ docks earn a 25% offline haul for up to two hours away.
 
 WASD moves; E buys, steals, recovers and docks; L locks; F zaps; U opens upgrades
 and contracts; R opens rebirth (click again to confirm); B opens the index.
-Q Blink crosses open deck (shorter with cargo). Shift Sprint gives a four-second burst. On phones, More Skills opens the utility actions.
+Q Blink crosses open deck (shorter with cargo). Shift Sprint gives a four-second burst.
+G throws a cargo bomb; T places a proximity trap (at most two active). Bombs
+and traps share a cooldown, hit gremlins and knock cargo from rival thieves;
+crew allies are protected. On phones, Menu holds bay/progression/crew/contracts,
+and More opens utility skills and Trap beside the right-thumb controls.
 Skills also have touch buttons and server-enforced cooldowns. X Jet Dash is
 free; V Gravity Slam unlocks with Carry Speed 1 or rebirth 1; C Bay Bubble
 unlocks with Lock Duration 1 or rebirth 2. Bubble protects your nearby bay for
@@ -32,7 +36,13 @@ crew. Crew membership lasts for the current server session. ALL-TIME ranks
 combine these three named crews across servers using a protected score ledger
 and OrderedDataStore, refreshing every 60 seconds. If APIs are unavailable,
 local crew play and rankings continue.
-Hold G beside your docked cargo to retire it and free the slot; discoveries stay.
+Hold H beside your docked cargo to retire it and free the slot; discoveries stay.
+Rebirth keeps your highest-income docked brainrot, with its mutation, earning
+immediately in the reset bay. R1 adds two pods and a mint bay; R2 extends Blink
+and paints the bay blue; R3 adds periodic shared Mythic cargo supply and a gold
+bay; R4 adds an Orbit Ace aura/title and a rose bay. Next rewards and cash/rarity
+requirements appear in the UI; fireworks announce each rebirth. The Rot King
+raid and its summon key remain future work.
 
 - `main.ts` (Node 22, standard library only) hands the game in: it copies `game.rbxl`, `src/`, `screenshots/` and
   `PLAY.json` to `/output`, leaving out every name that starts with a dot (such as `.gitkeep` or `.DS_Store`, which
@@ -58,8 +68,9 @@ Hold G beside your docked cargo to retire it and free the slot; discoveries stay
   menu area stays clear. The Cover preset stages 32/43 found and a Diamond Cosmo
   Cornetto carry; Index should visibly read 32/43 FOUND.
 
-`node tools/verify.mjs` rebuilds the place, compiles every Luau script and checks
-the exported dossier. Roblox Studio playtesting remains necessary: this machine
+`node tools/verify.mjs` rebuilds the place, compiles every Luau script, runs the
+gameplay/save/rebirth/combat/crew/phone-control regressions and checks the
+exported dossier. Roblox Studio playtesting remains necessary: this machine
 has no Studio. See NOTES.md for current progress and the next polish priorities.
 After replacing the starter pictures, run `node tools/verify.mjs --submission`
 to also check all four final JPEGs and their TOUR presets.
@@ -69,6 +80,10 @@ functions in the Luau interpreter.
 `node tools/check-combat.mjs` exercises actual combat, skill unlock/cooldown,
 crew membership/reward and retry-safe global-score functions with deterministic
 server stubs. Live physics and multiplayer still need the CAPTURE.md smoke test.
+`node tools/check-controls.mjs` runs the actual input/layout controller with a
+small GUI host, checking phone bounds, non-overlap, 44px targets at 1024×460,
+menu/skill paging, shared bomb/trap cooldown and desktop/preview restoration.
+It does not render Roblox or approve the final phone screenshot.
 
 Run it as the grader does, writing `out/` in place of `/output`:
 
