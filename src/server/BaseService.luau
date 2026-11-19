@@ -5,6 +5,7 @@ local HttpService = game:GetService("HttpService")
 local Config = require(shared:WaitForChild("Config"))
 local Catalog = require(script.Parent:WaitForChild("BrainrotCatalog"))
 local BrainrotModel = require(script.Parent:WaitForChild("BrainrotModel"))
+local WorldBuilder = require(script.Parent:WaitForChild("WorldBuilder"))
 local BaseService = {}
 BaseService.__index = BaseService
 
@@ -38,7 +39,11 @@ function BaseService:SetSpeed(player)
 	local state = self.Players[player]
 	local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
 	if humanoid then
-		humanoid.WalkSpeed = state and state.Carry and Config.BaseCarrySpeed or Config.BaseWalkSpeed
+		local profile = self.Economy and self.Economy.Profiles[player]
+		local upgrades = profile and profile.Upgrades or {}
+		humanoid.WalkSpeed = state and state.Carry
+			and (Config.BaseCarrySpeed + (upgrades.CarrySpeed or 0) * Config.Upgrades.CarrySpeed.Step)
+			or (Config.BaseWalkSpeed + (upgrades.WalkSpeed or 0) * Config.Upgrades.WalkSpeed.Step)
 		humanoid.UseJumpPower = true
 		humanoid.JumpPower = Config.JumpPower
 	end
@@ -60,19 +65,7 @@ function BaseService:Assign(player)
 	local state = { Bay = bay, Carry = nil, Found = {} }
 	self.Players[player] = state
 	for _, pedestal in ipairs(bay.Slots) do
-		local prompt = Instance.new("ProximityPrompt")
-		prompt.Name = "PlaceBrainrot"
-		prompt.ActionText = "Dock brainrot"
-		prompt.ObjectText = "Your empty pedestal"
-		prompt.KeyboardKeyCode = Enum.KeyCode.E
-		prompt.HoldDuration = 0.2
-		prompt.MaxActivationDistance = Config.InteractionDistance
-		prompt.RequiresLineOfSight = false
-		prompt.Parent = pedestal.Pad
-		pedestal.PlacePrompt = prompt
-		prompt.Triggered:Connect(function(visitor)
-			if visitor == bay.Owner then self:Place(visitor, pedestal) end
-		end)
+		self:AttachPlacePrompt(bay, pedestal)
 	end
 	local function characterAdded(character)
 		local root = character:WaitForChild("HumanoidRootPart", 10)
@@ -85,6 +78,31 @@ function BaseService:Assign(player)
 	state.CharacterConnection = player.CharacterAdded:Connect(characterAdded)
 	if player.Character then task.spawn(characterAdded, player.Character) end
 	return state
+end
+
+function BaseService:AttachPlacePrompt(bay, pedestal)
+	local prompt = Instance.new("ProximityPrompt")
+	prompt.Name = "PlaceBrainrot"
+	prompt.ActionText = "Dock brainrot"
+	prompt.ObjectText = "Your empty pedestal"
+	prompt.KeyboardKeyCode = Enum.KeyCode.E
+	prompt.HoldDuration = 0.2
+	prompt.MaxActivationDistance = Config.InteractionDistance
+	prompt.RequiresLineOfSight = false
+	prompt.Enabled = pedestal.Occupant == nil
+	prompt.Parent = pedestal.Pad
+	pedestal.PlacePrompt = prompt
+	prompt.Triggered:Connect(function(visitor)
+		if visitor == bay.Owner then self:Place(visitor, pedestal) end
+	end)
+end
+
+function BaseService:AddSlot(player)
+	local state = self.Players[player]
+	if not state or #state.Bay.Slots >= Config.World.MaxSlots then return false end
+	local pedestal = WorldBuilder.CreatePedestal(state.Bay, #state.Bay.Slots + 1)
+	self:AttachPlacePrompt(state.Bay, pedestal)
+	return true
 end
 
 function BaseService:FreeSlot(player)

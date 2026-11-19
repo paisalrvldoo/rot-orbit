@@ -10,6 +10,7 @@ local MeteorEvent = require(script.Parent:WaitForChild("MeteorEvent"))
 local LockService = require(script.Parent:WaitForChild("LockService"))
 local GremlinRaid = require(script.Parent:WaitForChild("GremlinRaid"))
 local SolarFlareEvent = require(script.Parent:WaitForChild("SolarFlareEvent"))
+local UpgradeService = require(script.Parent:WaitForChild("UpgradeService"))
 local Config = require(ReplicatedStorage:WaitForChild("Config"))
 local Players = game:GetService("Players")
 
@@ -24,15 +25,17 @@ local meteors = MeteorEvent.new(world, bases, economy)
 local locks = LockService.new(bases, economy)
 local gremlins = GremlinRaid.new(world, bases, economy, locks)
 local solarFlare = SolarFlareEvent.new(world, economy)
+local upgrades = UpgradeService.new(bases, economy)
 local actions = { Lock = function(player) locks:Activate(player) end,
-	Zap = function(player) gremlins:Zap(player) end }
+	Zap = function(player) gremlins:Zap(player) end,
+	Upgrade = function(player, name) upgrades:Buy(player, name) end }
 local lastAction = {}
-network.Action.OnServerEvent:Connect(function(player, action)
+network.Action.OnServerEvent:Connect(function(player, action, argument)
 	if type(action) ~= "string" or not actions[action] then return end
 	local now = workspace:GetServerTimeNow()
 	if now - (lastAction[player] or 0) < Config.ActionCooldown then return end
 	lastAction[player] = now
-	actions[action](player)
+	actions[action](player, argument)
 end)
 
 local function joined(player)

@@ -11,6 +11,8 @@ local HudController = require(script.Parent:WaitForChild("HudController"))
 local hud = HudController.Start()
 local InputController = require(script.Parent:WaitForChild("InputController"))
 local input = InputController.Start(hud)
+local UpgradePanel = require(script.Parent:WaitForChild("UpgradePanel"))
+local upgradePanel = UpgradePanel.Start(hud, input)
 
 local ARENA_WIDTH = 640
 local ARENA_HEIGHT = 480

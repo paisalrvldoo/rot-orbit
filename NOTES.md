@@ -64,7 +64,9 @@ ScreenshotMode and an exact rules-format TOUR only when those features exist.
 - [x] Green primitive gremlins raid player bays, steal and escape; locks block
   them and ZAP [F] stuns nearby thieves, returning their loot as recoverable drops.
 - [x] Solar flare: all dock income doubles for 20s every 150s, with a banner.
-- [ ] Upgrades; rebirth; index; contracts; saving; final HUD polish.
+- [x] Upgrade [U] panel: walk/carry speed, lock duration, +2 slots up to 16;
+  server recomputes costs and enforces upgrade caps.
+- [ ] Rebirth; index; contracts; saving; final HUD polish.
 - [ ] ScreenshotMode/TOUR, README, genuine Studio pictures and published IDs.
 
 NPC stealing; meteor warnings/impacts and safe domes; solar flare; green gremlin
