@@ -103,6 +103,16 @@ do
     assert(skills:TargetableThief(user, {}, { Carry = { Stolen = true } }))
 end
 local CrewService = ${moduleBody('src/server/CrewService.luau', 'local CrewService =')}
+do
+    local rows = { { Name = 'Solar', Score = 0 }, { Name = 'Lunar', Score = 0 }, { Name = 'Comet', Score = 0 } }
+    local board = setmetatable({ Board = {}, Banners = {}, View = function() return { Rows = rows } end }, CrewService)
+    board:Refresh()
+    assert(string.find(board.Board.Text, 'No raids yet') and not string.find(board.Board.Text, '0 / 0'))
+    for rank, row in ipairs(rows) do row.Score = 100 / rank end
+    board:Refresh()
+    local _, breaks = string.gsub(board.Board.Text, '\\n', '')
+    assert(breaks < 5 and not string.find(board.Board.Text, 'SYNCED'), 'physical board must have at most five separate lines')
+end
 local one, two, rival, far = {}, {}, {}, {}
 local crewPlayers = { [one] = { CrewId = 1 }, [two] = { CrewId = 1 }, [rival] = { CrewId = 2 }, [far] = { CrewId = 1 } }
 local crewProfiles = { [one] = { Cash = 0 }, [two] = { Cash = 0 }, [rival] = { Cash = 0 }, [far] = { Cash = 0 } }

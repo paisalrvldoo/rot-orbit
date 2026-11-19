@@ -539,7 +539,10 @@ function GremlinRaid:Skill(player, name, mode)
 				return
 			end
 		end
-		if not self:Bomb(player, state, root, trap, skill) then return end
+		if not self:Bomb(player, state, root, trap, skill) then
+			self.Economy.Network.Notice:FireClient(player, "BOMB BLOCKED · FIND OPEN DECK")
+			return
+		end
 		state.SkillReadyAt[name] = now + skill.Cooldown
 		self.Economy:Send(player)
 		return

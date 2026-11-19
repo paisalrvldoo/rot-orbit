@@ -251,7 +251,7 @@ end
 
 function CrewService:Refresh()
 	local view = self:View(nil)
-	local lines = { "CREW RANKS · [Y]", "SERVER · DEFENCE SCORE" }
+	local lines = { "CREW RANKS · DEFENCE SCORE" }
 	local populated = false
 	for rank, row in ipairs(view.Rows) do
 		if row.Score > 0 then

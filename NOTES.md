@@ -11,6 +11,7 @@ readable rarity/income cards and earned progression. Core correctness first.
 Newest phone feedback takes precedence over extra features this pass:
 - [x] Implement physical, hub-facing crew rank panel away from spawn; no
   camera-facing ranks, empty rows or overlapping global status lines.
+  Real Refresh regressions check empty-state copy and a five-line maximum.
 - [x] Shrink home beacon, respect world occlusion and hide when already home.
 - [x] Implement mobile Menu for lock/upgrades/rebirth/index/crew/contracts;
   compact right-thumb arc for Blink/Sprint/Bomb/Zap, secondary skills behind
