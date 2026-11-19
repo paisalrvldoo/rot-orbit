@@ -65,7 +65,27 @@ function HudController.Start()
 		UDim2.new(0.5, 0, 1, -120), UDim2.fromOffset(930, 24), 17, Config.Palette.Mint)
 	local hint = HudController.Text(gui, "Hint", "WASD MOVE  ·  E BUY CARGO  ·  E DOCK ON AN EMPTY PEDESTAL",
 		UDim2.new(0.5, 0, 1, -91), UDim2.fromOffset(940, 33), 17)
-	local notice = HudController.Text(gui, "Notice", "", UDim2.new(0.5, 0, 1, -156), UDim2.fromOffset(920, 30), 19, Config.Palette.Sun)
+	local feed = {}
+	local feedLabels = {}
+	local feedGeneration = 0
+	for index = 1, 3 do
+		local row = HudController.Text(gui, "Action" .. index, "", UDim2.fromOffset(134, 168 + (index - 1) * 50),
+			UDim2.fromOffset(236, 44), 14, index == 1 and Config.Palette.Sun or Config.Palette.White)
+		row.BackgroundColor3 = Config.Palette.Ink
+		row.BackgroundTransparency = 0.14
+		row.TextWrapped = true
+		row.Visible = false
+		Instance.new("UICorner", row).CornerRadius = UDim.new(0, 8)
+		local padding = Instance.new("UIPadding", row)
+		padding.PaddingLeft, padding.PaddingRight = UDim.new(0, 8), UDim.new(0, 8)
+		feedLabels[index] = row
+	end
+	local function renderFeed()
+		for index, label in ipairs(feedLabels) do
+			label.Text = feed[index] or ""
+			label.Visible = feed[index] ~= nil
+		end
+	end
 	EventBanner.Start(gui, network)
 	local state
 	local marker = Instance.new("Part")
@@ -95,12 +115,17 @@ function HudController.Start()
 		marker.Position = snapshot.BayPosition + Vector3.new(0, 11, 0)
 	end
 	network.Snapshot.OnClientEvent:Connect(update)
-	local noticeVersion = 0
 	network.Notice.OnClientEvent:Connect(function(message)
-		noticeVersion += 1
-		local version = noticeVersion
-		notice.Text = message
-		task.delay(4, function() if version == noticeVersion then notice.Text = "" end end)
+		if feed[1] ~= message then table.insert(feed, 1, message) end
+		feed[4] = nil
+		feedGeneration += 1
+		local generation = feedGeneration
+		renderFeed()
+		task.delay(12, function()
+			if generation ~= feedGeneration then return end
+			table.clear(feed)
+			renderFeed()
+		end)
 	end)
 	network.CashPop.OnClientEvent:Connect(function(position, amount)
 		local anchor = Instance.new("Part")

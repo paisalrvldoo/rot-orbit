@@ -2,7 +2,9 @@
 local ContextActionService = game:GetService("ContextActionService")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
-local Config = require(game:GetService("ReplicatedStorage"):WaitForChild("Config"))
+local shared = game:GetService("ReplicatedStorage")
+local Config = require(shared:WaitForChild("Config"))
+local Format = require(shared:WaitForChild("Format"))
 local InputController = {}
 InputController.__index = InputController
 
@@ -10,25 +12,36 @@ function InputController.Start(hud)
 	local self = setmetatable({ Hud = hud, Buttons = {}, Order = {} }, InputController)
 	self:Register("Lock", "LOCK [L]", Enum.KeyCode.L, function() hud.Network.Action:FireServer("Lock") end)
 	self:Register("Zap", "ZAP [F]", Enum.KeyCode.F, function() hud.Network.Action:FireServer("Zap") end)
+	local previous
 	RunService.RenderStepped:Connect(function()
 		local state = hud.GetState()
 		if not state then return end
 		local now = workspace:GetServerTimeNow()
 		local lock = self.Buttons.Lock
 		if (state.LockUntil or 0) > now then
-			lock.Text = "LOCKED · " .. math.ceil(state.LockUntil - now) .. "s"
+			lock.Text = "LOCK [L]\nLOCKED · " .. math.ceil(state.LockUntil - now) .. "s"
 			lock.BackgroundColor3 = Config.Palette.Teal
 		elseif (state.LockReadyAt or 0) > now then
-			lock.Text = "LOCK · " .. math.ceil(state.LockReadyAt - now) .. "s"
+			lock.Text = "LOCK [L]\nRECHARGE · " .. math.ceil(state.LockReadyAt - now) .. "s"
 			lock.BackgroundColor3 = Config.Palette.Ink
 		else
-			lock.Text = "LOCK [L]"
+			lock.Text = "LOCK [L]\nREADY"
 			lock.BackgroundColor3 = Config.Palette.Ink
 		end
-		if self.Buttons.Zap then
-			self.Buttons.Zap.Text = (state.ZapReadyAt or 0) > now
-				and ("ZAP · " .. math.ceil(state.ZapReadyAt - now) .. "s") or "ZAP [F]"
+		self.Buttons.Zap.Text = "ZAP [F]\n" .. ((state.ZapReadyAt or 0) > now
+			and ("RECHARGE · " .. math.ceil(state.ZapReadyAt - now) .. "s") or "READY")
+		if state == previous then return end
+		previous = state
+		local levels, maxLevels, found = 0, 0, 0
+		for name, definition in pairs(Config.Upgrades) do
+			levels += state.Upgrades[name] or 0
+			maxLevels += definition.MaxLevel
 		end
+		for _, known in pairs(state.Found) do if known then found += 1 end end
+		local cost = Config.Rebirth.BaseCost * Config.Rebirth.CostGrowth ^ state.Rebirths
+		self.Buttons.Upgrades.Text = "UPGRADES [U]\n" .. levels .. "/" .. maxLevels .. " BUILT"
+		self.Buttons.Rebirth.Text = "REBIRTH [R]\n" .. (state.Rebirths >= Config.Rebirth.MaxLevel and "MAXED" or Format.Money(cost))
+		self.Buttons.Index.Text = "INDEX [B]\n" .. found .. "/" .. #state.Catalog .. " FOUND"
 	end)
 	return self
 end
@@ -39,7 +52,7 @@ function InputController:Register(name, label, key, callback)
 	button.Name = name
 	button.Text = label
 	button.AnchorPoint = Vector2.new(0.5, 0)
-	button.Size = UDim2.fromOffset(176, 40)
+	button.Size = UDim2.fromOffset(176, 48)
 	button.BackgroundColor3 = Config.Palette.Ink
 	button.TextColor3 = Config.Palette.White
 	button.Font = Enum.Font.GothamBold
@@ -57,7 +70,7 @@ function InputController:Register(name, label, key, callback)
 	local priority = { Lock = 1, Upgrades = 2, Rebirth = 3, Index = 4, Zap = 5 }
 	table.sort(self.Order, function(a, b) return (priority[a] or 9) < (priority[b] or 9) end)
 	for index, action in ipairs(self.Order) do
-		self.Buttons[action].Position = UDim2.new(0.5, (index - (#self.Order + 1) / 2) * 188, 1, -52)
+		self.Buttons[action].Position = UDim2.new(0.5, (index - (#self.Order + 1) / 2) * 188, 1, -53)
 	end
 	ContextActionService:BindAction("RotOrbit" .. name, function(_, inputState)
 		if UserInputService:GetFocusedTextBox() then return Enum.ContextActionResult.Pass end

@@ -111,8 +111,8 @@ The research is prose guidance, not source or reusable names. Rank is not guaran
 6. Strengthen meteor streaks/warnings, dome glow, drop feedback and between-event timer.
 7. [x] Sixth mutation Aurora at x7, with three coloured orbit ribbons.
    [ ] Short positive mutation-spawn event.
-8. Denser edge HUD: live upgrade/found/cost/cooldown buttons, right quest progress
-   card with done total, left three-action feed, readable money and event text.
+8. Edge HUD now has live upgrade/found/cost/cooldown buttons, a three-action feed,
+   and larger money and event text. Next is a right quest card with a done total.
 9. Larger billboards, BUY price, Cosmic beam and SECRET crown/light pillar;
    preserve idle bob/spin and per-character silhouette details.
 10. Later deepen progression: 25–30 upgrade levels, index milestones and 15+

@@ -56,6 +56,7 @@ function EconomyService:Purchase(player, record, position)
 	end
 	if not self.Bases:Carry(player, record) then return false end
 	profile.Cash -= price
+	self.Network.Notice:FireClient(player, "BOUGHT " .. Catalog.DisplayName(record) .. " · DOCK AT HOME")
 	self:Activity(player, "Buy", record)
 	self:Send(player)
 	return true
