@@ -64,7 +64,7 @@ local Config = {
 	Gremlin = { FirstRaid = 75, Interval = 135, Telegraph = 6, Duration = 48, Count = 4, Speed = 9, StunDuration = 3,
 		Health = 4, BossHealth = 18, BossEvery = 3, KillReward = 140, BossReward = 1800,
 		DefendReward = 600, ZapDamage = 2, ZapRadius = 48, ZapCooldown = 3 },
-	Crews = { SwitchCooldown = 15, RewardRadius = 90, KillScore = 10, BossScore = 150, RaidScore = 100,
+	Crews = { GlobalRefresh = 60, SwitchCooldown = 15, RewardRadius = 90, KillScore = 10, BossScore = 150, RaidScore = 100,
 		KillAssist = 50, BossAssist = 500, Teams = {
 			{ Name = "Solar Sporks", Color = Color3.fromRGB(255, 192, 79) },
 			{ Name = "Lunar Linguini", Color = Color3.fromRGB(113, 213, 255) },

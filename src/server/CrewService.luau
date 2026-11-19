@@ -1,4 +1,6 @@
 -- Original station crews: server-owned membership, friendly cargo and shared defence.
+local DataStoreService = game:GetService("DataStoreService")
+local HttpService = game:GetService("HttpService")
 local Config = require(game:GetService("ReplicatedStorage"):WaitForChild("Config"))
 local WorldBuilder = require(script.Parent:WaitForChild("WorldBuilder"))
 local CrewService = {}
@@ -6,7 +8,8 @@ CrewService.__index = CrewService
 
 function CrewService.new(world, bases, economy, raids)
 	local self = setmetatable({ World = world, Bases = bases, Economy = economy, Raids = raids,
-		Crews = {}, Connections = {}, Banners = {}, Global = {}, GlobalStatus = "LOCAL SESSION" }, CrewService)
+		Crews = {}, Connections = {}, Banners = {}, Global = {}, GlobalStatus = "CONNECTING ALL-TIME",
+		Token = HttpService:GenerateGUID(false), Saved = {}, Unpublished = {} }, CrewService)
 	for id, definition in ipairs(Config.Crews.Teams) do
 		self.Crews[id] = { Id = id, Name = definition.Name, Color = definition.Color, Score = 0, Raids = 0, Bosses = 0 }
 	end
@@ -14,6 +17,18 @@ function CrewService.new(world, bases, economy, raids)
 	economy.Crews = self
 	raids.Crews = self
 	self:BuildBoard()
+	local stores, ledger, ordered = pcall(function()
+		return DataStoreService:GetDataStore("RotOrbitCrewLedger_v1"),
+			DataStoreService:GetOrderedDataStore("RotOrbitCrewRanks_v1")
+	end)
+	if stores then self.Ledger, self.Ordered = ledger, ordered end
+	task.spawn(function()
+		while true do
+			self:SyncGlobal()
+			task.wait(Config.Crews.GlobalRefresh)
+		end
+	end)
+	game:BindToClose(function() self:SyncGlobal(true) end)
 	task.spawn(function()
 		while true do
 			task.wait(3)
@@ -21,6 +36,70 @@ function CrewService.new(world, bases, economy, raids)
 		end
 	end)
 	return self
+end
+
+-- The ledger records this server's cumulative contribution before publishing a
+-- monotonic ordered score. Retrying either write cannot apply a payout twice.
+function CrewService:WriteCrew(id)
+	local crew = self.Crews[id]
+	local amount = crew.Score
+	if amount > (self.Saved[id] or 0) then
+		local ok, document = pcall(function()
+			return self.Ledger:UpdateAsync("crew_" .. id, function(previous)
+				local data = type(previous) == "table" and previous or { Total = 0, Sessions = {} }
+				data.Sessions = type(data.Sessions) == "table" and data.Sessions or {}
+				local before = tonumber(data.Sessions[self.Token]) or 0
+				data.Total = math.min(Config.MaxCash, (tonumber(data.Total) or 0) + math.max(0, amount - before))
+				data.Sessions[self.Token] = math.max(before, amount)
+				return data
+			end)
+		end)
+		if not ok or type(document) ~= "table" or type(document.Total) ~= "number" then return false end
+		self.Saved[id] = amount
+		self.Unpublished[id] = math.max(self.Unpublished[id] or 0, document.Total)
+	end
+	if self.Unpublished[id] then
+		local total = self.Unpublished[id]
+		local ok = pcall(function()
+			self.Ordered:UpdateAsync(tostring(id), function(previous)
+				return math.max(tonumber(previous) or 0, total)
+			end)
+		end)
+		if not ok then return false end
+		self.Unpublished[id] = nil
+	end
+	return true
+end
+
+function CrewService:SyncGlobal(closing)
+	if self.Syncing then return end
+	if not self.Ledger or not self.Ordered then self.GlobalStatus = "LOCAL ONLY · API UNAVAILABLE"; return end
+	self.Syncing = true
+	local success = true
+	for id in ipairs(self.Crews) do
+		if not self:WriteCrew(id) then success = false end
+	end
+	if not closing then
+		local ok, page = pcall(function() return self.Ordered:GetSortedAsync(false, 3):GetCurrentPage() end)
+		if ok and type(page) == "table" then
+			local rows, present = {}, {}
+			for _, item in ipairs(page) do
+				local id = tonumber(item.key)
+				local crew = id and self.Crews[id]
+				if crew and type(item.value) == "number" then
+					present[id] = true
+					table.insert(rows, { Id = id, Name = crew.Name, Color = crew.Color, Score = item.value })
+				end
+			end
+			for id, crew in ipairs(self.Crews) do
+				if not present[id] then table.insert(rows, { Id = id, Name = crew.Name, Color = crew.Color, Score = 0 }) end
+			end
+			table.sort(rows, function(a, b) if a.Score == b.Score then return a.Id < b.Id end; return a.Score > b.Score end)
+			self.Global = rows
+		else success = false end
+	end
+	self.GlobalStatus = success and "ALL-TIME SYNCED" or "GLOBAL RETRYING · LOCAL PLAY CONTINUES"
+	self.Syncing = false
 end
 
 function CrewService:Same(first, second)
@@ -156,6 +235,10 @@ function CrewService:Refresh()
 	local lines = { "CREW RANKS · [Y]", "SERVER · SCORE / RAIDS / BOSSES" }
 	for rank, row in ipairs(view.Rows) do
 		table.insert(lines, string.format("#%d %s · %d / %d / %d", rank, row.Name, row.Score, row.Raids, row.Bosses))
+	end
+	table.insert(lines, "ALL-TIME · " .. self.GlobalStatus)
+	for rank, row in ipairs(self.Global) do
+		table.insert(lines, "#" .. rank .. " " .. row.Name .. " · " .. row.Score)
 	end
 	table.insert(lines, "JOIN A COLOUR PAD · TEAM UP TO DEFEND")
 	self.Board.Text = table.concat(lines, "\n")

@@ -334,7 +334,14 @@ Core fixes and combat take priority over more visual polish.
   alliance/assist/score/membership regressions pass; Studio multiplayer pending.
   Added one purposeful CrewService: 25 scripts, slightly above the prior
   approximate 20–24 target to fulfil the owner's newer squad request cleanly.
-- [ ] Server/global crew ranks with throttled pcall-safe persistence.
+- [x] Global all-time crew totals via OrderedDataStore, plus a cumulative
+  per-server ledger so ambiguous write retries do not double-count score.
+  Publishing is monotonic; refresh/write throttle is 60s, pcall failures keep
+  local play working and show retry status. World board and Y/touch ALL-TIME
+  tab show the three named crews across all servers. Actual retry/interleaving
+  regressions pass; live DataStore/close behavior still requires Studio.
+  Ledger session receipts are retained for idempotency; at very large server
+  counts, shard/archive the ledger before approaching DataStore value limits.
 - [ ] Four genuine Studio captures, approved icon/thumbnail and latest publish.
 
 Combat layout follow-up: skill controls sit above the counts/carry strips, not

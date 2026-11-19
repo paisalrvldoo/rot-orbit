@@ -96,6 +96,36 @@ crewPlayers[one].Carry = nil
 crews.Raids.Active = true
 crews:Join(one, 2)
 assert(crewPlayers[one].CrewId == 1, 'cannot hop crews during a raid')
+local ledgerDocument, orderedScore
+local failLedger, failOrdered = false, false
+local persistent = setmetatable({ Crews = { { Score = 100 } }, Token = 'server-a', Saved = {}, Unpublished = {},
+    Ledger = { UpdateAsync = function(_, key, callback)
+        ledgerDocument = callback(ledgerDocument)
+        if failLedger then error('timeout after committed ledger write') end
+        return ledgerDocument
+    end },
+    Ordered = { UpdateAsync = function(_, key, callback)
+        orderedScore = callback(orderedScore)
+        if failOrdered then error('timeout after ordered publish') end
+    end } }, CrewService)
+failLedger = true
+assert(not persistent:WriteCrew(1) and ledgerDocument.Total == 100)
+failLedger = false
+assert(persistent:WriteCrew(1) and ledgerDocument.Total == 100 and orderedScore == 100,
+    'retry after ambiguous ledger response must not double-add')
+persistent.Crews[1].Score = 160
+failOrdered = true
+assert(not persistent:WriteCrew(1) and orderedScore == 160)
+failOrdered = false
+assert(persistent:WriteCrew(1) and orderedScore == 160 and ledgerDocument.Total == 160,
+    'ordered publication retry must keep the same cumulative score')
+persistent.Token, persistent.Saved, persistent.Crews[1].Score = 'server-b', {}, 50
+assert(persistent:WriteCrew(1) and ledgerDocument.Total == 210 and orderedScore == 210,
+    'independent server contributions must combine')
+orderedScore = 500
+persistent.Crews[1].Score = 60
+assert(persistent:WriteCrew(1) and orderedScore == 500, 'a stale publisher cannot lower another server score')
+print('Global crew checks passed: combined servers, ambiguous ledger retry, ordered retry and monotonic publication.')
 print('Crew checks passed: friendly protection, nearby assist payout, outsider exclusion, once-per-crew raid score and membership guards.')
 print('Skill checks passed: invalid names, unlocks, upgrade/rebirth paths, cooldown spam and departure/preview guards.')
 print('Combat checks passed: damage, stun, death once, boss reward, cargo recovery, wave reward once, cash cap and profile guards.')

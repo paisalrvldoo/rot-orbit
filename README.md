@@ -26,7 +26,10 @@ Y opens crews and live server ranks. Join Solar Sporks, Lunar Linguini or Comet
 Cannoli from the panel or coloured arrival pads. Crewmates cannot steal each
 other's cargo; nearby allies share kill cash. Crew score awards 10 per gremlin,
 150 per captain and 100 per defended raid. Gold dock banners mark the leading
-crew. Crew membership lasts for the current server session.
+crew. Crew membership lasts for the current server session. ALL-TIME ranks
+combine these three named crews across servers using a protected score ledger
+and OrderedDataStore, refreshing every 60 seconds. If APIs are unavailable,
+local crew play and rankings continue.
 Hold G beside your docked cargo to retire it and free the slot; discoveries stay.
 
 - `main.ts` (Node 22, standard library only) hands the game in: it copies `game.rbxl`, `src/`, `screenshots/` and
