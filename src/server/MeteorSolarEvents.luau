@@ -2,14 +2,13 @@
 local TweenService = game:GetService("TweenService")
 local Debris = game:GetService("Debris")
 local Config = require(game:GetService("ReplicatedStorage"):WaitForChild("Config"))
-local Catalog = require(script.Parent:WaitForChild("BrainrotCatalog"))
 local WorldBuilder = require(script.Parent:WaitForChild("WorldBuilder"))
-local MeteorEvent = {}
-MeteorEvent.__index = MeteorEvent
+local MeteorSolarEvents = {}
+MeteorSolarEvents.__index = MeteorSolarEvents
 
-function MeteorEvent.new(world, bases, economy)
+function MeteorSolarEvents.new(world, bases, economy)
 	local self = setmetatable({ World = world, Bases = bases, Economy = economy,
-		Random = Random.new(), Active = false }, MeteorEvent)
+		Random = Random.new(), Active = false }, MeteorSolarEvents)
 	self.Effects = Instance.new("Folder")
 	self.Effects.Name = "MeteorEffects"
 	self.Effects.Parent = world.Root
@@ -19,17 +18,23 @@ function MeteorEvent.new(world, bases, economy)
 			task.spawn(function() self:Start() end)
 		end
 	end)
+	task.spawn(function()
+		while true do
+			task.wait(Config.SolarFlare.Interval)
+			task.spawn(function() self:StartSolarFlare() end)
+		end
+	end)
 	return self
 end
 
-function MeteorEvent:IsProtected(position)
+function MeteorSolarEvents:IsProtected(position)
 	for _, dome in ipairs(self.World.Domes) do
 		if (position - dome.Center).Magnitude <= dome.Radius then return true end
 	end
 	return false
 end
 
-function MeteorEvent:Impact(position)
+function MeteorSolarEvents:Impact(position)
 	local warning = WorldBuilder.Ring("ImpactWarning", Config.Meteor.ImpactRadius, 0.32, 0.15,
 		CFrame.new(position), Config.Palette.Sun, Enum.Material.Neon, self.Effects, 28, false)
 	local target = WorldBuilder.Part("WarningCore", Vector3.new(0.12, 2.5, 2.5),
@@ -70,7 +75,7 @@ function MeteorEvent:Impact(position)
 	end)
 end
 
-function MeteorEvent:Start()
+function MeteorSolarEvents:Start()
 	if self.Active or self.World.Root:GetAttribute("ScreenshotFrozen") then return end
 	self.Active = true
 	local endsAt = workspace:GetServerTimeNow() + Config.Meteor.Duration
@@ -110,4 +115,20 @@ function MeteorEvent:Start()
 	end
 end
 
-return MeteorEvent
+function MeteorSolarEvents:StartSolarFlare()
+	if self.SolarActive or self.World.Root:GetAttribute("ScreenshotFrozen") then return end
+	self.SolarActive = true
+	self.Economy.IncomeMultiplier = Config.SolarFlare.Multiplier
+	self.World.Root:SetAttribute("SolarFlareActive", true)
+	self.Economy:PublishEvent({ Name = "SolarFlare", Text = "SOLAR FLARE! ALL BAYS PAY x2",
+		EndsAt = workspace:GetServerTimeNow() + Config.SolarFlare.Duration,
+		Priority = 1, Color = Config.Palette.Sun })
+	for player in pairs(self.Economy.Profiles) do self.Economy:Send(player) end
+	task.wait(Config.SolarFlare.Duration)
+	self.Economy.IncomeMultiplier = 1
+	self.World.Root:SetAttribute("SolarFlareActive", false)
+	self.SolarActive = false
+	for player in pairs(self.Economy.Profiles) do self.Economy:Send(player) end
+end
+
+return MeteorSolarEvents

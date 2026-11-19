@@ -6,12 +6,10 @@ local BaseService = require(script.Parent:WaitForChild("BaseService"))
 local EconomyService = require(script.Parent:WaitForChild("EconomyService"))
 local ConveyorService = require(script.Parent:WaitForChild("ConveyorService"))
 local StealService = require(script.Parent:WaitForChild("StealService"))
-local MeteorEvent = require(script.Parent:WaitForChild("MeteorEvent"))
+local MeteorSolarEvents = require(script.Parent:WaitForChild("MeteorSolarEvents"))
 local LockService = require(script.Parent:WaitForChild("LockService"))
 local GremlinRaid = require(script.Parent:WaitForChild("GremlinRaid"))
-local SolarFlareEvent = require(script.Parent:WaitForChild("SolarFlareEvent"))
-local UpgradeService = require(script.Parent:WaitForChild("UpgradeService"))
-local RebirthService = require(script.Parent:WaitForChild("RebirthService"))
+local UpgradeRebirthService = require(script.Parent:WaitForChild("UpgradeRebirthService"))
 local ContractService = require(script.Parent:WaitForChild("ContractService"))
 local DataService = require(script.Parent:WaitForChild("DataService"))
 local ScreenshotService = require(script.Parent:WaitForChild("ScreenshotService"))
@@ -25,12 +23,10 @@ bases:SeedRivals()
 local economy = EconomyService.new(bases, network)
 local conveyor = ConveyorService.new(world, economy)
 local stealing = StealService.new(bases, economy, network)
-local meteors = MeteorEvent.new(world, bases, economy)
+local meteors = MeteorSolarEvents.new(world, bases, economy)
 local locks = LockService.new(bases, economy)
 local gremlins = GremlinRaid.new(world, bases, economy, locks)
-local solarFlare = SolarFlareEvent.new(world, economy)
-local upgrades = UpgradeService.new(bases, economy)
-local rebirth = RebirthService.new(bases, economy)
+local upgrades = UpgradeRebirthService.new(bases, economy)
 local contracts = ContractService.new(economy)
 local data = DataService.new(bases, economy)
 local screenshots = ScreenshotService.new({ Bases = bases, Economy = economy, Data = data,
@@ -38,7 +34,7 @@ local screenshots = ScreenshotService.new({ Bases = bases, Economy = economy, Da
 local actions = { Lock = function(player) locks:Activate(player) end,
 	Zap = function(player) gremlins:Zap(player) end,
 	Upgrade = function(player, name) upgrades:Buy(player, name) end,
-	Rebirth = function(player) rebirth:Perform(player) end,
+	Rebirth = function(player) upgrades:Perform(player) end,
 	Screenshot = function(player, shot) screenshots:Prepare(player, shot) end }
 local lastAction = {}
 network.Action.OnServerEvent:Connect(function(player, action, argument)

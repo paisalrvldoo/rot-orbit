@@ -31,7 +31,7 @@ function InputController.Start(hud)
 		end
 		self.Buttons.Zap.Text = "ZAP [F]\n" .. ((state.ZapReadyAt or 0) > now
 			and ("RECHARGE · " .. math.ceil(state.ZapReadyAt - now) .. "s") or "READY")
-		if state == previous then return end
+		if state == previous or not (self.Buttons.Upgrades and self.Buttons.Rebirth and self.Buttons.Index) then return end
 		previous = state
 		local levels, maxLevels, found = 0, 0, 0
 		for name, definition in pairs(Config.Upgrades) do
