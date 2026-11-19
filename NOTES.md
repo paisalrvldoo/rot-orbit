@@ -51,7 +51,9 @@ ScreenshotMode and an exact rules-format TOUR only when those features exist.
 - [x] Recovered catalog/model/pedestal work; verified and committed `50e5c42`.
 - [x] Sunny runtime world, 30 original brainrots, seven rarities, five mutations.
 - [x] Player bay assignment, server-owned carry/drop/dock logic and passive economy.
-- [ ] Moving cargo and buy prompts; money HUD, carrying strip and income pops.
+- [x] Moving cargo and buy prompts; money HUD, carrying strip and income pops.
+  Minimum loop is implemented; Studio playtest still required. Follow the mint
+  YOUR BAY beacon; buy Common cargo on the ring, then E at a free home pedestal.
 - [ ] Rival stealing; meteors/domes; solar flare; gremlins with lock/zap.
 - [ ] Upgrades; rebirth; index; contracts; saving; final HUD polish.
 - [ ] ScreenshotMode/TOUR, README, genuine Studio pictures and published IDs.
