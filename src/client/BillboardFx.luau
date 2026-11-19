@@ -69,6 +69,7 @@ function BillboardFx.Start()
 	end
 	local chasers = tagged("OrbitRailChaser")
 	local relays = tagged("OrbitCargoRelay")
+	local cores = tagged("OrbitHologramCore")
 	local function restore(model)
 		if reveals[model] and model.Parent then model:ScaleTo(1) end
 		reveals[model] = nil
@@ -96,9 +97,12 @@ function BillboardFx.Start()
 				local phase = tracer:GetAttribute("OrbitPhase")
 				if phase then
 					local angle = phase + (frozen and 0 or time * 0.64)
-					tracer.CFrame = CFrame.Angles(0, -angle, 0)
-						* CFrame.new(Config.World.RailRadius + 4.55, Config.World.RailHeight + 0.18, 0)
+					tracer.CFrame = Config.World.RailFrame(angle, Config.World.RailRadius + 4.55, 0.24)
 				end
+			end
+			for core in pairs(cores) do
+				local frame = core:GetAttribute("CoreFrame")
+				if frame then core:PivotTo(frame * CFrame.Angles(0, frozen and 0 or time * 0.34, 0)) end
 			end
 			for relay in pairs(relays) do
 				local frame, phase = relay:GetAttribute("RelayFrame"), relay:GetAttribute("RelayPhase")

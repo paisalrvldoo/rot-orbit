@@ -24,7 +24,8 @@ local Config = {
 		DeckRadius = 132,
 		DeckThickness = 6,
 		RailRadius = 42,
-		RailHeight = 2.1,
+		RailHeight = 5.05,
+		RailTilt = math.rad(4),
 		RailSegments = 84,
 		BayRadius = 91,
 		PlayerBays = 6,
@@ -42,7 +43,7 @@ local Config = {
 		SpawnInterval = 4.5,
 		Speed = 6.5,
 		MaxCapsules = 12,
-		Height = 3.6,
+		HoverHeight = 1.5,
 		ModelScale = 1.5,
 		PodScale = 1.35,
 		PreviewAffordableCount = 3,
@@ -131,6 +132,14 @@ local Config = {
 		White = Color3.fromRGB(250, 253, 255),
 	},
 }
+
+function Config.World.RailPlane()
+	return CFrame.new(0, Config.World.RailHeight, 0) * CFrame.Angles(Config.World.RailTilt, 0, 0)
+end
+
+function Config.World.RailFrame(angle, radius, height)
+	return Config.World.RailPlane() * CFrame.Angles(0, -angle, 0) * CFrame.new(radius, height, 0)
+end
 
 function Config.Rebirth.Cost(level)
 	return Config.Rebirth.BaseCost * Config.Rebirth.CostGrowth ^ level

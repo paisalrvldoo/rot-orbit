@@ -89,8 +89,8 @@ function ConveyorService:RebirthSupply()
 end
 
 function ConveyorService:Frame(angle)
-	local position = Vector3.new(math.cos(angle) * Config.World.RailRadius,
-		Config.Conveyor.Height + math.sin(angle * 7) * 0.12, math.sin(angle) * Config.World.RailRadius)
+	local position = Config.World.RailFrame(angle, Config.World.RailRadius, Config.Conveyor.HoverHeight).Position
+		+ Vector3.new(0, math.sin(angle * 7) * 0.12, 0)
 	return CFrame.lookAt(position, Vector3.new(0, position.Y, 0))
 end
 

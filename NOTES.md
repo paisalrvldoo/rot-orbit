@@ -1,5 +1,21 @@
 # ROT ORBIT build notes
 
+## Orbit and cover continuation
+
+Clean recovery at `261bc29`. The full verifier passed before the checkpoint.
+Owner research puts the cargo ring first in the latest visual pass. The ten
+judging priorities stay in the plan: late-game cover, 42–45 originals (43),
+four genuine captures, about 20–24 purposeful scripts (25 with crew support),
+large world title, readable hazards, six mutations, live buttons with quest
+card and action feed, readable rarity and value cards, and earned progression.
+
+- [x] Tilt and lift the far side of the cargo track, leaving the approach
+  near spawn at 2.1 studs. Sleds and light chasers share the track plane.
+  Graded rarity rails, lit supports and brighter gates distinguish the path.
+  Replace upper reactor loops with a low rotating core clear of the title.
+- [ ] Improve cargo arrivals and podium readability, then refine sky and cover.
+- [ ] Studio review at 1024×460 and 1280×720, with four genuine captures.
+
 ## Current 25-minute orbit continuation
 
 Initial status/diff were clean; `node tools/verify.mjs` passed and checkpoint

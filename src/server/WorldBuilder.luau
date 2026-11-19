@@ -178,7 +178,8 @@ local function buildTitle(parent)
 		WorldBuilder.Part("TitleSupport", Vector3.new(1.05, height, 1.05),
 			CFrame.new(side * 18.8, height / 2, -3), palette.Teal, Enum.Material.SmoothPlastic, title)
 		WorldBuilder.Part("TitleTrim", Vector3.new(41, 0.27, 1.65),
-			CFrame.new(0, height + side * 3.4, -3), palette.Mint, Enum.Material.Neon, title, nil, false)
+			CFrame.new(0, height + side * 3.4, -3), side == 1 and palette.Sun or palette.Mint,
+			Enum.Material.Neon, title, nil, false)
 		WorldBuilder.Part("TitleBeacon", Vector3.one * 1.1,
 			CFrame.new(side * 19.5, height + 4.15, -3), palette.Sun,
 			Enum.Material.Neon, title, Enum.PartType.Ball, false)
@@ -289,31 +290,42 @@ end
 
 local function buildCargoRing(world)
 	local radius = Config.World.RailRadius
-	local y = Config.World.RailHeight
+	local plane = Config.World.RailPlane()
 	local track = folder("CargoTrack", world.Geometry)
-	WorldBuilder.Ring("TrackChassis", radius, 11.2, 0.6, CFrame.new(0, y - 0.42, 0),
+	WorldBuilder.Ring("TrackChassis", radius, 11.2, 0.6, plane * CFrame.new(0, -0.42, 0),
 		palette.Ink, Enum.Material.Metal, track, Config.World.RailSegments, false)
 	for _, side in ipairs({ -1, 1 }) do
-		local rail = WorldBuilder.Ring("GuideRail", radius + side * 4.55, 0.86, 0.27,
-			CFrame.new(0, y, 0), side == 1 and palette.Mint or palette.Teal, Enum.Material.Neon,
+		local rail = WorldBuilder.Ring("GuideRail", radius + side * 4.55, 1.02, 0.32,
+			plane, side == 1 and palette.Mint or palette.Teal, Enum.Material.Neon,
 			track, Config.World.RailSegments, false)
-		if side == 1 then
-			for index, segment in ipairs(rail:GetChildren()) do
-				local sector = math.floor((index - 1) * #Rarity.Order / Config.World.RailSegments) + 1
-				segment.Color = Rarity.ByName[Rarity.Order[sector]].Color:Lerp(palette.Teal, 0.13)
-			end
+		for index, segment in ipairs(rail:GetChildren()) do
+			local sector = (index - 1) * #Rarity.Order / Config.World.RailSegments
+			local tier = math.floor(sector)
+			local a = Rarity.ByName[Rarity.Order[tier + 1]].Color
+			local b = Rarity.ByName[Rarity.Order[(tier + 1) % #Rarity.Order + 1]].Color
+			segment.Color = a:Lerp(b, sector - tier):Lerp(palette.Teal, side == 1 and 0.08 or 0.45)
 		end
+	end
+	for index = 1, 14 do
+		local angle = (index - 0.5) * math.pi * 2 / 14
+		local position = Config.World.RailFrame(angle, radius, -0.62).Position
+		local height = position.Y
+		local frame = CFrame.new(position.X, height / 2, position.Z) * CFrame.Angles(0, -angle, 0)
+		WorldBuilder.Part("MaglevPylon", Vector3.new(3.5, height, 1.9), frame, palette.Ink,
+			Enum.Material.Metal, track, nil, false)
+		WorldBuilder.Part("PylonPowerCell", Vector3.new(1, height * 0.72, 2), frame, palette.Teal,
+			Enum.Material.Neon, track, nil, false)
 	end
 	for index = 1, 28 do
 		local angle = (index - 1) * math.pi * 2 / 28
-		local frame = CFrame.Angles(0, -angle, 0) * CFrame.new(radius, y - 0.17, 0)
+		local frame = Config.World.RailFrame(angle, radius, -0.17)
 		WorldBuilder.Part("TrackSleeper", Vector3.new(10.8, 0.2, 0.67), frame, palette.Teal,
 			Enum.Material.Metal, track, nil, false)
 	end
 	-- Wide clamps and center lane marks keep the ring recognizable from above.
 	for index, name in ipairs(Rarity.Order) do
 		local angle = (index - 1) * math.pi * 2 / #Rarity.Order
-		local frame = CFrame.Angles(0, -angle, 0) * CFrame.new(radius, y - 0.06, 0)
+		local frame = Config.World.RailFrame(angle, radius, -0.06)
 		local color = Rarity.ByName[name].Color
 		for _, side in ipairs({ -1, 1 }) do
 			WorldBuilder.Part("GuideClamp", Vector3.new(1.8, 0.58, 2.5),
@@ -327,9 +339,9 @@ local function buildCargoRing(world)
 
 	for index = 1, 7 do
 		local phase = (index - 1) * math.pi * 2 / 7
-		local frame = CFrame.Angles(0, -phase, 0) * CFrame.new(radius + 4.55, y + 0.18, 0)
+		local frame = Config.World.RailFrame(phase, radius + 4.55, 0.24)
 		local color = Rarity.ByName[Rarity.Order[index]].Color
-		local tracer = WorldBuilder.Part("RailChaser", Vector3.new(0.8, 0.22, 3.2), frame, color,
+		local tracer = WorldBuilder.Part("RailChaser", Vector3.new(0.84, 0.22, 5.4), frame, color:Lerp(palette.White, 0.55),
 			Enum.Material.Neon, track, nil, false)
 		tracer.CanQuery = false
 		tracer:SetAttribute("OrbitPhase", phase)
@@ -339,12 +351,18 @@ local function buildCargoRing(world)
 	-- sightline. Non-solid scenery cannot trap a carrier or block a purchase.
 	for index, angle in ipairs({ -math.pi / 2, -math.pi / 6 }) do
 		local gate = folder("CargoWarpGate_" .. index, track)
-		local frame = CFrame.Angles(0, -angle, 0) * CFrame.new(radius, y + 8.6, 0)
-			* CFrame.Angles(math.pi / 2, 0, 0)
+		local frame = Config.World.RailFrame(angle, radius, 8.6) * CFrame.Angles(math.pi / 2, 0, 0)
+		local color = index == 1 and palette.Mint or palette.Sun
 		WorldBuilder.Ring("GateHousing", 10.2, 0.8, 1.1, frame,
 			palette.Ink, Enum.Material.Metal, gate, 28, false)
 		WorldBuilder.Ring("WarpAperture", 9.6, 0.24, 0.28, frame,
-			index == 1 and palette.Mint or palette.Sun, Enum.Material.Neon, gate, 28, false)
+			color, Enum.Material.Neon, gate, 28, false)
+		for _, side in ipairs({ -1, 1 }) do
+			local cap = WorldBuilder.Part("GateBeacon", Vector3.new(0.8, 0.8, 1.4),
+				frame * CFrame.new(side * 10.1, 0, 0), color, Enum.Material.Neon, gate, nil, false)
+			local lamp = Instance.new("PointLight", cap)
+			lamp.Color, lamp.Brightness, lamp.Range = color, 0.65, 17
+		end
 	end
 	for index = 1, 3 do
 		local angle = (index - 1) * math.pi * 2 / 3 + 0.36
@@ -368,20 +386,28 @@ local function buildCargoRing(world)
 	WorldBuilder.Ring("HubTrim", 13, 1.5, 0.25, CFrame.new(0, 0.17, 0),
 		palette.Teal, Enum.Material.SmoothPlastic, world.Geometry, 48, false)
 	WorldBuilder.Part("ReactorBase", Vector3.new(0.65, 11, 11),
-		CFrame.new(0, 0.4, 0) * CFrame.Angles(0, 0, math.pi / 2), palette.Ink,
+		CFrame.new(0, 0.4, 5) * CFrame.Angles(0, 0, math.pi / 2), palette.Ink,
 		Enum.Material.SmoothPlastic, world.Geometry, Enum.PartType.Cylinder)
-	local core = WorldBuilder.Part("SunnyReactor", Vector3.one * 5, CFrame.new(0, 6.5, 0),
-		palette.Sun, Enum.Material.Neon, world.Geometry, Enum.PartType.Ball, false)
+	local hologram = Instance.new("Model")
+	hologram.Name = "HologramCore"
+	local core = WorldBuilder.Part("SunnyReactor", Vector3.one * 6.2, CFrame.new(0, 5.3, 5),
+		palette.Sun, Enum.Material.Neon, hologram, Enum.PartType.Ball, false)
+	core.Transparency = 0.26
 	local light = Instance.new("PointLight")
 	light.Color = palette.Sun
-	light.Brightness = 1.6
-	light.Range = 25
+	light.Brightness = 0.9
+	light.Range = 19
 	light.Parent = core
-	for level = 1, 3 do
-		WorldBuilder.Ring("ReactorOrbit", 4 + level, 0.2, 0.15,
-			CFrame.new(0, 4 + level * 1.8, 0) * CFrame.Angles(math.rad(level * 13), 0, math.rad(15)),
-			palette.Mint, Enum.Material.Neon, world.Geometry, 40, false)
-	end
+	-- Every piece stays inside a 4.5-stud sphere well clear of the title panel.
+	WorldBuilder.Ring("HologramEquator", 3.9, 0.18, 0.16,
+		core.CFrame * CFrame.Angles(math.rad(24), 0, math.rad(12)),
+		palette.Mint, Enum.Material.Neon, hologram, 24, false)
+	WorldBuilder.Part("HologramSatellite", Vector3.one * 0.62, core.CFrame * CFrame.new(4.15, 0, 0),
+		palette.Mint, Enum.Material.Neon, hologram, Enum.PartType.Ball, false)
+	hologram.PrimaryPart = core
+	hologram:SetAttribute("CoreFrame", core.CFrame)
+	hologram.Parent = world.Geometry
+	CollectionService:AddTag(hologram, "OrbitHologramCore")
 	buildTitle(world.Geometry)
 	WorldBuilder.Ring("SafetyRail", Config.World.DeckRadius - 0.5, 0.75, 2.1,
 		CFrame.new(0, 1.2, 0), palette.Teal, Enum.Material.SmoothPlastic, world.Geometry, 90, true)
