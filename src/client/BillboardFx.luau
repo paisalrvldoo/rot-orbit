@@ -85,6 +85,7 @@ function BillboardFx.Start()
 		return items
 	end
 	local chasers = tagged("OrbitRailChaser")
+	local powerCells = tagged("OrbitRailPowerCell")
 	local relays = tagged("OrbitCargoRelay")
 	local cores = tagged("OrbitHologramCore")
 	local crowns = tagged("OrbitCrewCrown")
@@ -118,8 +119,10 @@ function BillboardFx.Start()
 			for tracer in pairs(chasers) do
 				local phase = tracer:GetAttribute("OrbitPhase")
 				if phase then
-					local angle = phase + (frozen and 0 or time * 0.64)
-					tracer.CFrame = Config.World.RailFrame(angle, Config.World.RailRadius + 4.55, 0.24)
+					local side = tracer:GetAttribute("RailSide") or 1
+					local speed = side == 1 and 0.64 or -0.46
+					local angle = phase + (frozen and 0 or time * speed)
+					tracer.CFrame = Config.World.RailFrame(angle, Config.World.RailRadius + side * 4.55, 0.24)
 				end
 			end
 			for core in pairs(cores) do
@@ -141,6 +144,13 @@ function BillboardFx.Start()
 		railFrozen = frozen
 		cardElapsed += dt
 		if cardElapsed >= 0.07 then
+			for cell in pairs(powerCells) do
+				local phase = cell:GetAttribute("OrbitPhase")
+				if phase then
+					local pulse = math.max(0, math.cos(phase * 7 - time * 4.48)) ^ 4
+					cell.Transparency = frozen and 0.32 or 0.52 - pulse * 0.37
+				end
+			end
 			for rotor in pairs(rotors) do
 				local frame, color = rotor:GetAttribute("GateFrame"), rotor:GetAttribute("GateColor")
 				if frame and color then

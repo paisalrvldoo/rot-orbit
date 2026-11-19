@@ -12,6 +12,8 @@ value cards, and earned progression. Core systems verified before polish.
 - [x] Keep live cargo cards inside the screen and clear of the HUD, including
   quests, action feed and carrying. Give the full card to the first nearby pod
   with room for it. Test at a 1024×460 viewport with an obstructed nearest pod.
+- [x] Run counterflow chasers on both maglev rails and pulse existing pylon
+  lights with the outer rail. The preset holds them in a fixed pose.
 - [ ] Review the four presets in Studio and take genuine captures.
 
 ## Current recovery and Studio review

@@ -379,8 +379,12 @@ local function buildCargoRing(world)
 		local frame = CFrame.new(position.X, height / 2, position.Z) * CFrame.Angles(0, -angle, 0)
 		WorldBuilder.Part("MaglevPylon", Vector3.new(3.5, height, 1.9), frame, palette.Ink,
 			Enum.Material.Metal, track, nil, false)
-		WorldBuilder.Part("PylonPowerCell", Vector3.new(1, height * 0.72, 2), frame, palette.Teal,
+		local cell = WorldBuilder.Part("PylonPowerCell", Vector3.new(1, height * 0.72, 2), frame, palette.Mint,
 			Enum.Material.Neon, track, nil, false)
+		cell.Transparency = 0.44
+		cell.CanQuery = false
+		cell:SetAttribute("OrbitPhase", angle)
+		CollectionService:AddTag(cell, "OrbitRailPowerCell")
 	end
 	for index = 1, 28 do
 		local angle = (index - 1) * math.pi * 2 / 28
@@ -403,15 +407,19 @@ local function buildCargoRing(world)
 		end
 	end
 
-	for index = 1, 7 do
-		local phase = (index - 1) * math.pi * 2 / 7
-		local frame = Config.World.RailFrame(phase, radius + 4.55, 0.24)
-		local color = Rarity.ByName[Rarity.Order[index]].Color
-		local tracer = WorldBuilder.Part("RailChaser", Vector3.new(0.84, 0.22, 5.4), frame, color:Lerp(palette.White, 0.55),
-			Enum.Material.Neon, track, nil, false)
-		tracer.CanQuery = false
-		tracer:SetAttribute("OrbitPhase", phase)
-		CollectionService:AddTag(tracer, "OrbitRailChaser")
+	for _, side in ipairs({ 1, -1 }) do
+		local count = side == 1 and 7 or 4
+		for index = 1, count do
+			local phase = (index - 1) * math.pi * 2 / count + (side == 1 and 0 or 0.4)
+			local frame = Config.World.RailFrame(phase, radius + side * 4.55, 0.24)
+			local color = side == 1 and Rarity.ByName[Rarity.Order[index]].Color or palette.Teal
+			local tracer = WorldBuilder.Part("RailChaser", Vector3.new(0.76, 0.22, side == 1 and 5.4 or 3.8),
+				frame, color:Lerp(palette.White, 0.55), Enum.Material.Neon, track, nil, false)
+			tracer.CanQuery = false
+			tracer:SetAttribute("OrbitPhase", phase)
+			tracer:SetAttribute("RailSide", side)
+			CollectionService:AddTag(tracer, "OrbitRailChaser")
+		end
 	end
 	-- Two open hoops sit across the actual cargo path, away from the arrival
 	-- sightline. Non-solid scenery cannot trap a carrier or block a purchase.
