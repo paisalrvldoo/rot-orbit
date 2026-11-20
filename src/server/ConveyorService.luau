@@ -60,7 +60,7 @@ function ConveyorService.new(world, economy)
 					record = record or Catalog.Roll(self.Random)
 					if surge then record.Mutation = Mutation.Roll(self.Random, true) end
 				end
-				self:Spawn(record, -math.pi / 2)
+				self:Spawn(record, Config.World.CargoEntryAngle)
 				local entry = Catalog.Get(record.Id)
 				local rarity = Rarity.ByName[entry.Rarity]
 				if rarity.Rank >= 5 and world.CargoEntry then

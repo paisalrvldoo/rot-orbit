@@ -495,13 +495,15 @@ local function buildCargoRing(world)
 	end
 	-- Two open hoops sit across the actual cargo path, away from the arrival
 	-- sightline. Non-solid scenery cannot trap a carrier or block a purchase.
-	for index, angle in ipairs({ math.pi * 1.12, math.pi * 1.88 }) do
+	for index, angle in ipairs({ Config.World.CargoEntryAngle, math.pi * 1.88 }) do
 		local gate = folder("CargoWarpGate_" .. index, track)
-		local frame = Config.World.RailFrame(angle, radius, 8.6) * CFrame.Angles(math.pi / 2, 0, 0)
+		-- The 2x SECRET crown reaches ~22 studs above the rail, including
+		-- hover. Keep the aperture above it instead of cutting through its head.
+		local frame = Config.World.RailFrame(angle, radius, 12.4) * CFrame.Angles(math.pi / 2, 0, 0)
 		local color = index == 1 and palette.Mint or palette.Sun
-		WorldBuilder.Ring("GateHousing", 10.2, 0.8, 1.1, frame,
+		WorldBuilder.Ring("GateHousing", 12.6, 0.8, 1.1, frame,
 			palette.Ink, Enum.Material.Metal, gate, 28, false)
-		WorldBuilder.Ring("WarpAperture", 9.6, 0.24, 0.28, frame,
+		WorldBuilder.Ring("WarpAperture", 12, 0.24, 0.28, frame,
 			color, Enum.Material.Neon, gate, 28, false)
 		local rotor = Instance.new("Model")
 		rotor.Name = "WarpRotor"
@@ -514,7 +516,7 @@ local function buildCargoRing(world)
 			for segment = 0, 2 do
 				local spin = (arc * 2 * math.pi / 3) + segment * 0.13
 				local shard = WorldBuilder.Part("WarpArc", Vector3.new(0.38, 0.46, 1.34),
-					frame * CFrame.Angles(0, -spin, 0) * CFrame.new(9.06, 0, 0),
+					frame * CFrame.Angles(0, -spin, 0) * CFrame.new(11.46, 0, 0),
 					color, Enum.Material.Neon, rotor, nil, false)
 				shard.CanQuery = false
 			end
@@ -523,7 +525,7 @@ local function buildCargoRing(world)
 		if index == 1 then world.CargoEntry = rotor end
 		for _, side in ipairs({ -1, 1 }) do
 			local cap = WorldBuilder.Part("GateBeacon", Vector3.new(0.8, 0.8, 1.4),
-				frame * CFrame.new(side * 10.1, 0, 0), color, Enum.Material.Neon, gate, nil, false)
+				frame * CFrame.new(side * 12.5, 0, 0), color, Enum.Material.Neon, gate, nil, false)
 			local lamp = Instance.new("PointLight", cap)
 			lamp.Color, lamp.Brightness, lamp.Range = color, 0.65, 17
 		end

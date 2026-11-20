@@ -449,7 +449,7 @@ local function startTitle(hud, crewPanel)
 		if camera then
 			if humanoid then camera.CameraSubject = humanoid end
 			camera.CFrame = Config.World.SpawnCamera()
-			camera.Focus = CFrame.new(0, 7, 54)
+			camera.Focus = CFrame.new(0, 12, 42)
 			camera.FieldOfView = 65
 			camera.CameraType = Enum.CameraType.Custom
 		end
@@ -477,7 +477,7 @@ local function startTitle(hud, crewPanel)
 			camera.CameraType = Enum.CameraType.Scriptable
 			camera.CFrame = Config.World.SpawnCamera() * CFrame.new(slide * 2, 0, 0)
 			camera.FieldOfView = 65
-			camera.Focus = CFrame.new(0, 20, -2)
+			camera.Focus = CFrame.new(0, 27, -2)
 		end
 		local ready = hud.GetState() ~= nil
 		play:SetAttribute("Unavailable", not ready)

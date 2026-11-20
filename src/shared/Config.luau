@@ -27,6 +27,7 @@ local Config = {
 		RailHeight = 36,
 		RailTilt = math.rad(15),
 		RailSegments = 84,
+		CargoEntryAngle = math.pi * 1.12,
 		BayRadius = 91,
 		PlayerBays = 6,
 		RivalBays = 3,
@@ -145,11 +146,11 @@ end
 -- One arrival view shared by live Play and the Studio phone review. Look up
 -- along the ring rather than down across a mostly empty station floor.
 function Config.World.SpawnFrame()
-	return CFrame.lookAt(Vector3.new(0, 0.2, 54), Vector3.new(0, 0.2, 0))
+	return CFrame.lookAt(Vector3.new(0, 0.2, 42), Vector3.new(0, 0.2, 0))
 end
 
 function Config.World.SpawnCamera()
-	return CFrame.lookAt(Vector3.new(0, 11, 72), Vector3.new(0, 20, -2))
+	return CFrame.lookAt(Vector3.new(0, 11, 60), Vector3.new(0, 27, -2))
 end
 
 function Config.Rebirth.Cost(level)

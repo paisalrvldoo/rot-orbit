@@ -12,6 +12,12 @@ Work ONLY in this order; no further pedestal/UI/new-system polish:
   access ramps. First arrival/title camera faces the overhead arc; portals
   move to its outer flanks. Full source/build/gameplay checks pass. NOT visually
   approved: genuine 1170x540 phone screenshot still REQUIRED in docs/shots/.
+  Geometry review tightened the shared arrival camera: the actual rail projects
+  across x220–950, y111–233 in a 1170x540 frame (>60% width). Enlarged portal
+  apertures clear the 2x SECRET crown; new live arrivals use the portal's actual
+  angle. Actual builder/Config tests cover solid track, two <35° ramps, ordinary
+  purchase reach, scenery/title nonintersection and portal headroom. These are
+  mathematical checks, NOT rendering or proof of final appearance.
 - [ ] **0: v8 defects**, only after 0a is visibly approved: unclipped title,
   visible deep-space background, graphite floor, single phone raid warning,
   correct empty-and-not-carrying bottom hint. See refs.md for full requirements.
@@ -26,9 +32,10 @@ Core systems already pass. Old white-deck/orange-planet direction is superseded
 by dark metal/neon and deep space. No additional side systems this session.
 
 This machine has no Roblox Studio/runtime renderer. Do not mark 0a complete,
-advance to 0, or invent a screenshot. Next: finish/test only the orbit access,
-spawn framing and a repeatable Studio phone review, then obtain the genuine
-spawn screenshot before continuing. Rebuild and verify before each commit.
+advance to 0, or invent a screenshot. Next: obtain the genuine
+spawn screenshot using docs/shots/README.md before continuing. The old Cover
+preset was framed for the low ring and will need review at the cover step;
+it is not visually approved for the elevated ring. Rebuild and verify before each commit.
 
 # ROT ORBIT build notes
 

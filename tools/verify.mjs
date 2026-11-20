@@ -37,7 +37,7 @@ for (const script of scripts) {
     throw new Error(`Restricted runtime service assignment in ${script}; set it in default.project.json`);
   }
 }
-for (const check of ['check-collections.mjs', 'check-combat.mjs', 'check-controls.mjs']) {
+for (const check of ['check-collections.mjs', 'check-combat.mjs', 'check-controls.mjs', 'check-orbit.mjs']) {
   process.stdout.write(run(process.execPath, [join('tools', check)]));
 }
 rmSync(scratch, { recursive: true, force: true });
