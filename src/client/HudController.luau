@@ -4,6 +4,7 @@ local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local Debris = game:GetService("Debris")
+local SoundService = game:GetService("SoundService")
 local shared = game:GetService("ReplicatedStorage")
 local Config = require(shared:WaitForChild("Config"))
 local Traits = require(shared:WaitForChild("BrainrotTraits"))
@@ -333,8 +334,23 @@ function HudController.Start()
 		feed = scene.Actions or {}
 		renderFeed()
 	end)
-	local function incomePop(position, amount)
+	local burstEmitter
+	local modelPops = setmetatable({}, { __mode = "k" })
+	local lastPing = 0
+	local function clearModelPop(model)
+		local pop = modelPops[model]
+		if not pop then return end
+		modelPops[model] = nil
+		pop.Connection:Disconnect()
+		pop.Tween:Cancel()
+		if model.Parent then model:ScaleTo(pop.Scale) end
+		pop.Driver:Destroy()
+	end
+	local function incomePop(position, amount, kind, model)
+		local world = workspace:FindFirstChild("ROT_ORBIT")
+		if world and world:GetAttribute("ScreenshotFrozen") then return end
 		local anchor = Instance.new("Part")
+		anchor.Name = "OrbitMomentPop"
 		anchor.Anchored = true
 		anchor.CanCollide = false
 		anchor.CanQuery = false
@@ -347,7 +363,46 @@ function HudController.Start()
 		pop.AlwaysOnTop = true
 		pop.MaxDistance = 52
 		pop.Parent = anchor
-		local text = HudController.Text(pop, "IncomePop", "+" .. Format.Money(amount), UDim2.fromScale(0.5, 0), UDim2.fromScale(1, 1), 18, Config.Palette.Mint)
+		local copy = (kind == "Buy" and "−" or "+") .. Format.Money(amount)
+		if kind == "Dock" then copy ..= "/s" elseif kind == "Steal" then copy ..= " VALUE" end
+		pop.Size = UDim2.fromOffset(kind == "Steal" and 180 or 130, 29)
+		local color = kind == "Steal" and Config.Palette.Sun or Config.Palette.Mint
+		local text = HudController.Text(pop, "IncomePop", copy, UDim2.fromScale(0.5, 0), UDim2.fromScale(1, 1), 18, color)
+		-- One disposable emitter per client, even when a full bay pays together.
+		if burstEmitter then burstEmitter:Destroy() end
+		burstEmitter = Instance.new("ParticleEmitter", anchor)
+		burstEmitter.Name = "MomentBurst"
+		burstEmitter.Texture = "rbxasset://textures/particles/sparkles_main.dds"
+		burstEmitter.Rate, burstEmitter.Enabled = 0, false
+		burstEmitter.Color, burstEmitter.LightEmission = ColorSequence.new(color), 0.8
+		burstEmitter.Lifetime, burstEmitter.Speed = NumberRange.new(0.25, 0.55), NumberRange.new(2, 4)
+		burstEmitter.SpreadAngle = Vector2.new(90, 90)
+		burstEmitter.Size, burstEmitter.Transparency = NumberSequence.new(0.2, 0), NumberSequence.new(0.1, 1)
+		burstEmitter:Emit(7)
+		local secretReveal = model and model:GetAttribute("RarityRank") == 7
+			and workspace:GetServerTimeNow() - (model:GetAttribute("DockedAt") or -math.huge) < Config.SecretDock.Duration
+		if model and model.Parent and not secretReveal then
+			clearModelPop(model)
+			local driver = Instance.new("NumberValue", anchor)
+			local baseScale = model:GetScale()
+			driver.Value = baseScale
+			local tween = TweenService:Create(driver, TweenInfo.new(0.18, Enum.EasingStyle.Quad,
+				Enum.EasingDirection.Out, 0, true), { Value = baseScale * (kind == "Collect" and 1.035 or 1.08) })
+			local connection = driver.Changed:Connect(function(value)
+				if model.Parent then model:ScaleTo(value) end
+			end)
+			modelPops[model] = { Tween = tween, Driver = driver, Scale = baseScale, Connection = connection }
+			tween.Completed:Connect(function() if modelPops[model] and modelPops[model].Driver == driver then clearModelPop(model) end end)
+			tween:Play()
+		end
+		if os.clock() - lastPing > 0.25 then
+			lastPing = os.clock()
+			local sound = Instance.new("Sound", SoundService)
+			sound.SoundId, sound.Volume = "rbxasset://sounds/electronicpingshort.wav", 0.1
+			sound.PlaybackSpeed = kind == "Steal" and 1.35 or kind == "Dock" and 1.15 or 1
+			SoundService:PlayLocalSound(sound)
+			Debris:AddItem(sound, 1)
+		end
 		local popScale = Instance.new("UIScale", text)
 		popScale.Scale = 0.65
 		TweenService:Create(popScale, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
@@ -359,7 +414,8 @@ function HudController.Start()
 		Debris:AddItem(anchor, 1)
 	end
 	network.CashPop.OnClientEvent:Connect(function(pops)
-		if state and state.SaveStatus ~= "STUDIO PREVIEW" and #state.Inventory > 0 and #pops > 0 then
+		if state and state.SaveStatus ~= "STUDIO PREVIEW" and #state.Inventory > 0 and #pops > 0
+			and (pops[1].Kind == nil or pops[1].Kind == "Collect") then
 			if not collected then showNotice("FIRST ORBIT COMPLETE · KEEP BUYING, DOCKING & EARNING") end
 			collected = true
 		end
@@ -367,8 +423,15 @@ function HudController.Start()
 		if not camera then return end
 		for index, pop in ipairs(pops) do
 			if (camera.CFrame.Position - pop.Position).Magnitude <= 52 then
-				task.delay((index - 1) % 4 * 0.08, incomePop, pop.Position, pop.Amount)
+				task.delay((index - 1) % 4 * 0.08, incomePop, pop.Position, pop.Amount, pop.Kind, pop.Model)
 			end
+		end
+	end)
+	network.Screenshot.OnClientEvent:Connect(function()
+		if burstEmitter then burstEmitter:Destroy(); burstEmitter = nil end
+		for model in pairs(modelPops) do clearModelPop(model) end
+		for _, item in ipairs(workspace:GetChildren()) do
+			if item.Name == "OrbitMomentPop" then item:Destroy() end
 		end
 	end)
 	RunService.RenderStepped:Connect(function()

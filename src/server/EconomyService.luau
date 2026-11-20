@@ -48,7 +48,7 @@ function EconomyService:Income(player, showPops, baseRateOnly)
 			if pops then
 				local position = occupant.Model:GetPivot().Position
 				table.insert(pops, { Position = position + Vector3.new(1.5, 2.4, 0),
-					Amount = math.floor(income * multiplier) - previous })
+					Amount = math.floor(income * multiplier) - previous, Model = occupant.Model, Kind = "Collect" })
 			end
 		end
 	end
@@ -105,6 +105,19 @@ end
 
 function EconomyService:Activity(player, kind, record)
 	self.Activities:Fire(player, kind, record)
+	if kind == "Buy" or kind == "Dock" or kind == "Steal" then
+		local state = self.Bases.Players[player]
+		local model = state and state.Carry and state.Carry.Model
+		if kind == "Dock" and state then
+			for _, slot in ipairs(state.Bay.Slots) do
+				if slot.Occupant and slot.Occupant.Record.Guid == record.Guid then model = slot.Occupant.Model; break end
+			end
+		end
+		if model and model.Parent and not self.Bases.World.Root:GetAttribute("ScreenshotFrozen") then
+			self.Network.CashPop:FireClient(player, { { Position = model:GetPivot().Position + Vector3.new(0, 2.4, 0),
+				Amount = kind == "Dock" and Catalog.Income(record) or Catalog.Price(record), Kind = kind, Model = model } })
+		end
+	end
 end
 
 function EconomyService:PublishEvent(event)

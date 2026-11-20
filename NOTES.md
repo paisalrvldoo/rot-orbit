@@ -8,7 +8,12 @@
   carry/income state. One tapered ground beam points toward the rail, then
   YOUR bay; both hide after the first income payment and in capture mode.
   Returning earners skip the introduction. No new gameplay or save system.
-- [ ] Final 2: brief, disposable buy/dock/steal/collect feedback.
+- [x] Final 2: buy/dock/steal/collect reuse the existing server CashPop event:
+  brief model scale tween, floating cost/income/value text and one disposable
+  seven-spark emitter per client, destroyed with the pop after one second.
+  Reused the existing built-in ping through SoundService; capture transitions
+  cancel effects and restore model scale. Purchases show their real cost,
+  docking shows income per second and steals show cargo value, not extra cash.
 - [ ] Final 3: premium high-rarity pedestal presentation within phone budgets.
 - [ ] Final 4: assert HUD rectangles clear at 844×390 and 390×844.
 - [ ] Final 5: document four cover presets and restoration; final clean handoff.
