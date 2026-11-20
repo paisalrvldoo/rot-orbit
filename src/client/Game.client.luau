@@ -448,6 +448,9 @@ local function startTitle(hud, crewPanel)
 		local humanoid = character and character:FindFirstChildOfClass("Humanoid")
 		if camera then
 			if humanoid then camera.CameraSubject = humanoid end
+			camera.CFrame = Config.World.SpawnCamera()
+			camera.Focus = CFrame.new(0, 7, 54)
+			camera.FieldOfView = 65
 			camera.CameraType = Enum.CameraType.Custom
 		end
 		if squad then crewPanel.Visible = true end
@@ -471,10 +474,10 @@ local function startTitle(hud, crewPanel)
 			local size = screen.AbsoluteSize
 			scale.Scale = math.clamp(math.min(size.X / 1280, size.Y / 720), 0.33, 1.4)
 			local slide = math.sin((os.clock() - started) * 0.24)
-			local target = Vector3.new(-10, 6, 18)
 			camera.CameraType = Enum.CameraType.Scriptable
-			camera.CFrame = CFrame.lookAt(Vector3.new(-8 + slide * 10, 16.5, 67), target)
-			camera.Focus = CFrame.new(target)
+			camera.CFrame = Config.World.SpawnCamera() * CFrame.new(slide * 2, 0, 0)
+			camera.FieldOfView = 65
+			camera.Focus = CFrame.new(0, 20, -2)
 		end
 		local ready = hud.GetState() ~= nil
 		play:SetAttribute("Unavailable", not ready)

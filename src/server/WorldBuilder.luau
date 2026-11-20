@@ -415,7 +415,23 @@ local function buildCargoRing(world)
 	local plane = Config.World.RailPlane()
 	local track = folder("CargoTrack", world.Geometry)
 	WorldBuilder.Ring("TrackChassis", radius, 11.2, 0.6, plane * CFrame.new(0, -0.42, 0),
-		palette.Ink, Enum.Material.Metal, track, Config.World.RailSegments, false)
+		palette.Ink, Enum.Material.Metal, track, Config.World.RailSegments, true)
+	-- Raising the real conveyor must not strand its purchase prompts in the
+	-- sky. Two broad, solid ramps connect the deck to the annular shopping walk.
+	-- They sit to either side of arrival, leaving the title sightline open.
+	for _, angle in ipairs({ math.pi / 4, math.pi * 3 / 4 }) do
+		local top = Config.World.RailFrame(angle, radius, -0.48).Position
+		local foot = Vector3.new(math.cos(angle) * 86, -0.42, math.sin(angle) * 86)
+		local frame = CFrame.lookAt((top + foot) / 2, top)
+		local length = (top - foot).Magnitude + 2
+		WorldBuilder.Part("CargoAccessRamp", Vector3.new(9, 0.8, length), frame,
+			palette.Ink, Enum.Material.Metal, track)
+		for _, side in ipairs({ -1, 1 }) do
+			WorldBuilder.Part("RampGuide", Vector3.new(0.24, 0.12, length),
+				frame * CFrame.new(side * 4.2, 0.46, 0), palette.Mint,
+				Enum.Material.Neon, track, nil, false)
+		end
+	end
 	for _, side in ipairs({ -1, 1 }) do
 		local rail = WorldBuilder.Ring("GuideRail", radius + side * 4.55, 1.02, 0.32,
 			plane, side == 1 and palette.Mint or palette.Teal, Enum.Material.Neon,
@@ -479,7 +495,7 @@ local function buildCargoRing(world)
 	end
 	-- Two open hoops sit across the actual cargo path, away from the arrival
 	-- sightline. Non-solid scenery cannot trap a carrier or block a purchase.
-	for index, angle in ipairs({ -math.pi / 2, -math.pi / 6 }) do
+	for index, angle in ipairs({ math.pi * 1.12, math.pi * 1.88 }) do
 		local gate = folder("CargoWarpGate_" .. index, track)
 		local frame = Config.World.RailFrame(angle, radius, 8.6) * CFrame.Angles(math.pi / 2, 0, 0)
 		local color = index == 1 and palette.Mint or palette.Sun
@@ -622,7 +638,7 @@ function WorldBuilder.Build()
 	spawn.Name = "ArrivalPad"
 	spawn.Anchored = true
 	spawn.Size = Vector3.new(10, 0.3, 10)
-	spawn.CFrame = CFrame.lookAt(Vector3.new(0, 0.2, 23), Vector3.new(0, 0.2, 42))
+	spawn.CFrame = Config.World.SpawnFrame()
 	spawn.Transparency = 1
 	spawn.Color = palette.Teal
 	spawn.Material = Enum.Material.SmoothPlastic

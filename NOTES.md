@@ -1,3 +1,35 @@
+# ACTIVE OWNER OVERRIDE — 20 November: TOP 3
+
+Read `/workspace/rbx/refs.md` current first 15 lines and the linked orbit,
+v8 phone and sky sections. These supersede ALL older continuation plans below.
+Initial status/diff were clean; full verify passed; checkpoint `eded8aa`.
+
+Work ONLY in this order; no further pedestal/UI/new-system polish:
+- [ ] **0a: elevated orbit visible from spawn.** Source implementation raises
+  the actual 42-stud-radius conveyor to 36 studs with 15° tilt (lowest rail
+  ~25 studs), retains its 11.2-stud-wide chassis/double rarity rails/chasers,
+  increases cargo models to 2x catalog size and gives the real track two solid
+  access ramps. First arrival/title camera faces the overhead arc; portals
+  move to its outer flanks. Full source/build/gameplay checks pass. NOT visually
+  approved: genuine 1170x540 phone screenshot still REQUIRED in docs/shots/.
+- [ ] **0: v8 defects**, only after 0a is visibly approved: unclipped title,
+  visible deep-space background, graphite floor, single phone raid warning,
+  correct empty-and-not-carrying bottom hint. See refs.md for full requirements.
+- [ ] **1–6:** orbit spectacle → dark deck → text clutter → crew podium →
+  cover framing → deep-space sky, respecting the latest ordering above.
+
+Owner research top-ten targets remain subordinate: staged late-game cover;
+42–45 original cast (43); four genuine captures; about 20–24 purposeful scripts
+(25); big readable title; readable hazards; six mutations; live HUD/button
+states, quests and feed; readable cargo value cards; earned progression.
+Core systems already pass. Old white-deck/orange-planet direction is superseded
+by dark metal/neon and deep space. No additional side systems this session.
+
+This machine has no Roblox Studio/runtime renderer. Do not mark 0a complete,
+advance to 0, or invent a screenshot. Next: finish/test only the orbit access,
+spawn framing and a repeatable Studio phone review, then obtain the genuine
+spawn screenshot before continuing. Rebuild and verify before each commit.
+
 # ROT ORBIT build notes
 
 ## Current layered pedestal continuation

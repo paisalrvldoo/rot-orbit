@@ -24,8 +24,8 @@ local Config = {
 		DeckRadius = 132,
 		DeckThickness = 6,
 		RailRadius = 42,
-		RailHeight = 5.05,
-		RailTilt = math.rad(4),
+		RailHeight = 36,
+		RailTilt = math.rad(15),
 		RailSegments = 84,
 		BayRadius = 91,
 		PlayerBays = 6,
@@ -45,8 +45,8 @@ local Config = {
 		Speed = 6.5,
 		MaxCapsules = 12,
 		HoverHeight = 1.5,
-		ModelScale = 1.5,
-		PodScale = 1.35,
+		ModelScale = 2,
+		PodScale = 1.65,
 		PreviewAffordableCount = 3,
 		PreviewDisplayIds = { 8, 13, 18 },
 		RareNoticeSeconds = 5,
@@ -140,6 +140,16 @@ end
 
 function Config.World.RailFrame(angle, radius, height)
 	return Config.World.RailPlane() * CFrame.Angles(0, -angle, 0) * CFrame.new(radius, height, 0)
+end
+
+-- One arrival view shared by live Play and the Studio phone review. Look up
+-- along the ring rather than down across a mostly empty station floor.
+function Config.World.SpawnFrame()
+	return CFrame.lookAt(Vector3.new(0, 0.2, 54), Vector3.new(0, 0.2, 0))
+end
+
+function Config.World.SpawnCamera()
+	return CFrame.lookAt(Vector3.new(0, 11, 72), Vector3.new(0, 20, -2))
 end
 
 function Config.Rebirth.Cost(level)
