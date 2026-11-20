@@ -25,6 +25,7 @@ function vm.__index(a,k)
 end
 Vector3.zero,Vector3.one=Vector3.new(),Vector3.new(1,1,1)
 Vector3.xAxis,Vector3.yAxis,Vector3.zAxis=Vector3.new(1,0,0),Vector3.new(0,1,0),Vector3.new(0,0,1)
+local Vector2,ColorSequence,NumberSequence,NumberRange = {new=Vector3.new},{new=function() end},{new=function() end},{new=function() end}
 local CFrame={}; local cm={}
 local function frame(p,r,u,b) return setmetatable({Position=p,R=r,U=u,B=b},cm) end
 function CFrame.new(x,y,z)
@@ -60,6 +61,7 @@ function Instance.new(class,parent)
  function item:GetChildren() return self.Children end
  function item:SetAttribute(k,v) self.Attributes[k]=v end
  function item:GetAttribute(k) return self.Attributes[k] end
+ function item:GetAttributeChangedSignal() return {Connect=function() end} end
  setmetatable(item,{__newindex=function(t,k,v) rawset(t,k,v);if k=='Parent' and v then table.insert(v.Children,t) end end})
  item.Parent=parent
  return item
@@ -79,7 +81,7 @@ ${section(builder, 'function WorldBuilder.Ring(', 'function WorldBuilder.Billboa
 local function signFace() return {} end
 ${section(builder, 'local function buildTitle(', 'function WorldBuilder.CreatePedestal(')}
 ${section(builder, 'local function buildCargoRing(', 'local function buildDomes(')}
-local world={Geometry=folder('Station')}
+local world={Root=folder('ROT_ORBIT'),Geometry=folder('Station')}
 buildCargoRing(world)
 local function named(name)
  local found={};for _,p in ipairs(parts) do if p.Name==name then table.insert(found,p) end end;return found

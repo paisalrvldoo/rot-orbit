@@ -32,6 +32,8 @@ Work ONLY in this order; no further pedestal/UI/new-system polish:
   Live cargo on the far arc now faces the viewer from arrival. The old
   48-stud turn limit left the far-side brainrots showing their backs.
   Each glass pod now shines a short rarity-coloured spotlight onto the track.
+  Both portal rims leave short trails of sparks from their rotating arcs.
+  The sparks clear when a fixed screenshot preset freezes the world.
 - [ ] **0: v8 defects**, only after 0a is visibly approved: unclipped title,
   visible deep-space background, graphite floor, single phone raid warning,
   correct empty-and-not-carrying bottom hint. See refs.md for full requirements.

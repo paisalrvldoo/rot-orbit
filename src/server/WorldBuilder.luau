@@ -516,6 +516,7 @@ local function buildCargoRing(world)
 		rotor:SetAttribute("GateColor", color)
 		rotor:SetAttribute("GatePhase", index * 0.9)
 		rotor.Parent = gate
+		local motes = {}
 		for arc = 0, 2 do
 			for segment = 0, 2 do
 				local spin = (arc * 2 * math.pi / 3) + segment * 0.13
@@ -523,8 +524,30 @@ local function buildCargoRing(world)
 					frame * CFrame.Angles(0, -spin, 0) * CFrame.new(11.46, 0, 0),
 					color, Enum.Material.Neon, rotor, nil, false)
 				shard.CanQuery = false
+				if segment == 0 then
+					local sparks = Instance.new("ParticleEmitter", shard)
+					sparks.Name = "WarpMotes"
+					sparks.Texture = "rbxasset://textures/particles/sparkles_main.dds"
+					sparks.Color = ColorSequence.new(color, palette.White)
+					sparks.LightEmission = 0.8
+					sparks.Rate = 3
+					sparks.Lifetime = NumberRange.new(0.35, 0.65)
+					sparks.Speed = NumberRange.new(0.5, 1.7)
+					sparks.EmissionDirection = Enum.NormalId.Right
+					sparks.SpreadAngle = Vector2.new(18, 18)
+					sparks.Size = NumberSequence.new(0.48, 0)
+					sparks.Transparency = NumberSequence.new(0.25, 1)
+					table.insert(motes, sparks)
+				end
 			end
 		end
+		world.Root:GetAttributeChangedSignal("ScreenshotFrozen"):Connect(function()
+			local frozen = world.Root:GetAttribute("ScreenshotFrozen") == true
+			for _, sparks in ipairs(motes) do
+				sparks.Enabled = not frozen
+				if frozen then sparks:Clear() end
+			end
+		end)
 		CollectionService:AddTag(rotor, "OrbitWarpRotor")
 		if index == 1 then world.CargoEntry = rotor end
 		for _, side in ipairs({ -1, 1 }) do
