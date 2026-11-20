@@ -22,6 +22,8 @@ Work ONLY in this order; no further pedestal/UI/new-system polish:
   seconds before returning control to the follow camera. Moving ends the
   view early and a screenshot preset can take over immediately. The phone
   checklist can capture this view directly. Studio confirmation is pending.
+  Both rarity rails now wrap around the chassis edges. From the hub below,
+  the exposed neon and light chasers have a clear line of sight past the track.
 - [ ] **0: v8 defects**, only after 0a is visibly approved: unclipped title,
   visible deep-space background, graphite floor, single phone raid warning,
   correct empty-and-not-carrying bottom hint. See refs.md for full requirements.

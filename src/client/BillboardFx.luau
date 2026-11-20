@@ -185,7 +185,8 @@ function BillboardFx.Start()
 					local side = tracer:GetAttribute("RailSide") or 1
 					local speed = side == 1 and 0.64 or -0.46
 					local angle = phase + (frozen and 0 or time * speed)
-					tracer.CFrame = Config.World.RailFrame(angle, Config.World.RailRadius + side * 4.55, 0.24)
+					tracer.CFrame = Config.World.RailFrame(angle, Config.World.RailRadius + side * Config.World.RailEdgeOffset,
+						Config.World.RailChaserHeight)
 				end
 			end
 			for core in pairs(cores) do

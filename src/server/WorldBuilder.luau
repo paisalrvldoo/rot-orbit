@@ -433,8 +433,9 @@ local function buildCargoRing(world)
 		end
 	end
 	for _, side in ipairs({ -1, 1 }) do
-		local rail = WorldBuilder.Ring("GuideRail", radius + side * 4.55, 1.02, 0.32,
-			plane, side == 1 and palette.Mint or palette.Teal, Enum.Material.Neon,
+		-- Wrap the glowing edges around the chassis so they read from the hub below.
+		local rail = WorldBuilder.Ring("GuideRail", radius + side * Config.World.RailEdgeOffset, 1.02, 1.28,
+			plane * CFrame.new(0, -0.42, 0), side == 1 and palette.Mint or palette.Teal, Enum.Material.Neon,
 			track, Config.World.RailSegments, false)
 		for index, segment in ipairs(rail:GetChildren()) do
 			local sector = (index - 1) * #Rarity.Order / Config.World.RailSegments
@@ -483,9 +484,10 @@ local function buildCargoRing(world)
 		local count = side == 1 and 7 or 4
 		for index = 1, count do
 			local phase = (index - 1) * math.pi * 2 / count + (side == 1 and 0 or 0.4)
-			local frame = Config.World.RailFrame(phase, radius + side * 4.55, 0.24)
+			local frame = Config.World.RailFrame(phase, radius + side * Config.World.RailEdgeOffset,
+				Config.World.RailChaserHeight)
 			local color = side == 1 and Rarity.ByName[Rarity.Order[index]].Color or palette.Teal
-			local tracer = WorldBuilder.Part("RailChaser", Vector3.new(0.76, 0.22, side == 1 and 5.4 or 3.8),
+			local tracer = WorldBuilder.Part("RailChaser", Vector3.new(0.76, 0.26, side == 1 and 5.4 or 3.8),
 				frame, color:Lerp(palette.White, 0.55), Enum.Material.Neon, track, nil, false)
 			tracer.CanQuery = false
 			tracer:SetAttribute("OrbitPhase", phase)
