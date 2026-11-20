@@ -46,6 +46,15 @@ the pod buy prompt on both sides of the tilted track, and the gap between the
 world title and spinning core. Pan quickly to confirm cargo cards clear the
 cash and event HUD. Keep the gremlin warning short enough to fit at 1024×460.
 
+Occupied dock sockets now use a thick inner rarity ring and a thin broken outer
+ring. Near the camera, the outer facets rotate/pulse gently; Epic+ has a faint
+low aura and Legendary+ has sparse sparkles. SECRET cycles colour. Walk more
+than 90 studs away and back to check that motion/particles stop and resume.
+Retire or steal a character and confirm its empty socket has no lingering
+accents. Cover uses the same layered sockets in a fixed pose, without random
+socket particles; repeat Cover and check identical ring positions/colours.
+Check the low auras do not obscure faces, dock cards or the foreground rail.
+
 Run Cover → Index → Raid → Upgrades → Cover in the same Play session. Each
 should replace the prior preview: six cargo pods (not twelve), one BUY card
 only on Cover, no old showcase platform or meteors on the other presets, and

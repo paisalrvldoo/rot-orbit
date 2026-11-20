@@ -3,6 +3,7 @@ local RunService = game:GetService("RunService")
 local HttpService = game:GetService("HttpService")
 local shared = game:GetService("ReplicatedStorage")
 local Config = require(shared:WaitForChild("Config"))
+local Rarity = require(shared:WaitForChild("BrainrotTraits")).Rarity
 local ScreenshotMode = require(shared:WaitForChild("ScreenshotMode"))
 local WorldBuilder = require(script.Parent:WaitForChild("WorldBuilder"))
 local ScreenshotService = {}
@@ -98,12 +99,15 @@ local function stageCover(state, root, meteors)
 		local column = index - 3
 		local pedestal = state.Bay.Slots[index]
 		local center = platform * CFrame.new(column * 10.2, 0.8, -math.abs(column) * 0.85)
-		local color = index == 3 and palette.Sun or palette.Mint
+		local rarity = Rarity.ByName[pedestal.Occupant.Model:GetAttribute("Rarity")]
+		local color = rarity.Color
 		WorldBuilder.Part("ShowcasePedestal", Vector3.new(1, 6.2, 6.2),
 			center * CFrame.Angles(0, 0, math.pi / 2), palette.Ink, Enum.Material.SmoothPlastic,
 			effects, Enum.PartType.Cylinder)
-		WorldBuilder.Ring("ShowcaseSocket", 2.8, 0.2, 0.13, center * CFrame.new(0, 0.56, 0),
+		local socket = WorldBuilder.Ring("ShowcaseSocket", 2.8, 0.32, 0.13, center * CFrame.new(0, 0.56, 0),
 			color, Enum.Material.Neon, effects, 18, false)
+		socket:SetAttribute("SocketFrame", center * CFrame.new(0, 0.56, 0))
+		WorldBuilder.ColorSocket(socket, color, rarity.Rank)
 		local card = pose(pedestal, center * CFrame.new(0, 0.55, 0) * CFrame.Angles(0, math.pi, 0))
 		card.Size = UDim2.fromOffset(164, 90)
 		card.MaxDistance = 80

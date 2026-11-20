@@ -15,8 +15,10 @@ progression. Core systems already pass; finish the pending pedestal accents.
   empty sockets stay quiet and screenshot poses must be repeatable.
   Eight noncolliding outer facets per occupied slot; no added local lights.
   Full verification passes. Actual Studio appearance remains unverified.
-- [ ] Apply the same socket treatment to the cover showcase and document the
-  Studio review points. No renderer is available here.
+- [x] Apply the same socket treatment to the cover showcase and document the
+  Studio review points. Showcase sockets use each hero's actual rarity instead
+  of generic mint/gold, with fixed rings/SECRET colour and no socket particles.
+  Full source/build/dossier checks pass; no renderer is available here.
 - [ ] Owner: Studio phone/cover playtest, four genuine captures and republish.
 
 ## 20 November readability and socket continuation
