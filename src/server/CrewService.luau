@@ -218,7 +218,10 @@ end
 
 function CrewService:BuildBoard()
 	local palette = Config.Palette
-	local frame = CFrame.lookAt(Vector3.new(35, 7.5, 43), Vector3.new(0, 7.5, 0))
+	-- Use the outer gap between the bays at 10 and 50 degrees.
+	local angle = math.rad(30)
+	local position = Vector3.new(121 * math.cos(angle), 7.5, 121 * math.sin(angle))
+	local frame = CFrame.lookAt(position, Vector3.new(0, position.Y, 0))
 	local board = WorldBuilder.Part("CrewRankingBoard", Vector3.new(26, 10.6, 0.8),
 		frame, palette.Ink, Enum.Material.Metal, self.World.Geometry)
 	-- A freestanding trophy gallery: graphite stone, chrome and narrow gold

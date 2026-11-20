@@ -1,5 +1,15 @@
 # ACTIVE OWNER OVERRIDE — 20 November: TOP 3
 
+## v12 phone feedback continuation, 20 November
+
+- [x] Started from clean `9cefd7f`. The full verifier passed before edits.
+- [x] Moved the crew ranking wall, crown, plinth and podiums into the outer
+  gap between the 10° and 50° bays. The board faces the hub from radius 121.
+  The verifier checks the actual gallery parts for walkway clearance.
+- [ ] Spread upper-sky stars and nebulae around the whole station. Lighten
+  the metal deck while preserving black space.
+- [ ] Continue item 6 model polish, then prepare the four Studio shots.
+
 ## Current continuation — 20 November, 14:35 WIB (25-minute limit)
 
 - [x] Step 1: clean status/diff; full verifier passed; immediate recovery

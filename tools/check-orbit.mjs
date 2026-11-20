@@ -8,6 +8,7 @@ const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const read = path => readFileSync(join(root, path), 'utf8');
 const section = (source, start, end) => source.slice(source.indexOf(start), end ? source.indexOf(end) : undefined);
 const builder = read('src/server/WorldBuilder.luau');
+const crewService = read('src/server/CrewService.luau');
 const harness = `
 local Vector3 = {}
 local vm = {}
@@ -124,6 +125,31 @@ local function signFace() return {} end
 ${section(builder, 'local function buildTitle(', 'function WorldBuilder.CreatePedestal(')}
 ${section(builder, 'local function buildCargoRing(', 'local function buildDomes(')}
 local world={Root=folder('ROT_ORBIT'),Geometry=folder('Station')}
+do
+ local CrewService={Refresh=function() end}
+ local UDim2={fromOffset=function() return {} end}
+ ${section(crewService, 'function CrewService:BuildBoard()', 'function CrewService:Refresh()')}
+ -- An empty crew list isolates the gallery from the hub join pads.
+ setmetatable({World=world,Crews={}}, {__index=CrewService}):BuildBoard()
+ local board=world.Geometry:FindFirstChild('CrewRankingBoard')
+ assert(board,'expected a crew ranking board')
+ local function checkGallery(part)
+  if part:IsA('BasePart') then
+   local p=part.Position
+   local radial=Vector3.new(p.X,0,p.Z).Unit
+   local half=part.Size/2
+   local cf=part.CFrame
+   local function extent(axis)
+    return math.abs(dot(axis,cf.R))*half.X+math.abs(dot(axis,cf.U))*half.Y+math.abs(dot(axis,cf.B))*half.Z
+   end
+   assert(dot(p,radial)-extent(radial)>=110 or p.Y-extent(Vector3.yAxis)>=22,
+    part.Name..' blocks the walkway below Y=22 and inside radius 110')
+  end
+  for _,child in ipairs(part:GetChildren()) do checkGallery(child) end
+ end
+ checkGallery(board)
+ print('Crew gallery checks passed: board, plinth and podiums clear the walkway.')
+end
 buildCargoRing(world)
 local function named(name)
  local found={};for _,p in ipairs(parts) do if p.Name==name then table.insert(found,p) end end;return found
