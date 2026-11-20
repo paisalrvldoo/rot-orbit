@@ -37,6 +37,20 @@ for (const script of scripts) {
     throw new Error(`Restricted runtime service assignment in ${script}; set it in default.project.json`);
   }
 }
+// Runtime WorldBuilder atmosphere is exercised with Roblox's positive default density.
+const project = JSON.parse(readFileSync(join(root, 'default.project.json'), 'utf8'));
+function checkPlaceAtmospheres(node) {
+  if (node?.$className === 'Atmosphere' && !(node.$properties?.Density <= 0)) {
+    throw new Error('Positive Atmosphere density in default.project.json');
+  }
+  if (node && typeof node === 'object') Object.values(node).forEach(checkPlaceAtmospheres);
+}
+checkPlaceAtmospheres(project.tree.Lighting);
+for (const script of scripts.filter(path => path !== join('src', 'server', 'WorldBuilder.luau'))) {
+  if (/Instance\.new\s*\(\s*["']Atmosphere["']/.test(readFileSync(join(root, script), 'utf8'))) {
+    throw new Error(`Atmosphere outside the verified lighting builder in ${script}`);
+  }
+}
 for (const check of ['check-collections.mjs', 'check-combat.mjs', 'check-controls.mjs', 'check-orbit.mjs']) {
   process.stdout.write(run(process.execPath, [join('tools', check)]));
 }

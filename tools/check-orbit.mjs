@@ -26,6 +26,15 @@ end
 Vector3.zero,Vector3.one=Vector3.new(),Vector3.new(1,1,1)
 Vector3.xAxis,Vector3.yAxis,Vector3.zAxis=Vector3.new(1,0,0),Vector3.new(0,1,0),Vector3.new(0,0,1)
 local Vector2,ColorSequence,NumberSequence,NumberRange = {new=Vector3.new},{new=function() end},{new=function() end},{new=function() end}
+local NumberSequenceKeypoint={new=function() end}
+local Random={new=function()
+ local state=73126
+ return {NextNumber=function(_,min,max)
+  state=(state*16807)%2147483647
+  min,max=min or 0,max or 1
+  return min+(max-min)*state/2147483647
+ end}
+end}
 local CFrame={}; local cm={}
 local function frame(p,r,u,b) return setmetatable({Position=p,R=r,U=u,B=b},cm) end
 function CFrame.new(x,y,z)
@@ -52,12 +61,13 @@ end
 CFrame.identity=CFrame.new()
 local color={};color.__index=color
 function color:Lerp(b,t) return setmetatable({},color) end
-local Color3={fromRGB=function() return setmetatable({},color) end}
+local Color3={fromRGB=function(r,g,b) return setmetatable({r,g,b},color) end}
 local function enum() return setmetatable({},{__index=function(t,k) local v=enum();rawset(t,k,v);return v end}) end
 local Enum=enum()
 local Instance={}
 function Instance.new(class,parent)
  local item={ClassName=class,Children={},Attributes={}}
+ if class=='Atmosphere' then item.Density=0.395 end
  function item:GetChildren() return self.Children end
  function item:IsA(class) return self.ClassName==class or class=='BasePart' and self.ClassName=='Part' end
  function item:FindFirstChild(name) for _,v in ipairs(self.Children) do if v.Name==name then return v end end end
@@ -77,9 +87,37 @@ local function folder(name,parent) local f=Instance.new('Folder',parent);f.Name=
 function WorldBuilder.Part(name,size,cf,color,material,parent,shape,solid)
  local p=Instance.new('Part',parent)
  p.Name,p.Size,p.CFrame,p.Position,p.Color,p.Material,p.CanCollide=name,size,cf,cf.Position,color,material,solid~=false
+ p.Shape=shape
  table.insert(parts,p);return p
 end
 ${section(builder, 'function WorldBuilder.Ring(', 'function WorldBuilder.Billboard(')}
+local Lighting=Instance.new('Lighting')
+${section(builder, 'local function lighting()', 'local function signFace(')}
+lighting()
+for _,effect in ipairs(Lighting:GetChildren()) do
+ assert(not effect:IsA('Atmosphere') or effect.Density<=0,'positive Lighting atmosphere washes out the black sky')
+end
+for _,ambient in ipairs({Lighting.Ambient,Lighting.OutdoorAmbient}) do
+ for _,channel in ipairs(ambient) do assert(channel>=40 and channel<=60,'space ambient must stay within RGB 40–60') end
+end
+local sky=Lighting:FindFirstChild('OrbitSky')
+assert(sky and sky.StarCount>=3000 and not sky.CelestialBodiesShown,'keep the rich night sky')
+local space=folder('SkyCheck')
+skyAndPlanet(space)
+local planets=space:FindFirstChild('Starfield'):FindFirstChild('BackdropPlanets')
+assert(planets and #planets:GetChildren()>=4,'expected authored backdrop bodies')
+for _,body in ipairs(planets:GetChildren()) do
+ local p=body.Position
+ local horizontal=math.sqrt(p.X^2+p.Z^2)
+ local radius=math.max(body.Size.X,body.Size.Y,body.Size.Z)/2
+ assert(p.Y+radius<=0 or horizontal>=1000,body.Name..' rises above deck within 1000 studs of the hub')
+end
+local azure=planets:FindFirstChild('AzureHeroPlanet')
+local rim=planets:FindFirstChild('AzureRim')
+assert(azure.Shape==Enum.PartType.Ball and azure.Position.Y+azure.Size.Y/2<0,'Azure belongs below the horizon')
+assert(rim.Material==Enum.Material.SmoothPlastic and rim.Transparency>=0.9,'Azure rim must stay faint and non-emissive')
+table.clear(parts)
+print('Sky checks passed: no positive atmosphere, dark ambient, built-in stars and distant backdrop planets.')
 local function signFace() return {} end
 ${section(builder, 'local function buildTitle(', 'function WorldBuilder.CreatePedestal(')}
 ${section(builder, 'local function buildCargoRing(', 'local function buildDomes(')}

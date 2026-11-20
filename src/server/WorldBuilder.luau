@@ -73,21 +73,12 @@ local function lighting()
 	Lighting.Brightness = 3.2
 	Lighting.ClockTime = 0
 	Lighting.GeographicLatitude = 18
-	Lighting.Ambient = Color3.fromRGB(104, 133, 155)
-	Lighting.OutdoorAmbient = Color3.fromRGB(147, 173, 192)
-	Lighting.ExposureCompensation = 0.18
+	Lighting.Ambient = Color3.fromRGB(45, 48, 55)
+	Lighting.OutdoorAmbient = Color3.fromRGB(48, 52, 59)
+	Lighting.ExposureCompensation = 0
 	Lighting.GlobalShadows = true
 	Lighting.EnvironmentDiffuseScale = 0.65
 	Lighting.EnvironmentSpecularScale = 0.7
-	local atmosphere = Instance.new("Atmosphere")
-	atmosphere.Name = "OrbitalDepth"
-	atmosphere.Density = 0.045
-	atmosphere.Offset = 0.15
-	atmosphere.Color = Color3.fromRGB(199, 222, 237)
-	atmosphere.Decay = Color3.fromRGB(255, 212, 167)
-	atmosphere.Haze = 0.08
-	atmosphere.Glare = 0
-	atmosphere.Parent = Lighting
 	local sky = Instance.new("Sky")
 	sky.Name = "OrbitSky"
 	sky.CelestialBodiesShown = false
@@ -99,12 +90,6 @@ local function lighting()
 	bloom.Size = 24
 	bloom.Threshold = 1.08
 	bloom.Parent = Lighting
-	local grade = Instance.new("ColorCorrectionEffect")
-	grade.Name = "SunnyOrbit"
-	grade.Brightness = 0.02
-	grade.Saturation = 0.18
-	grade.TintColor = Color3.fromRGB(255, 249, 237)
-	grade.Parent = Lighting
 end
 
 local function skyAndPlanet(parent)
@@ -170,9 +155,10 @@ local function skyAndPlanet(parent)
 		cloud.Parent = source
 	end
 
+	local planets = folder("BackdropPlanets", backdrop)
 	local function azureSphere(name, radius, color, material, transparency)
 		local sphere = WorldBuilder.Part(name, Vector3.one * (radius * 2), CFrame.new(Config.World.PlanetPosition),
-			color, material, backdrop, Enum.PartType.Ball, false)
+			color, material, planets, Enum.PartType.Ball, false)
 		sphere.CanQuery, sphere.Transparency = false, transparency
 		-- The built-in sphere mesh keeps the limb round without an uploaded asset.
 		local mesh = Instance.new("SpecialMesh")
@@ -180,15 +166,14 @@ local function skyAndPlanet(parent)
 		mesh.Parent = sphere
 	end
 	local planetRadius = Config.World.PlanetRadius
-	azureSphere("AzureHeroPlanet", planetRadius, Color3.fromRGB(51, 105, 182), Enum.Material.SmoothPlastic, 0)
-	azureSphere("AzureInnerAtmosphere", planetRadius + 3, cyan, Enum.Material.Neon, 0.9)
-	azureSphere("AzureOuterAtmosphere", planetRadius + 7, lilac:Lerp(cyan, 0.85), Enum.Material.Neon, 0.96)
+	azureSphere("AzureHeroPlanet", planetRadius, Color3.fromRGB(20, 33, 62), Enum.Material.SmoothPlastic, 0)
+	azureSphere("AzureRim", planetRadius + 3, Color3.fromRGB(40, 56, 88), Enum.Material.SmoothPlastic, 0.94)
 
 	-- A Saturn-like ringed planet and a small red planet make the skyline
 	-- unmistakably space themed from the phone arrival view.
-	local saturn = Vector3.new(275, 142, -560)
+	local saturn = Vector3.new(578, 298, -1176)
 	local saturnBody = WorldBuilder.Part("RingedSaturn", Vector3.one * 82, CFrame.new(saturn),
-		Color3.fromRGB(192, 151, 103), Enum.Material.SmoothPlastic, backdrop, Enum.PartType.Ball, false)
+		Color3.fromRGB(192, 151, 103), Enum.Material.SmoothPlastic, planets, Enum.PartType.Ball, false)
 	saturnBody.CanQuery = false
 	-- The opaque planet hides each translucent disc's centre. Overlapping
 	-- circular discs give the rings continuous edges and stepped colour bands.
@@ -203,29 +188,29 @@ local function skyAndPlanet(parent)
 		local diameter = band[1] * 2
 		local ring = WorldBuilder.Part("SaturnBand", Vector3.new(0.2, diameter, diameter),
 			ringPlane * CFrame.new((index - 2.5) * 0.32, 0, 0), band[2],
-			Enum.Material.Neon, backdrop, Enum.PartType.Cylinder, false)
+			Enum.Material.Neon, planets, Enum.PartType.Cylinder, false)
 		ring.Transparency, ring.CanQuery = band[3], false
 	end
-	local redPlanet = WorldBuilder.Part("RedPlanet", Vector3.one * 52, CFrame.new(-380, 116, -620),
-		Color3.fromRGB(173, 63, 72), Enum.Material.SmoothPlastic, backdrop, Enum.PartType.Ball, false)
+	local redPlanet = WorldBuilder.Part("RedPlanet", Vector3.one * 52, CFrame.new(-652, 210, -1116),
+		Color3.fromRGB(173, 63, 72), Enum.Material.SmoothPlastic, planets, Enum.PartType.Ball, false)
 	redPlanet.CanQuery = false
 	local redRim = WorldBuilder.Part("RedPlanetGlow", Vector3.one * 54, redPlanet.CFrame,
-		Color3.fromRGB(255, 119, 101), Enum.Material.Neon, backdrop, Enum.PartType.Ball, false)
+		Color3.fromRGB(255, 119, 101), Enum.Material.Neon, planets, Enum.PartType.Ball, false)
 	redRim.Transparency, redRim.CanQuery = 0.92, false
 
-	local moonPosition = Vector3.new(157, 10, -408)
-	local moon = WorldBuilder.Part("PearlMoon", Vector3.one * 46, CFrame.new(moonPosition),
-		Color3.fromRGB(173, 177, 204), Enum.Material.SmoothPlastic, backdrop, Enum.PartType.Ball, false)
+	local moonPosition = Vector3.new(394, 120, -1130)
+	local moon = WorldBuilder.Part("PearlMoon", Vector3.one * 68, CFrame.new(moonPosition),
+		Color3.fromRGB(173, 177, 204), Enum.Material.SmoothPlastic, planets, Enum.PartType.Ball, false)
 	moon.CanQuery = false
 	for _, crater in ipairs({
 		Vector3.new(-9, 7, 9), Vector3.new(7, 4, 16), Vector3.new(-4, -8, 17),
 		Vector3.new(5, 13, 6), Vector3.new(-13, -3, 8),
 	}) do
 		local normal = crater.Unit
-		local face = CFrame.lookAt(moonPosition + normal * 22.6, moonPosition) * CFrame.Angles(0, math.pi / 2, 0)
+		local face = CFrame.lookAt(moonPosition + normal * 33.6, moonPosition) * CFrame.Angles(0, math.pi / 2, 0)
 		local width = random:NextNumber(5.4, 10)
 		local mark = WorldBuilder.Part("MoonCrater", Vector3.new(1.55, width, width), face,
-			Color3.fromRGB(127, 136, 167), Enum.Material.SmoothPlastic, backdrop, Enum.PartType.Ball, false)
+			Color3.fromRGB(127, 136, 167), Enum.Material.SmoothPlastic, planets, Enum.PartType.Ball, false)
 		mark.CanQuery = false
 	end
 end

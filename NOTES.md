@@ -1,5 +1,30 @@
 # ACTIVE OWNER OVERRIDE — 20 November: TOP 3
 
+## v11 phone feedback continuation
+
+- [x] Recovered the interrupted work. The inherited verifier failed on phone
+  rail width. Set the rail at Y=9 with zero tilt, centered the three overhead
+  halos at (0, 80, 0) with radii 60/72/84 and tilts 0/+10/−10°, and centered
+  the hologram. The revised arrival camera keeps the title and the cargo
+  approach clear. The source projection puts the rail at x198–972 on a
+  1170×540 phone frame. Committed as `eca28ff`.
+- [x] Removed atmospheric wash and warm tint. Ambient and outdoor light are
+  RGB 45/48/55 and 48/52/59. The Azure planet sits at (−600, −900, −1700)
+  with radius 700 and a faint SmoothPlastic rim. Other sky bodies sit
+  beyond 1,000 studs. Events colour the shield domes locally. The verifier
+  checks the flat centered rail, halo clearance, atmosphere and planet bounds.
+- [ ] Item 6. Sculpt the toast and green characters, improve expressions,
+  and step up the silhouettes and effects across rarity tiers.
+- [ ] Check cover framing and update the capture guide for the lowered ring.
+- [ ] Owner phone playtest and four genuine Studio captures.
+
+Core systems pass. The judging plan from the owner research remains a staged
+late-game cover, 43 original brainrots within the 42–45 target, four genuine
+captures, roughly 20–24 purposeful scripts (currently 25), a large world title,
+readable hazards and shields, six mutations, live buttons with a quest card
+and action feed, readable rarity and value cards, and earned progression.
+The v11 measurements govern the orbit and sky.
+
 ## v10 phone feedback continuation
 
 - [x] Recovered and verified prior changes, then committed `a9d0854`. Read
@@ -8,7 +33,7 @@
   a separate dense Milky Way band and soft dust emitters. Smooth blue limb
   with two atmosphere shells, wide layered Saturn discs, cratered moon and
   red planet. Full verification includes the rebuilt place and dossier.
-- [ ] Urgent 5: lower the cargo rail, center the hub globe and raise the halos.
+- [x] Urgent 5: superseded by the measured v11 orbit fix above.
 - [ ] Urgent 6: sculpt the toast and green characters and step up rarity gear.
 - [ ] Reframe staged Cover around the new orbit geometry and capture guidance.
 - [ ] Owner live phone playtest and four Studio captures.

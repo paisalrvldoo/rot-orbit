@@ -1,7 +1,6 @@
 -- Telegraph every impact; a carrying astronaut can always run for a mint dome.
 local TweenService = game:GetService("TweenService")
 local Debris = game:GetService("Debris")
-local Lighting = game:GetService("Lighting")
 local Config = require(game:GetService("ReplicatedStorage"):WaitForChild("Config"))
 local WorldBuilder = require(script.Parent:WaitForChild("WorldBuilder"))
 local MeteorSolarEvents = {}
@@ -61,12 +60,10 @@ function MeteorSolarEvents:EventLook()
 end
 
 function MeteorSolarEvents:RefreshEventLook()
-	local look = self:EventLook()
-	local grade = Lighting:FindFirstChild("SunnyOrbit")
-	if grade then grade.TintColor = look.Tint end
-	local depth = Lighting:FindFirstChild("OrbitalDepth")
-	if depth then
-		depth.Color, depth.Decay = look.Sky, look.Decay
+	-- Put event colour on the shields so the sky stays dark throughout a round.
+	local color = self:EventLook()
+	for _, dome in ipairs(self.World.Domes) do
+		dome.Part.Color = color
 	end
 end
 
