@@ -289,7 +289,7 @@ function BillboardFx.Start()
 				local age = time - (model:GetAttribute("DockedAt") or -math.huge)
 				local secret = (model:GetAttribute("RarityRank") or 1) == 7
 				local config = Config.SecretDock
-				local tilt = 0
+				local tilt = math.sin(time * 2.4 + seed * 1.7) * (cargo and 0.045 or 0.025)
 				if secret and state == "Pedestal" and age >= 0 and age < config.Duration then
 					local progress = math.clamp((age - config.Anticipation) / config.Settle, 0, 1)
 					local ease = TweenService:GetValue(progress, Enum.EasingStyle.Back, Enum.EasingDirection.Out)

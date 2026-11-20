@@ -26,7 +26,13 @@ the judging plan immediately below. Core systems pass; no new side systems.
   Three original brainrot astronaut trophies replace bare blocks. Existing
   rotating crown, live crew strips, empty-rank suppression and update shine
   retained. Full verifier passes; actual phone appearance remains unverified.
-- [ ] Brainrot silhouettes/expressions, then Item 5 cover presets as time allows.
+- [x] Brainrot upgrade: oversized eyes, winks, surprised mouths, goofy teeth
+  and eyebrows; rank-specific lunchbox backpacks, espresso jetpacks, astro-fork
+  staffs, captain scarves, metallic shoulders and floating Cosmic/SECRET shards.
+  Added a gentle live side-to-side idle sway, frozen by screenshot mode.
+  Existing unique food geometry, mutation auras and crown height retained.
+  All source/build checks pass; phone appearance remains an owner check.
+- [ ] Item 5: cover presets for the raised ring and new celestial landmarks.
 - [ ] Owner live phone playtest and genuine screenshots; never block source work.
 
 Recovery checkpoint `0edd687` records the clean, verified inherited state.

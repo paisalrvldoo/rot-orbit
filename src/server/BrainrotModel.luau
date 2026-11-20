@@ -320,19 +320,70 @@ function BrainrotModel.Create(record, frame, parent, forSale)
 	elseif kind == "Bean" or kind == "Olive" then
 		make("BeanBelt", Vector3.new(2.05, 0.26, 1.6), Vector3.new(0, 1.2, 0), accent)
 	end
-	-- Big eyes and an expressive little smile on the front of every astronaut.
-	local faceZ = -bodySize.Z / 2 - 0.06
-	for _, side in ipairs({ -1, 1 }) do
-		make("EyeWhite", Vector3.new(0.44, 0.55, 0.15), Vector3.new(side * 0.46, 2.22, faceZ),
-			Config.Palette.White, Enum.PartType.Ball)
-		make("Pupil", Vector3.new(0.23, 0.32, 0.11), Vector3.new(side * 0.46 + 0.04, 2.19, faceZ - 0.09),
-			Config.Palette.Ink, Enum.PartType.Ball)
-		make("EyeGlint", Vector3.new(0.07, 0.09, 0.05), Vector3.new(side * 0.46 + 0.08, 2.28, faceZ - 0.15),
-			Config.Palette.White, Enum.PartType.Ball)
+	-- Rank silhouettes read before a label: food cadets, jetpack pilots,
+	-- utensil navigators, comet captains, then shard-crowned space royalty.
+	if rarity.Rank == 1 then
+		make("LunchboxBackpack", Vector3.new(1.5, 1.3, 0.65), Vector3.new(0, 1.8, 0.95), accent)
+	elseif rarity.Rank == 2 or rarity.Rank == 4 then
+		for _, side in ipairs({ -1, 1 }) do
+			make("EspressoJetTank", Vector3.new(0.65, 1.85, 0.7), Vector3.new(side * 0.8, 1.75, 0.95), accent,
+				Enum.PartType.Cylinder, CFrame.Angles(0, 0, math.pi / 2))
+			local flame = make("JetFlame", Vector3.new(0.42, 0.95, 0.45), Vector3.new(side * 0.8, 0.6, 0.95),
+				glow, Enum.PartType.Ball)
+			flame.Material, flame.CastShadow = Enum.Material.Neon, false
+		end
+		if rarity.Rank == 4 then
+			make("CaptainScarf", Vector3.new(3.4, 0.45, 0.35), Vector3.new(0.35, 1.25, 0.85),
+				glow, nil, CFrame.Angles(0, -0.2, -0.18))
+		end
+	elseif rarity.Rank == 3 then
+		make("AstroForkHandle", Vector3.new(0.16, 2.7, 0.16), Vector3.new(1.7, 1.8, -0.05), Config.Palette.Sun)
+		make("AstroForkHead", Vector3.new(0.85, 0.22, 0.25), Vector3.new(1.7, 3.05, -0.05), Config.Palette.Sun)
+		for tooth = -1, 1 do
+			make("AstroForkProng", Vector3.new(0.15, 0.65, 0.2), Vector3.new(1.7 + tooth * 0.34, 3.4, -0.05),
+				Config.Palette.Sun)
+		end
+	elseif rarity.Rank >= 5 then
+		for _, side in ipairs({ -1, 1 }) do
+			local pauldron = make("OrbitalShoulder", Vector3.new(1.05, 0.6, 0.9),
+				Vector3.new(side * 1.3, 2.5, 0), rarity.Rank == 7 and Config.Palette.Sun or accent,
+				nil, CFrame.Angles(0, 0, side * 0.24))
+			pauldron.Material = Enum.Material.Metal
+			if rarity.Rank >= 6 then
+				local shard = make("FloatingCometShard", Vector3.new(0.6, 1.25, 0.6),
+					Vector3.new(side * 2.05, 2.7, 0.4), glow, nil,
+					CFrame.Angles(0, side * 0.45, -side * 0.45), "WedgePart")
+				shard.Material, shard.CastShadow = Enum.Material.Neon, false
+			end
+		end
 	end
-	make("Smile", Vector3.new(0.48, 0.13, 0.12), Vector3.new(0, 1.65, faceZ - 0.03), Config.Palette.Ink)
+	-- Oversized expressive faces remain different even when mutations tint them.
+	local faceZ = -bodySize.Z / 2 - 0.06
+	local expression = entry.Id % 5
 	for _, side in ipairs({ -1, 1 }) do
-		make("SmileCorner", Vector3.new(0.1, 0.15, 0.1), Vector3.new(side * 0.23, 1.73, faceZ - 0.05), Config.Palette.Ink)
+		make("EyeWhite", Vector3.new(0.6, expression == 2 and side == -1 and 0.2 or 0.7, 0.18),
+			Vector3.new(side * 0.48, 2.22, faceZ - 0.03),
+			Config.Palette.White, Enum.PartType.Ball)
+		make("Pupil", Vector3.new(0.29, expression == 2 and side == -1 and 0.1 or 0.4, 0.11),
+			Vector3.new(side * 0.48 + 0.04, 2.19, faceZ - 0.15),
+			Config.Palette.Ink, Enum.PartType.Ball)
+		make("EyeGlint", Vector3.new(0.1, 0.12, 0.05), Vector3.new(side * 0.48 + 0.08, 2.28, faceZ - 0.22),
+			Config.Palette.White, Enum.PartType.Ball)
+		make("MemeEyebrow", Vector3.new(0.64, 0.13, 0.13), Vector3.new(side * 0.48, 2.76, faceZ - 0.05),
+			accent, nil, CFrame.Angles(0, 0, side * (expression == 3 and -0.28 or 0.16)))
+	end
+	if expression == 0 then
+		make("AstonishedMouth", Vector3.new(0.48, 0.55, 0.14), Vector3.new(0, 1.51, faceZ - 0.08),
+			Config.Palette.Ink, Enum.PartType.Ball)
+	else
+		make("Smile", Vector3.new(0.74, 0.21, 0.12), Vector3.new(0, 1.55, faceZ - 0.06),
+			Config.Palette.Ink, nil, CFrame.Angles(0, 0, expression == 2 and 0.15 or 0))
+		for _, side in ipairs({ -1, 1 }) do
+			make("SmileCorner", Vector3.new(0.12, 0.22, 0.1), Vector3.new(side * 0.34, 1.67, faceZ - 0.08), Config.Palette.Ink)
+		end
+		if expression == 1 or expression == 4 then
+			make("GoofyTooth", Vector3.new(0.22, 0.22, 0.13), Vector3.new(0.08, 1.52, faceZ - 0.14), Config.Palette.White)
+		end
 	end
 	if entry.Id % 4 == 0 then
 		local helmet = make("BubbleHelmet", Vector3.new(2.85, 2.1, 2.5), Vector3.new(0, 2.4, 0),
