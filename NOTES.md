@@ -1,5 +1,24 @@
 # ACTIVE OWNER OVERRIDE — 20 November: TOP 3
 
+## Resumed continuation — 20 November, 11:53 WIB (25-minute limit)
+
+- [x] Step 1: status and diff clean; `node tools/verify.mjs` passed; immediate
+  recovery checkpoint `77554de`.
+- [x] Read the recent log, this handoff, and `/workspace/rbx/refs.md` once.
+  The ten judging priorities below remain folded into the plan. Items 0, 2, 3,
+  4 and 6, the core loop, and the staged cover already pass source checks.
+- [x] Slightly enrich the deep-space grade: more atmospheric depth, restrained
+  bloom around neon, and a small saturation lift. Full verifier passes; this
+  is source/build validation, not approval of the rendered phone image.
+- [x] Make.fun local dev gate: 5 checks pass, including the public play link
+  and matching place/universe IDs. Site-only submission checks remain external.
+
+Committed this continuation: recovery `77554de`, lighting `cc19fff`. Next:
+owner Studio phone playtest and four genuine captures using `CAPTURE.md`; do
+not fabricate images or treat source geometry as rendered approval. Keep
+improving only actionable source gaps before submission and preserve the
+current dark-metal, deep-space cargo-orbit theme.
+
 ## Current continuation — 20 November, 11:03 WIB (25-minute limit)
 
 - [x] Step 1: clean status/diff, full verifier passed, immediate checkpoint
