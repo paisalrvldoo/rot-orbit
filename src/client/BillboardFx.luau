@@ -7,6 +7,47 @@ local Config = require(game:GetService("ReplicatedStorage"):WaitForChild("Config
 local BillboardFx = {}
 local started = false
 
+local function updateSocketAccents(accents, cache, time, frozen, camera)
+	for accent in pairs(accents) do
+		local frame = accent:GetAttribute("SocketFrame")
+		local rank = accent:GetAttribute("SocketRank") or 0
+		local color = accent:GetAttribute("SocketColor")
+		if not accent.Parent or not frame or not color then continue end
+		local data = cache[accent]
+		if not data then
+			data = { Facets = {} }
+			for _, item in ipairs(accent:GetDescendants()) do
+				if item.Name == "OrbitFacet" then table.insert(data.Facets, item)
+				elseif item.Name == "SocketAura" then data.Aura = item
+				elseif item.Name == "SocketSparkles" then data.Sparks = item end
+			end
+			cache[accent] = data
+		end
+		local nearby = camera and (frame.Position - camera.CFrame.Position).Magnitude <= 90
+		local mode = frozen and "Frozen" or nearby and "Live" or "Distant"
+		local live = mode == "Live"
+		if live or data.Mode ~= mode or data.Rank ~= rank or data.Color ~= color then
+			local phase = frame.Position.X * 0.13 + frame.Position.Z * 0.17
+			local pulse = live and (0.5 + 0.5 * math.sin(time * 1.8 + phase)) or 0.6
+			local tint = rank == 7 and Color3.fromHSV((live and time * 0.045 or 0.08) % 1, 0.65, 1) or color
+			accent:PivotTo(frame * CFrame.Angles(0, live and (time % 120) * math.pi / 30 or 0, 0))
+			for _, facet in ipairs(data.Facets) do
+				facet.Color, facet.Transparency = tint, 0.4 - pulse * 0.24
+			end
+			if data.Aura then
+				data.Aura.Color = ColorSequence.new(tint)
+				data.Aura.Enabled = rank >= 3 and mode ~= "Distant"
+			end
+			if data.Sparks then
+				data.Sparks.Color, data.Sparks.Enabled = ColorSequence.new(tint), rank >= 4 and live
+				if not live then data.Sparks:Clear() end
+			end
+			data.Mode = mode
+			data.Rank, data.Color = rank, color
+		end
+	end
+end
+
 local function updateCargoCards(visuals, frozen, hud)
 	local camera = workspace.CurrentCamera
 	local character = Players.LocalPlayer.Character
@@ -111,6 +152,8 @@ function BillboardFx.Start()
 	local crowns = tagged("OrbitCrewCrown")
 	local stars = tagged("OrbitSkyStar")
 	local rotors = tagged("OrbitWarpRotor")
+	local sockets = tagged("OrbitSocketAccent")
+	local socketCache = setmetatable({}, { __mode = "k" })
 	local function restore(model)
 		if reveals[model] and model.Parent then model:ScaleTo(1) end
 		reveals[model] = nil
@@ -164,6 +207,7 @@ function BillboardFx.Start()
 		railFrozen = frozen
 		cardElapsed += dt
 		if cardElapsed >= 0.07 then
+			updateSocketAccents(sockets, socketCache, time, frozen, workspace.CurrentCamera)
 			for cell in pairs(powerCells) do
 				local phase = cell:GetAttribute("OrbitPhase")
 				if phase then

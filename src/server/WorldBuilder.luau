@@ -256,8 +256,9 @@ function WorldBuilder.CreatePedestal(bay, index)
 		Enum.Material.SmoothPlastic, bay.Model, Enum.PartType.Cylinder)
 	pad:SetAttribute("BayIndex", bay.Index)
 	pad:SetAttribute("SlotIndex", index)
-	local socket = WorldBuilder.Ring("SocketGlow_" .. index, 2.85, 0.2, 0.12,
+	local socket = WorldBuilder.Ring("SocketGlow_" .. index, 2.85, 0.32, 0.12,
 		bay.Frame * CFrame.new(x, 1.53, z), bay.Color, Enum.Material.Neon, bay.Model, 16, false)
+	socket:SetAttribute("SocketFrame", bay.Frame * CFrame.new(x, 1.53, z))
 	WorldBuilder.Part("SocketUnderglow", Vector3.new(0.16, 6.3, 6.3),
 		center * CFrame.new(0, -0.25, 0) * CFrame.Angles(0, 0, math.pi / 2),
 		bay.Color, Enum.Material.Neon, socket, Enum.PartType.Cylinder, false).Transparency = 0.38
@@ -271,10 +272,66 @@ function WorldBuilder.CreatePedestal(bay, index)
 	return pedestal
 end
 
-function WorldBuilder.ColorSocket(socket, color)
+function WorldBuilder.ColorSocket(socket, color, rank)
 	for _, segment in ipairs(socket:GetChildren()) do
-		segment.Color = color
+		if segment:IsA("BasePart") then segment.Color = color end
 	end
+	local accent = socket:FindFirstChild("SocketAccent")
+	if not rank or rank == 0 then
+		if accent then accent:Destroy() end
+		return
+	end
+	local frame = socket:GetAttribute("SocketFrame")
+	if not frame then return end
+	if not accent then
+		accent = Instance.new("Model")
+		accent.Name = "SocketAccent"
+		-- Gaps in the outer ring make its slow rotation visible without textures.
+		for index = 1, 8 do
+			local angle = (index - 1) * math.pi / 4
+			local arc = WorldBuilder.Part("OrbitFacet", Vector3.new(0.12, 0.1, 1.2),
+				frame * CFrame.Angles(0, angle, 0) * CFrame.new(3.22, 0.07, 0),
+				color, Enum.Material.Neon, accent, nil, false)
+			arc.CanQuery = false
+		end
+		local mount = WorldBuilder.Part("AuraMount", Vector3.one * 0.1, frame,
+			color, Enum.Material.SmoothPlastic, accent, nil, false)
+		mount.Transparency, mount.CanQuery = 1, false
+		local foot = Instance.new("Attachment", mount)
+		local tip = Instance.new("Attachment", mount)
+		tip.Position = Vector3.new(0, 1.8, 0)
+		local aura = Instance.new("Beam", mount)
+		aura.Name = "SocketAura"
+		aura.Attachment0, aura.Attachment1 = foot, tip
+		aura.Width0, aura.Width1 = 4.5, 0.25
+		aura.FaceCamera, aura.LightEmission = true, 0.8
+		aura.Transparency = NumberSequence.new(0.88, 1)
+		local sparks = Instance.new("ParticleEmitter", foot)
+		sparks.Name = "SocketSparkles"
+		sparks.Texture = "rbxasset://textures/particles/sparkles_main.dds"
+		sparks.Rate, sparks.LightEmission = 1.5, 0.8
+		sparks.Lifetime, sparks.Speed = NumberRange.new(0.6, 1), NumberRange.new(0.5, 1.2)
+		sparks.SpreadAngle = Vector2.new(45, 45)
+		sparks.Size = NumberSequence.new(0.13, 0)
+		sparks.Transparency = NumberSequence.new(0.35, 1)
+		-- Geometry is already in world space; assign the pivot without moving it.
+		accent.WorldPivot = frame
+		accent.Parent = socket
+	end
+	accent:SetAttribute("SocketFrame", frame)
+	accent:SetAttribute("SocketRank", rank)
+	accent:SetAttribute("SocketColor", color)
+	for _, item in ipairs(accent:GetDescendants()) do
+		if item:IsA("BasePart") then
+			item.Color = color
+			if item.Name == "OrbitFacet" then item.Transparency = 0.22 end
+		elseif item:IsA("Beam") then
+			item.Color, item.Enabled = ColorSequence.new(color), rank >= 3
+		elseif item:IsA("ParticleEmitter") then
+			item.Color, item.Enabled = ColorSequence.new(color), false
+		end
+	end
+	CollectionService:AddTag(accent, "OrbitSocketAccent")
 end
 
 local function buildBays(world)

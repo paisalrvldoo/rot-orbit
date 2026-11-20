@@ -1,5 +1,24 @@
 # ROT ORBIT build notes
 
+## Current layered pedestal continuation
+
+Initial status/diff were clean; `node tools/verify.mjs` passed and recovery
+checkpoint `2589585` was committed immediately. Read owner `/workspace/rbx/refs.md`
+once. Keep its top ten priorities: staged late-game cover; 42–45 originals
+(43 implemented); four genuine captures; about 20–24 purposeful scripts (25
+with crews); large world title; readable hazards/shields; six mutations;
+live HUD buttons, quests and action feed; readable rarity/value cards; earned
+progression. Core systems already pass; finish the pending pedestal accents.
+
+- [x] Add layered rarity socket rings, slow local rotation/pulse, an Epic+
+  aura and restrained Legendary+ sparkles. Animate only nearby occupied slots;
+  empty sockets stay quiet and screenshot poses must be repeatable.
+  Eight noncolliding outer facets per occupied slot; no added local lights.
+  Full verification passes. Actual Studio appearance remains unverified.
+- [ ] Apply the same socket treatment to the cover showcase and document the
+  Studio review points. No renderer is available here.
+- [ ] Owner: Studio phone/cover playtest, four genuine captures and republish.
+
 ## 20 November readability and socket continuation
 
 Recovered one uncommitted BillboardFx change; initial status/diff and full

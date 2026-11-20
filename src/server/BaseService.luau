@@ -210,7 +210,7 @@ function BaseService:RefreshPedestal(pedestal)
 	local rarity = occupant and Rarity.ByName[Catalog.Get(occupant.Record.Id).Rarity]
 	pedestal.Label.Visible = occupant == nil
 	if pedestal.PlacePrompt then pedestal.PlacePrompt:SetAttribute("SocketOpen", occupant == nil) end
-	WorldBuilder.ColorSocket(pedestal.Socket, rarity and rarity.Color or pedestal.EmptyColor)
+	WorldBuilder.ColorSocket(pedestal.Socket, rarity and rarity.Color or pedestal.EmptyColor, rarity and rarity.Rank or 0)
 end
 
 function BaseService:ClearPedestal(pedestal)
