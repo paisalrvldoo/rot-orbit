@@ -198,8 +198,24 @@ function BrainrotModel.Create(record, frame, parent, forSale)
 				accent, Enum.PartType.Ball, tilt)
 		end
 	elseif kind == "Raviolo" or kind == "Gnocco" then
-		for index = -2, 2 do
-			make("PastaRidge", Vector3.new(0.14, 1.7, 0.13), Vector3.new(index * 0.34, 1.8, -0.8), accent)
+		if kind == "Raviolo" then
+			-- A stuffed pasta pillow, with crimped edges outside the eyes.
+			pill("RavioliPillow", 2.48, 2.45, 1.49, Vector3.new(0, 1.83, 0.04), bodyColor)
+			for _, side in ipairs({ -1, 1 }) do
+				for index = -2, 2 do
+					pill("PastaCrimp", 0.43, 0.39, 0.7,
+						Vector3.new(side * 1.16, 1.8 + index * 0.43, 0), accent)
+					pill("PastaCrimp", 0.4, 0.4, 0.7,
+						Vector3.new(index * 0.43, 1.8 + side * 1.07, 0), accent)
+				end
+			end
+			pill("SauceMedallion", 0.63, 0.39, 0.15, Vector3.new(0, 1.01, -0.79), accent)
+		else
+			for index = -2, 2 do
+				make("PastaRidge", Vector3.new(0.16, 0.53, 0.17),
+					Vector3.new(index * 0.34, 1.0, -0.67), accent, Enum.PartType.Ball,
+					CFrame.Angles(0, 0, -0.25))
+			end
 		end
 	elseif kind == "Cheese" or kind == "Gorgonzola" then
 		for index = 1, 5 do
@@ -223,9 +239,23 @@ function BrainrotModel.Create(record, frame, parent, forSale)
 				make("SolarCell", Vector3.new(0.35, 1.0, 0.06), Vector3.new(side * 2.2 + (cell - 2) * 0.5, 2.2, 0.05), accent)
 			end
 		end
+		local dishTilt = CFrame.Angles(-0.48, -0.3, 0.15)
+		local dish = make("CiabattaDish", Vector3.new(1.42, 0.27, 1.42),
+			Vector3.new(-0.54, 3.26, 0.13), Config.Palette.White, Enum.PartType.Ball, dishTilt)
+		dish.Material = Enum.Material.Metal
+		pill("DishBowl", 0.94, 0.13, 0.94, Vector3.new(-0.54, 3.4, 0.08), accent)
+		make("DishFeed", Vector3.new(0.11, 0.48, 0.11), Vector3.new(-0.54, 3.55, 0.08), accent)
+		pill("DishSignal", 0.22, 0.22, 0.22, Vector3.new(-0.54, 3.82, 0.08), glow).Material = Enum.Material.Neon
 	elseif kind == "Penguin" then
 		make("WhiteBelly", Vector3.new(1.55, 1.9, 0.2), Vector3.new(0, 1.65, -0.79), Config.Palette.White, Enum.PartType.Ball)
 		make("TurboBeak", Vector3.new(0.62, 0.25, 0.4), Vector3.new(0, 1.9, -1.04), accent)
+		for _, side in ipairs({ -1, 1 }) do
+			make("TurboFlipper", Vector3.new(0.65, 1.48, 0.61), Vector3.new(side * 1.4, 1.63, 0.21),
+				bodyColor, Enum.PartType.Ball, CFrame.Angles(0, 0, side * 0.42))
+			make("PilotGoggleRim", Vector3.new(0.87, 0.98, 0.17), Vector3.new(side * 0.48, 2.23, -0.89),
+				accent, Enum.PartType.Ball).Material = Enum.Material.Metal
+			pill("TurboSki", 0.93, 0.24, 1.87, Vector3.new(side * 0.7, 0.08, -0.3), accent)
+		end
 	elseif kind == "Nacho" or kind == "Quesadilla" then
 		make("TriangleCrown", Vector3.new(2.6, 1.2, 1.9), Vector3.new(0, 3.05, 0), accent,
 			nil, CFrame.Angles(0, math.pi, 0), "WedgePart")
@@ -233,9 +263,14 @@ function BrainrotModel.Create(record, frame, parent, forSale)
 		for _, side in ipairs({ -1, 1 }) do
 			make("CroissantHorn", Vector3.new(1.0, 1.4, 0.85), Vector3.new(side * 1.15, 2.4, 0),
 				bodyColor, Enum.PartType.Ball, CFrame.Angles(0, 0, side * 0.7))
+			make("CroissantTip", Vector3.new(0.83, 0.53, 0.65), Vector3.new(side * 1.64, 2.91, -0.1),
+				side == 1 and accent or bodyColor, Enum.PartType.Ball, CFrame.Angles(0, 0, side * 0.24))
+			make("PastryFold", Vector3.new(0.16, 0.61, 0.13), Vector3.new(side * 1.14, 2.58, -0.43),
+				accent, Enum.PartType.Ball, CFrame.Angles(0, 0, side * 0.7))
 		end
 		for index = -1, 1 do
-			make("ToastyStripe", Vector3.new(0.13, 1.8, 0.12), Vector3.new(index * 0.6, 1.8, -0.8), accent)
+			make("ToastyStripe", Vector3.new(0.15, 0.51, 0.15), Vector3.new(index * 0.49, 1.02, -0.67),
+				accent, Enum.PartType.Ball, CFrame.Angles(0, 0, -0.2))
 		end
 	elseif kind == "Zucchini" then
 		pill("VeggieStem", 0.55, 0.58, 0.55, Vector3.new(0, 3.33, 0), accent)

@@ -1,5 +1,28 @@
 # ACTIVE OWNER OVERRIDE — 20 November: TOP 3
 
+## Current continuation — 20 November, 14:35 WIB (25-minute limit)
+
+- [x] Step 1: clean status/diff; full verifier passed; immediate recovery
+  checkpoint `17e7d42`. Read recent log and owner research once. The measured
+  v11 orbit/sky fixes and prior item 6 model passes are already committed.
+- [x] Item 6: crimped ravioli pillow, satellite dish, penguin flippers/pilot
+  goggles/skis and curved chocolate-tipped croissant horns. Belly pasta lines
+  no longer cross faces. All 602 model combinations and full verifier pass;
+  a regression checks that penguin goggle rims sit behind the eyes.
+- [ ] Reach the research's 20–24 purposeful-script target by merging the
+  tiny bay-lock service into its existing bay owner, with lock regressions.
+- [ ] Correct the README's superseded sunny/orange-planet capture guidance
+  and reconcile the completed v10 checklist with the measured v11 handoff.
+- [ ] Owner live phone review and four genuine Studio captures.
+
+Research priorities remain: staged late-game cover; 42–45 originals (43);
+four genuine captures; about 20–24 purposeful scripts (25 initially); big
+in-world title; readable hazards/shields; six mutations; live HUD buttons,
+quest card and action feed; clear rarity/value cards; earned progression.
+Core systems already pass. Preserve the dark-metal station, centered flat
+cargo rail and high concentric halos against black space. Do not wait for a
+renderer or fabricate captures. Verify and commit each working piece.
+
 ## v11 phone feedback continuation
 
 - [x] Recovered the interrupted work. The inherited verifier failed on phone

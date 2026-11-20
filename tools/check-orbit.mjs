@@ -371,6 +371,15 @@ for _,entry in ipairs(Catalog.Entries) do
    assert(counts.EyeWhite==2 and counts.Pupil==2 and counts.Mitten==2,'keep the expressive suit silhouette')
    if entry.Id==1 then assert(counts.BakedCrust and counts.GoldenCrumb and counts.ToasterRadio,'keep sculpted toast') end
    if entry.Id==3 then assert(counts.LettuceCrown==5 and counts.LeafVein==5,'keep layered lettuce') end
+   if entry.Kind=='Raviolo' then assert(counts.RavioliPillow==1 and counts.PastaCrimp==20,'keep the stuffed pasta silhouette') end
+   if entry.Kind=='Satellite' then assert(counts.SolarPanel==2 and counts.CiabattaDish==1,'satellite needs panels and a receiver') end
+   if entry.Kind=='Penguin' then
+    assert(counts.TurboFlipper==2 and counts.PilotGoggleRim==2 and counts.TurboSki==2,'keep turbo penguin pilot gear')
+    local rim=model:FindFirstChild('PilotGoggleRim')
+    local eye=model:FindFirstChild('EyeWhite')
+    assert(eye.CFrame.Position.Z-eye.Size.Z/2<rim.CFrame.Position.Z-rim.Size.Z/2,'goggle frame must sit behind the eyes')
+   end
+   if entry.Kind=='Cornetto' then assert(counts.CroissantTip==2 and counts.PastryFold==2,'keep the croissant crescent') end
    if entry.Rarity=='SECRET' then
     assert(counts.RoyalCometCape==3 and counts.CrownPoint==5,'SECRET needs a regal silhouette')
     assert(maxY<=4.35,'SECRET sculpture exceeds the checked warp crown height: '..entry.Name..' '..tostring(maxY))
