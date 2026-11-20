@@ -100,7 +100,7 @@ function InputController.Start(hud)
 	menu.TextColor3, menu.BackgroundColor3 = Config.Palette.White, Config.Palette.Ink
 	menu.Font, menu.TextSize = Enum.Font.GothamBold, 17
 	Instance.new("UICorner", menu).CornerRadius = UDim.new(0, 10)
-	menu.Size, menu.Position = UDim2.fromOffset(144, 72), UDim2.fromOffset(96, 156)
+	menu.Size, menu.Position = UDim2.fromOffset(144, 84), UDim2.fromOffset(96, 156)
 	menu.Visible = false
 	menu.Parent = hud.Gui
 	HudController.ButtonFeedback(menu, function()
@@ -142,9 +142,10 @@ function InputController.Start(hud)
 				local button = self.Buttons[name]
 				if button then
 					button.Visible = not compact or self.MenuOpen == true
-					button.Position = compact and UDim2.fromOffset(144, 238 + (index - 1) * 78)
+					button.Position = compact and UDim2.fromOffset(144 + ((index - 1) % 2) * 256,
+						250 + math.floor((index - 1) / 2) * 90)
 						or UDim2.new(0.5, (index - 3) * 188, 1, -53)
-					button.Size = UDim2.fromOffset(compact and 240 or 176, compact and 72 or 48)
+					button.Size = UDim2.fromOffset(compact and 240 or 176, compact and 84 or 48)
 				end
 			end
 			self.Buttons.Zap.Position = compact and UDim2.new(1, -80, 1, -292) or UDim2.new(0.5, 376, 1, -69)
@@ -339,8 +340,8 @@ local function startCrewPanel(hud)
 		local preview = state.SaveStatus == "STUDIO PREVIEW"
 		local compact = HudController.IsCompact()
 		open.Visible = not preview and (not compact or hud.Gui:GetAttribute("MobileMenuOpen") == true)
-		open.Position = compact and UDim2.fromOffset(24, 550) or UDim2.fromOffset(16, 365)
-		open.Size = compact and UDim2.fromOffset(240, 72) or UDim2.fromOffset(236, 44)
+		open.Position = compact and UDim2.fromOffset(24, 430) or UDim2.fromOffset(16, 365)
+		open.Size = compact and UDim2.fromOffset(240, 84) or UDim2.fromOffset(236, 44)
 		open:SetAttribute("Selected", panel.Visible)
 		open.TextSize = compact and 18 or 16
 		open.Text = compact and ("CREWS\n" .. (view.Current and Config.Crews.Teams[view.Current].Name or "JOIN A CREW"))

@@ -9,6 +9,11 @@ const read = path => readFileSync(join(root, path), 'utf8');
 const section = (source, start, end) => source.slice(source.indexOf(start), end ? source.indexOf(end) : undefined);
 const builder = read('src/server/WorldBuilder.luau');
 const crewService = read('src/server/CrewService.luau');
+// Measure actual HUD declarations/layout, then compare with the built 3D sign.
+const phoneCheck = spawnSync(process.execPath, ['tools/check-controls.mjs', '--json-rects'], { cwd: root, encoding: 'utf8' });
+if (phoneCheck.status !== 0) throw new Error(phoneCheck.stderr || 'Phone HUD rectangle check failed');
+const phoneRects = JSON.parse(phoneCheck.stdout);
+
 const harness = `
 local Vector3 = {}
 local vm = {}
@@ -254,6 +259,20 @@ assert(#named('HologramSatellite')==3,'hologram needs three orbital energy shard
 for _,p in ipairs(corners(title)) do
 	local x,y=project(p);assert(x>120 and x<1050 and y>145 and y<455,'title must stay below the HUD and inside the clear phone region')
 end
+-- Source projection only: the arrival sign must clear the actual phone chrome.
+local phoneRects = {
+${phoneRects.map(r => `{${r.width},${r.height},"${r.name}",${r.x},${r.y},${r.w},${r.h}}`).join(',\n')}
+}
+for _, r in ipairs(phoneRects) do
+ local left,top,right,bottom=math.huge,math.huge,-math.huge,-math.huge
+ for _,p in ipairs(corners(title)) do
+  local x,y=project(p,r[1],r[2])
+  left,top,right,bottom=math.min(left,x),math.min(top,y),math.max(right,x),math.max(bottom,y)
+ end
+ assert(r[4]+r[6]<=left or right<=r[4] or r[5]+r[7]<=top or bottom<=r[5],
+  r[3]..' covers arrival ROT ORBIT sign at '..r[1]..'x'..r[2]..' sign '..left..','..top..','..right..','..bottom)
+end
+print('Phone sign checks passed: actual HUD rectangles clear arrival title at both phone orientations.')
 -- Conservative world AABBs: reject any track component intersecting the title.
 local function bounds(part)
  local low,high=Vector3.new(math.huge,math.huge,math.huge),Vector3.new(-math.huge,-math.huge,-math.huge)

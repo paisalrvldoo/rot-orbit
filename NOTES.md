@@ -1,5 +1,15 @@
 # ACTIVE OWNER OVERRIDE — 20 November: TOP 3
 
+## Final polish continuation — 20 November, 17:00 WIB (25-minute limit)
+
+- [x] Immediate status/diff and full verifier: clean, all checks passed.
+  No inherited changes existed to commit. Read NOTES, recent log and the
+  owner research once; the ten research priorities below remain the plan.
+- [x] Continue final 4: phone HUD bounds, overlaps, tap targets and arrival-sign
+  clearance; preserve the 43 originals, six mutations, 24 scripts and locked
+  orbit/sky checks. No gameplay systems added.
+- [ ] Final 5: audit capture preset documentation/restoration and handoff.
+
 ## Final polish continuation — 20 November, 16:03 WIB (25-minute limit)
 
 - [x] Recovery: clean status/diff, full verifier passed; checkpoint `c311b67`.
@@ -20,7 +30,14 @@
   to verify tier-coloured labels and premium card contrast. Full verifier passes;
   no parts, lights or emitters were added. Rendered phone appearance still
   needs owner review.
-- [ ] Final 4: assert HUD rectangles clear at 844×390 and 390×844.
+- [x] Final 4: actual HUD/control declarations now pass pairwise rectangle,
+  viewport bounds and 44px target checks at 844×390 and 390×844, with the
+  quest, captain health, live action feed and open/closed crew menu. Portrait
+  uses a taller canvas; compact feed clears MENU and hides while menus open.
+  Menu actions have larger targets; Contracts clears the arrival title.
+  The orbit harness compares these actual rectangles with the built sign's
+  projected bounds in both orientations. Full verifier passes; the matching
+  place was rebuilt. Source geometry only; owner phone rendering still pending.
 - [ ] Final 5: document four cover presets and restoration; final clean handoff.
 
 Owner research top-ten plan: staged late-game cover; 42–45 originals (43);

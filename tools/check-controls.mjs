@@ -7,6 +7,8 @@ const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const source = path => readFileSync(join(root, path), 'utf8');
 const moduleBody = (path, marker) => `(function()\n${source(path).slice(source(path).indexOf(marker))}\nend)()`;
 const client = source('src/client/Game.client.luau');
+const hudSource = source('src/client/HudController.luau');
+const section = (text, start, end) => text.slice(text.indexOf(start), text.indexOf(end, text.indexOf(start)));
 const harness = `
 local Color3 = { fromRGB = function(...) return {...} end }
 local Vector3 = { new = function(...) return {...} end }
@@ -14,6 +16,7 @@ local Vector2 = { new = function(x, y) return { X = x, Y = y } end }
 local UDim = { new = function(...) return {...} end }
 local UDim2 = { new = function(xs, x, ys, y) return { X = { Scale = xs, Offset = x }, Y = { Scale = ys, Offset = y } } end }
 UDim2.fromOffset = function(x, y) return UDim2.new(0, x, 0, y) end
+UDim2.fromScale = function(x, y) return UDim2.new(x, 0, y, 0) end
 local function signal()
     local s = { Callbacks = {} }
     function s:Connect(callback) table.insert(self.Callbacks, callback) end
@@ -137,6 +140,53 @@ state.SaveStatus = 'SAVED'; state.LockUntil = nil; state = table.clone(state); c
 assert(input.Buttons.Index.Visible and input.Buttons.Rebirth.Visible and not menu.Visible)
 assert(input.Buttons.Lock.Text == 'LOCK [L]\\nREADY' and input.Buttons.Zap:FindFirstChild('ActionCaption').Text:find('%[F%]'),
     'desktop controls should retain keyboard hints')
+-- Instantiate the real chrome declarations alongside the actual input controller.
+${section(hudSource, 'function HudController.Text(', 'function HudController.EventCopy(')}
+${section(hudSource, 'function HudController.Canvas(', 'local function startEventBanner(')}
+${section(hudSource, 'local function startEventBanner(', 'function HudController.Start(')}
+local gui = hud.Gui
+${section(hudSource, '\tlocal cash = HudController.Text(', '\tlocal function renderFeed(')}
+${section(hudSource, '\tlocal quest = Instance.new("Frame")', '\tlocal marker = Instance.new("Part")')}
+local events = { Event = { OnClientEvent = signal() }, Snapshot = { OnClientEvent = signal() } }
+startEventBanner(gui, events)
+events.Snapshot.OnClientEvent:Fire({ Ready = true, NextMeteorAt = 200 })
+local open = Instance.new('TextButton', gui); open.Name = 'CrewButton'
+local questTab = Instance.new('TextButton', gui); questTab.Name = 'ContractsTab'
+for _, viewport in ipairs({ Vector2.new(844,390), Vector2.new(390,844) }) do
+ for _, expanded in ipairs({ false, true }) do
+  compact = true; input.MenuOpen = expanded; state.SaveStatus = 'SAVED'; frame()
+  local width, height, factor = HudController.Canvas(viewport, true)
+  gui.Size = UDim2.fromOffset(width, height)
+  -- Run the same compact carrying/status declarations as the live frame loop.
+  ${section(hudSource, '\t\tcarrying.Position = compact', '\t\tlocal root = player.Character')}
+  ${section(client, '\t\topen.Position = compact', '\t\topen:SetAttribute("Selected"')}
+  ${section(source('src/client/UpgradeRebirthContracts.luau'), '\t\tquestTab.Position =', '\t\tquest.Position =')}
+  open.Visible, questTab.Visible = expanded, expanded
+  quest.Visible, carrying.Visible, hint.Visible = not expanded, true, false
+  boss.Visible = true -- Worst case: captain bar, first quest, cash and event coexist.
+  for _, row in ipairs(feedLabels) do row.Text = 'LIVE ACTION FEED' end
+  HudController.LayoutChrome(gui, true, expanded)
+  local rects = {}
+  for _, object in ipairs(gui.Children) do
+   if (object.ClassName == 'TextButton' or object.ClassName == 'TextLabel' or object.Name == 'QuestCard')
+    and object.Visible and object.Text ~= '' then
+    local p, size, anchor = object.Position, object.Size, object.AnchorPoint
+    local w, h = (size.X.Scale * width + size.X.Offset) * factor, (size.Y.Scale * height + size.Y.Offset) * factor
+    local x = (viewport.X - width * factor) / 2 + (p.X.Scale * width + p.X.Offset) * factor - anchor.X * w
+    local y = (viewport.Y - height * factor) / 2 + (p.Y.Scale * height + p.Y.Offset) * factor - anchor.Y * h
+    assert(x >= -0.01 and y >= -0.01 and x+w <= viewport.X+0.01 and y+h <= viewport.Y+0.01, object.Name..' clips phone viewport')
+    if object.ClassName == 'TextButton' then assert(w >= 44 and h >= 44, object.Name..' needs a 44px touch target') end
+    for _, r in ipairs(rects) do
+     assert(x+w <= r.x+0.01 or r.x+r.w <= x+0.01 or y+h <= r.y+0.01 or r.y+r.h <= y+0.01,
+      object.Name..' overlaps '..r.name..' at '..viewport.X..'x'..viewport.Y)
+    end
+    table.insert(rects, {name=object.Name,x=x,y=y,w=w,h=h})
+    print(string.format('HUDRECT|%d|%d|%s|%.6f|%.6f|%.6f|%.6f',viewport.X,viewport.Y,object.Name,x,y,w,h))
+   end
+  end
+ end
+end
+print('Phone HUD checks passed: 844x390 and 390x844 chrome, quest, captain, feed, crew/menu states and 44px targets.')
 print('Control checks passed: round skill icons, phone arc/44px targets, jump clearance, cooldown/recovery, menu, keyboard, panels and staged/desktop restoration.')
 `;
 const directory = join(root, 'out', 'control-check');
@@ -144,7 +194,14 @@ mkdirSync(directory, { recursive: true });
 const script = join(directory, 'check.luau');
 writeFileSync(script, harness);
 const result = spawnSync('luau', [script], { encoding: 'utf8', cwd: root });
-process.stdout.write(result.stdout ?? '');
+const rects = [];
+for (const line of (result.stdout ?? '').split('\n')) {
+  if (line.startsWith('HUDRECT|')) {
+    const [, width, height, name, x, y, w, h] = line.split('|');
+    rects.push({ width: +width, height: +height, name, x: +x, y: +y, w: +w, h: +h });
+  } else if (!process.argv.includes('--json-rects') && line) process.stdout.write(line + '\n');
+}
+if (process.argv.includes('--json-rects') && result.status === 0) process.stdout.write(JSON.stringify(rects));
 process.stderr.write(result.stderr ?? '');
 if (result.error) throw result.error;
 process.exitCode = result.status ?? 1;

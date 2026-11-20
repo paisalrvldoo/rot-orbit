@@ -109,6 +109,31 @@ function HudController.FirstStep(snapshot, collected)
 	return 1
 end
 
+-- Keep the established landscape composition; portrait gets more vertical room.
+function HudController.Canvas(viewport, compact)
+	if compact and viewport.X < viewport.Y then
+		return 720, math.max(720, viewport.Y * 720 / viewport.X), viewport.X / 720
+	end
+	return 1280, 720, math.clamp(math.min(viewport.X / 1280, viewport.Y / 720), 0.4, 1.4)
+end
+
+function HudController.LayoutChrome(gui, compact, panelOpen)
+	local portrait = compact and gui.Size.X.Offset < 1280
+	local income = gui:FindFirstChild("Income")
+	income.Size = UDim2.fromOffset(portrait and 688 or 720, 28)
+	income.TextScaled = portrait
+	local boss = gui:FindFirstChild("CaptainHealth")
+	boss.Position = portrait and UDim2.fromOffset(448, 156) or UDim2.new(0.5, 0, 0, 156)
+	boss.Size = UDim2.fromOffset(portrait and 496 or 640, 36)
+	local quest = gui:FindFirstChild("QuestCard")
+	quest.Position = UDim2.fromOffset(24, compact and 360 or 420)
+	for index = 1, 3 do
+		local row = gui:FindFirstChild("Action" .. index)
+		row.Position = UDim2.fromOffset(134, compact and 244 or 168 + (index - 1) * 50)
+		row.Visible = row.Text ~= "" and (not compact or (index == 1 and not panelOpen))
+	end
+end
+
 local function startEventBanner(gui, network)
 	local banner = Instance.new("TextLabel")
 	banner.Name = "EventBanner"
@@ -180,13 +205,16 @@ function HudController.Start()
 	gui.BackgroundTransparency = 1
 	gui.Parent = screen
 	local scale = Instance.new("UIScale", gui)
-	local function resize()
+	local function resize(compact)
 		local camera = workspace.CurrentCamera
-		if camera then scale.Scale = math.clamp(math.min(camera.ViewportSize.X / 1280, camera.ViewportSize.Y / 720), 0.4, 1.4) end
+		if camera then
+			local width, height, factor = HudController.Canvas(camera.ViewportSize, compact)
+			gui.Size, scale.Scale = UDim2.fromOffset(width, height), factor
+		end
 	end
 	local cash = HudController.Text(gui, "Cash", "$400", UDim2.new(0.5, 0, 0, 4), UDim2.fromOffset(580, 65), 60, Config.Palette.Mint)
 	cash.Font = Enum.Font.GothamBlack
-	local detail = HudController.Text(gui, "Income", "ARRIVING AT YOUR DOCK...", UDim2.new(0.5, 0, 0, 67), UDim2.fromOffset(720, 28), 21)
+	local detail = HudController.Text(gui, "Income", "ARRIVING AT YOUR DOCK...", UDim2.new(0.5, 0, 0, 71), UDim2.fromOffset(720, 28), 21)
 	local logo = HudController.Text(gui, "Logo", "ROT\nORBIT", UDim2.new(1, -85, 0, 28), UDim2.fromOffset(140, 60), 23, Config.Palette.Mint)
 	logo.Font = Enum.Font.GothamBlack
 	local save = HudController.Text(gui, "SaveStatus", "", UDim2.new(1, -98, 0, 89),
@@ -435,9 +463,9 @@ function HudController.Start()
 		end
 	end)
 	RunService.RenderStepped:Connect(function()
-		resize()
 		local compact = HudController.IsCompact() and (not state or state.SaveStatus ~= "STUDIO PREVIEW")
-		carrying.Position = compact and UDim2.new(0.45, 0, 1, -59) or UDim2.new(0.5, 0, 1, -91)
+		resize(compact)
+		carrying.Position = compact and UDim2.new(0.45, 0, 1, -45) or UDim2.new(0.5, 0, 1, -91)
 		carrying.Size = UDim2.fromOffset(compact and 600 or 940, 33)
 		carrying.TextScaled = compact
 		hint.Position = carrying.Position
@@ -454,6 +482,7 @@ function HudController.Start()
 			local panel = gui:FindFirstChild(name)
 			panelOpen = panelOpen or (panel and panel.Visible) or false
 		end
+		HudController.LayoutChrome(gui, compact, panelOpen)
 		quest.Visible = step > 0 and state.SaveStatus ~= "STUDIO PREVIEW" and not panelOpen
 		guide.Enabled = quest.Visible and root ~= nil
 		if quest.Visible then
