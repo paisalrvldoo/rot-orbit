@@ -131,9 +131,17 @@ function ConveyorService:Spawn(record, angle)
 		canopy.Transparency = 0.62
 		canopy.CanQuery = false
 	end
-	WorldBuilder.Part("SledUnderglow", Vector3.new(0.14, 4.8 * sledSize, 4.8 * sledSize),
+	local underglow = WorldBuilder.Part("SledUnderglow", Vector3.new(0.14, 4.8 * sledSize, 4.8 * sledSize),
 		CFrame.new(0, -0.93, 0) * CFrame.Angles(0, 0, math.pi / 2), rarity.Color,
 		Enum.Material.Neon, capsule, Enum.PartType.Cylinder, false)
+	-- The default right face of this sideways cylinder points up. Light the
+	-- rail immediately below the glass pod, with no distant spill or shadows.
+	local wash = Instance.new("SpotLight")
+	wash.Name = "SledSpotlight"
+	wash.Face = Enum.NormalId.Left
+	wash.Angle, wash.Range = 105, 5
+	wash.Color, wash.Brightness = rarity.Color, rarity.Rank >= 4 and 0.9 or 0.48
+	wash.Parent = underglow
 	local exhaust = Instance.new("ParticleEmitter")
 	exhaust.Name = "IonDust"
 	exhaust.Texture = "rbxasset://textures/particles/sparkles_main.dds"

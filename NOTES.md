@@ -2,7 +2,7 @@
 
 Read `/workspace/rbx/refs.md` current first 15 lines and the linked orbit,
 v8 phone and sky sections. These supersede ALL older continuation plans below.
-Initial status/diff were clean; full verify passed; checkpoint `eded8aa`.
+Initial status/diff were clean at `49337ea` and full verification passed.
 
 Work ONLY in this order; no further pedestal/UI/new-system polish:
 - [ ] **0a: elevated orbit visible from spawn.** Source implementation raises
@@ -31,6 +31,7 @@ Work ONLY in this order; no further pedestal/UI/new-system polish:
   of the title camera slide as well as the live Play camera.
   Live cargo on the far arc now faces the viewer from arrival. The old
   48-stud turn limit left the far-side brainrots showing their backs.
+  Each glass pod now shines a short rarity-coloured spotlight onto the track.
 - [ ] **0: v8 defects**, only after 0a is visibly approved: unclipped title,
   visible deep-space background, graphite floor, single phone raid warning,
   correct empty-and-not-carrying bottom hint. See refs.md for full requirements.
