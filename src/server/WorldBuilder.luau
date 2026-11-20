@@ -153,21 +153,56 @@ local function skyAndPlanet(parent)
 		star(Vector3.new(x, y, random:NextNumber(-790, -690)), random:NextNumber(1.0, 2.7), color,
 			0.25 + math.abs(scatter) * 0.18)
 	end
+	-- Deep-space hero limb: a blue Earth-like planet replaces the old orange
+	-- backdrop. Cloud belts and a thin cyan atmosphere keep the curve readable
+	-- behind the elevated orbit without competing with the title or HUD.
 	local radius = Config.World.PlanetRadius
 	local position = Config.World.PlanetPosition
-	WorldBuilder.Part("TangerinePlanet", Vector3.one * radius * 2, CFrame.new(position),
-		palette.Planet, Enum.Material.SmoothPlastic, parent, Enum.PartType.Ball, false)
+	WorldBuilder.Part("AzureHeroPlanet", Vector3.one * radius * 2, CFrame.new(position),
+		Color3.fromRGB(34, 92, 164), Enum.Material.SmoothPlastic, backdrop, Enum.PartType.Ball, false)
 	for band = -2, 2 do
-		local latitude = band * 0.27
+		local latitude = band * 0.25
 		local bandRadius = math.cos(latitude) * (radius + 0.9)
-		WorldBuilder.Ring("PlanetCloudBelt", bandRadius, 1.4, 9,
-			CFrame.new(position) * CFrame.Angles(0, 0, math.rad(-16)) * CFrame.new(0, math.sin(latitude) * radius, 0),
-			band % 2 == 0 and Color3.fromRGB(255, 157, 66) or Color3.fromRGB(223, 91, 32),
-			Enum.Material.SmoothPlastic, parent, 56, false)
+		WorldBuilder.Ring("AzureCloudBelt", bandRadius, 1.55, 10,
+			CFrame.new(position) * CFrame.Angles(0, 0, math.rad(-18)) * CFrame.new(0, math.sin(latitude) * radius, 0),
+			band % 2 == 0 and Color3.fromRGB(164, 218, 239) or Color3.fromRGB(70, 145, 211),
+			Enum.Material.SmoothPlastic, backdrop, 56, false)
 	end
-	WorldBuilder.Ring("PlanetHalo", radius * 1.45, 2, 0.9,
-		CFrame.new(position) * CFrame.Angles(math.rad(12), 0, math.rad(-16)),
-		Color3.fromRGB(255, 199, 115), Enum.Material.Neon, parent, 94, false)
+	WorldBuilder.Ring("AzureAtmosphereHalo", radius * 1.04, 2.2, 1.1,
+		CFrame.new(position) * CFrame.Angles(math.rad(12), 0, math.rad(-18)),
+		Color3.fromRGB(91, 220, 255), Enum.Material.Neon, backdrop, 94, false)
+
+	-- A Saturn-like ringed planet and a small red planet make the skyline
+	-- unmistakably space themed from the phone arrival view.
+	local saturn = Vector3.new(275, 142, -560)
+	WorldBuilder.Part("RingedSaturn", Vector3.one * 82, CFrame.new(saturn),
+		Color3.fromRGB(192, 151, 103), Enum.Material.SmoothPlastic, backdrop, Enum.PartType.Ball, false)
+	for band = -1, 1 do
+		WorldBuilder.Ring("SaturnCloudBand", 40 - math.abs(band) * 5, 1.1, 4.5,
+			CFrame.new(saturn) * CFrame.Angles(math.rad(18), math.rad(-12), math.rad(16)) * CFrame.new(0, band * 12, 0),
+			band == 0 and Color3.fromRGB(235, 197, 143) or Color3.fromRGB(156, 111, 79),
+			Enum.Material.SmoothPlastic, backdrop, 48, false)
+	end
+	WorldBuilder.Ring("SaturnRings", 62, 2.2, 1.1,
+		CFrame.new(saturn) * CFrame.Angles(math.rad(22), math.rad(-12), math.rad(16)),
+		Color3.fromRGB(255, 206, 125), Enum.Material.Neon, backdrop, 72, false)
+	local redPlanet = WorldBuilder.Part("RedPlanet", Vector3.one * 52, CFrame.new(-380, 116, -620),
+		Color3.fromRGB(173, 63, 72), Enum.Material.SmoothPlastic, backdrop, Enum.PartType.Ball, false)
+	redPlanet.CanQuery = false
+	WorldBuilder.Ring("RedPlanetGlow", 27, 0.8, 0.7, CFrame.new(-380, 116, -620) * CFrame.Angles(math.rad(20), 0, math.rad(-18)),
+		Color3.fromRGB(255, 119, 101), Enum.Material.Neon, backdrop, 48, false)
+
+	-- Soft nebula ribbons sit behind the stars as broad, low-cost colour fields.
+	for index, data in ipairs({
+		{ Vector3.new(-80, 210, -790), Color3.fromRGB(135, 62, 190), math.rad(-15) },
+		{ Vector3.new(170, 72, -785), Color3.fromRGB(47, 151, 201), math.rad(12) },
+		{ Vector3.new(-250, -12, -780), Color3.fromRGB(208, 74, 151), math.rad(-8) },
+	}) do
+		local nebula = WorldBuilder.Part("MilkyWayRibbon" .. index, Vector3.new(520, 74, 1),
+			CFrame.new(data[1]) * CFrame.Angles(0, 0, data[3]), data[2], Enum.Material.Neon, backdrop, nil, false)
+		nebula.Transparency = 0.84
+		nebula.CanQuery = false
+	end
 
 	-- A second planetary limb sits well behind the station on the opposite
 	-- edge. Nested spheres give the horizon a narrow blue atmospheric rim.
