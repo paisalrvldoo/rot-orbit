@@ -1,5 +1,25 @@
 # ACTIVE OWNER OVERRIDE — 20 November: TOP 3
 
+## v10 phone feedback continuation
+
+- [x] Recovered and verified prior changes, then committed `a9d0854`. Read
+  the owner research and both v10 phone shots. Core systems pass.
+- [x] Urgent 1–4: slab-free sky with 3,600 Sky stars, 340 hemisphere stars,
+  a separate dense Milky Way band and soft dust emitters. Smooth blue limb
+  with two atmosphere shells, wide layered Saturn discs, cratered moon and
+  red planet. Full verification includes the rebuilt place and dossier.
+- [ ] Urgent 5: lower the cargo rail, center the hub globe and raise the halos.
+- [ ] Urgent 6: sculpt the toast and green characters and step up rarity gear.
+- [ ] Reframe staged Cover around the new orbit geometry and capture guidance.
+- [ ] Owner live phone playtest and four Studio captures.
+
+Top 3 plan from the research, in judging order: staged late-game cover,
+42–45 originals (43), four genuine captures, roughly 20–24 purposeful scripts
+(shared traits and UI already consolidated, 25 scripts currently), a large
+in-world title, readable hazards and shields, six mutations, live buttons
+with a quest card and action feed, readable rarity and value cards, and
+earned progression. Apply the urgent fixes before further polish.
+
 ## Resumed continuation — 20 November, 11:53 WIB (25-minute limit)
 
 - [x] Step 1: status and diff clean; `node tools/verify.mjs` passed; immediate

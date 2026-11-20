@@ -127,7 +127,8 @@ local function skyAndPlanet(parent)
 		local position = Vector3.new(math.cos(angle) * horizontal, elevation * distance, math.sin(angle) * horizontal)
 		local bright = index % 14 == 0
 		local color = starColors[index % 7 == 0 and 2 or index % 5 == 0 and 3 or 1]
-		local point = star(position, random:NextNumber(0.62, bright and 3.2 or 1.65), color, bright and 0.15 or 0.32)
+		local point = star(position, random:NextNumber(bright and 1.65 or 0.51, bright and 2.9 or 1.9),
+			color, bright and 0.12 or 0.28)
 		if bright then
 			point:SetAttribute("TwinklePhase", angle)
 			CollectionService:AddTag(point, "OrbitSkyStar")
@@ -144,9 +145,9 @@ local function skyAndPlanet(parent)
 		star(Vector3.new(x, y, random:NextNumber(-790, -690)), random:NextNumber(1.0, 2.7), color,
 			0.25 + math.abs(scatter) * 0.18)
 	end
-	for index = 1, 15 do
-		local x = (index - 8) * 49
-		local y = 76 + x * 0.27 + random:NextNumber(-26, 26)
+	for index = 1, 19 do
+		local x = (index - 10) * 41
+		local y = 65 + x * 0.27 + random:NextNumber(-30, 30)
 		local source = star(Vector3.new(x, y, random:NextNumber(-570, -505)), 0.2, cyan, 1)
 		source.Name = "NebulaSource"
 		local cloud = Instance.new("ParticleEmitter")
@@ -154,10 +155,10 @@ local function skyAndPlanet(parent)
 		cloud.Texture = "rbxasset://textures/particles/smoke_main.dds"
 		cloud.Color = ColorSequence.new(lilac:Lerp(cyan, (index % 5) / 4))
 		cloud.Transparency = NumberSequence.new({
-			NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(0.16, 0.78),
-			NumberSequenceKeypoint.new(0.63, 0.87), NumberSequenceKeypoint.new(1, 1),
+			NumberSequenceKeypoint.new(0, 0.94), NumberSequenceKeypoint.new(0.12, 0.76),
+			NumberSequenceKeypoint.new(0.56, 0.87), NumberSequenceKeypoint.new(1, 1),
 		})
-		cloud.Size = NumberSequence.new(45, 92)
+		cloud.Size = NumberSequence.new(50, 105)
 		cloud.Lifetime = NumberRange.new(10, 16)
 		cloud.Speed = NumberRange.new(0.65, 2.1)
 		cloud.Rate = 1
@@ -169,18 +170,19 @@ local function skyAndPlanet(parent)
 		cloud.Parent = source
 	end
 
-	local function azure(name, position, radius, color)
-		local planet = WorldBuilder.Part(name, Vector3.one * (radius * 2), CFrame.new(position),
-			color, Enum.Material.SmoothPlastic, backdrop, Enum.PartType.Ball, false)
-		planet.CanQuery = false
-		for layer = 1, 2 do
-			local shell = WorldBuilder.Part("AzureAtmosphere", Vector3.one * (radius * 2 + layer * 4),
-				planet.CFrame, cyan, Enum.Material.Neon, backdrop, Enum.PartType.Ball, false)
-			shell.Transparency = layer == 1 and 0.88 or 0.95
-			shell.CanQuery = false
-		end
+	local function azureSphere(name, radius, color, material, transparency)
+		local sphere = WorldBuilder.Part(name, Vector3.one * (radius * 2), CFrame.new(Config.World.PlanetPosition),
+			color, material, backdrop, Enum.PartType.Ball, false)
+		sphere.CanQuery, sphere.Transparency = false, transparency
+		-- The built-in sphere mesh keeps the limb round without an uploaded asset.
+		local mesh = Instance.new("SpecialMesh")
+		mesh.MeshType = Enum.MeshType.Sphere
+		mesh.Parent = sphere
 	end
-	azure("AzureHeroPlanet", Config.World.PlanetPosition, Config.World.PlanetRadius, Color3.fromRGB(64, 129, 204))
+	local planetRadius = Config.World.PlanetRadius
+	azureSphere("AzureHeroPlanet", planetRadius, Color3.fromRGB(51, 105, 182), Enum.Material.SmoothPlastic, 0)
+	azureSphere("AzureInnerAtmosphere", planetRadius + 3, cyan, Enum.Material.Neon, 0.9)
+	azureSphere("AzureOuterAtmosphere", planetRadius + 7, lilac:Lerp(cyan, 0.85), Enum.Material.Neon, 0.96)
 
 	-- A Saturn-like ringed planet and a small red planet make the skyline
 	-- unmistakably space themed from the phone arrival view.
@@ -193,10 +195,10 @@ local function skyAndPlanet(parent)
 	local ringPlane = CFrame.new(saturn) * CFrame.Angles(math.rad(31), math.rad(-12), math.rad(16))
 		* CFrame.Angles(0, 0, math.pi / 2)
 	for index, band in ipairs({
-		{ 79, Color3.fromRGB(169, 180, 238), 0.83 },
-		{ 73, Color3.fromRGB(198, 164, 207), 0.79 },
-		{ 64, Color3.fromRGB(239, 193, 132), 0.69 },
-		{ 51, Color3.fromRGB(245, 218, 178), 0.81 },
+		{ 84, Color3.fromRGB(169, 180, 238), 0.81 },
+		{ 76, Color3.fromRGB(198, 164, 207), 0.88 },
+		{ 67, Color3.fromRGB(239, 193, 132), 0.74 },
+		{ 53, Color3.fromRGB(245, 218, 178), 0.88 },
 	}) do
 		local diameter = band[1] * 2
 		local ring = WorldBuilder.Part("SaturnBand", Vector3.new(0.2, diameter, diameter),
