@@ -5,7 +5,10 @@ No generated picture, source projection or old v8 capture counts as proof.
 
 1. Open the latest committed `game.rbxl` in Roblox Studio. Start **Play** with
    a client viewport of **1170x540** (19.5:9). Click PLAY on the title screen.
-2. In the **client** Command Bar, lock the same arrival framing used by PLAY:
+2. Capture during the two-second arrival view while standing still. The normal
+   HUD appears immediately, and moving restores the follow camera. If you
+   miss the window, wait for the follow camera and restore the same arrival
+   view in the **client** Command Bar:
 
    ```lua
    local c = workspace.CurrentCamera; c.CameraType = Enum.CameraType.Scriptable; c.CFrame = require(game.ReplicatedStorage.Config).World.SpawnCamera(); c.FieldOfView = 65

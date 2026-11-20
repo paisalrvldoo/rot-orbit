@@ -433,7 +433,9 @@ local function startTitle(hud, crewPanel)
 	screenHud.Enabled = false
 	hud.InTitle = true
 	local started = os.clock()
+	local arrivalBinding = "OrbitArrivalCamera"
 	local function close(forScreenshot)
+		if forScreenshot then RunService:UnbindFromRenderStep(arrivalBinding) end
 		if not hud.InTitle then
 			if forScreenshot and screen.Parent then screen:Destroy() end
 			return
@@ -448,10 +450,22 @@ local function startTitle(hud, crewPanel)
 		local humanoid = character and character:FindFirstChildOfClass("Humanoid")
 		if camera then
 			if humanoid then camera.CameraSubject = humanoid end
+			camera.CameraType = Enum.CameraType.Scriptable
 			camera.CFrame = Config.World.SpawnCamera()
-			camera.Focus = CFrame.new(0, 12, 42)
+			camera.Focus = CFrame.new(0, 27, -2)
 			camera.FieldOfView = 65
-			camera.CameraType = Enum.CameraType.Custom
+			-- The default follow camera replaces the elevated composition on its
+			-- next update. Show it briefly, then give control back as play starts.
+			local releaseAt = os.clock() + 2
+			RunService:BindToRenderStep(arrivalBinding, Enum.RenderPriority.Camera.Value + 1, function()
+				if camera ~= workspace.CurrentCamera or camera.CameraType ~= Enum.CameraType.Scriptable then
+					RunService:UnbindFromRenderStep(arrivalBinding)
+				elseif os.clock() >= releaseAt or not humanoid or humanoid.Health <= 0
+					or localPlayer.Character ~= character or humanoid.MoveDirection.Magnitude > 0 then
+					RunService:UnbindFromRenderStep(arrivalBinding)
+					camera.CameraType = Enum.CameraType.Custom
+				end
+			end)
 		end
 		if squad then crewPanel.Visible = true end
 		local fade = TweenService:Create(canvas, TweenInfo.new(0.24, Enum.EasingStyle.Quad), { GroupTransparency = 1 })

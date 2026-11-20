@@ -18,6 +18,10 @@ Work ONLY in this order; no further pedestal/UI/new-system polish:
   angle. Actual builder/Config tests cover solid track, two <35° ramps, ordinary
   purchase reach, scenery/title nonintersection and portal headroom. These are
   mathematical checks, NOT rendering or proof of final appearance.
+  PLAY now holds the verified arrival framing with the real HUD for two
+  seconds before returning control to the follow camera. Moving ends the
+  view early and a screenshot preset can take over immediately. The phone
+  checklist can capture this view directly. Studio confirmation is pending.
 - [ ] **0: v8 defects**, only after 0a is visibly approved: unclipped title,
   visible deep-space background, graphite floor, single phone raid warning,
   correct empty-and-not-carrying bottom hint. See refs.md for full requirements.
