@@ -11,7 +11,9 @@ local BrainrotModel = {}
 local rounded = { Bean = true, Olive = true, Leaf = true, Raviolo = true, Penguin = true,
 	Cornetto = true, Pastry = true, Quokka = true, Gnocco = true, Arancino = true,
 	Stracciatella = true, Pistachio = true, Supernova = true, Dumpling = true,
-	Pepper = true, Dragonfruit = true, Basil = true, Meringue = true, Hazelnut = true }
+	Pepper = true, Dragonfruit = true, Basil = true, Meringue = true, Hazelnut = true,
+	Zucchini = true, Carrot = true }
+local flatCylinder = CFrame.Angles(0, math.pi / 2, 0)
 
 local function label(parent, name, text, y, height, size, color)
 	local result = Instance.new("TextLabel")
@@ -101,11 +103,30 @@ function BrainrotModel.Create(record, frame, parent, forSale)
 		part.Anchored = true
 		part.CanCollide = false
 		part.CanTouch = false
+		part.CanQuery = false
 		part.CastShadow = true
 		part.TopSurface = Enum.SurfaceType.Smooth
 		part.BottomSurface = Enum.SurfaceType.Smooth
 		part.Parent = model
 		return part
+	end
+	local function pill(name, width, height, depth, position, color)
+		return make(name, Vector3.new(width, height, depth), position, color, Enum.PartType.Ball)
+	end
+	-- A straight-sided slice with soft corners and a curved top.
+	local function toastSlice(name, width, height, depth, y, z, color)
+		local corner = width * 0.16
+		make(name, Vector3.new(width - 2 * corner, height, depth), Vector3.new(0, y, z), color)
+		make(name, Vector3.new(width, height - 2 * corner, depth - 0.018), Vector3.new(0, y, z), color)
+		for _, side in ipairs({ -1, 1 }) do
+			for _, endY in ipairs({ -1, 1 }) do
+				make(name, Vector3.new(depth - 0.036, corner * 2, corner * 2),
+					Vector3.new(side * (width / 2 - corner), y + endY * (height / 2 - corner), z),
+					color, Enum.PartType.Cylinder, flatCylinder)
+			end
+			pill(name, width * 0.54, height * 0.32, depth, Vector3.new(side * width * 0.21,
+				y + height * 0.39, z), color)
+		end
 	end
 	local function orbit(radius, y, color, tilt)
 		for index = 1, 14 do
@@ -123,34 +144,58 @@ function BrainrotModel.Create(record, frame, parent, forSale)
 	root.CanQuery = false
 	model.PrimaryPart = root
 	local kind = entry.Kind
+	local isToast = kind == "Toast" or kind == "Bruschetta"
 	local bodySize = Vector3.new(2.2, 2.55, 1.7)
-	if kind == "Toast" or kind == "Bruschetta" then bodySize = Vector3.new(2.25, 2.55, 1.15) end
+	if isToast then bodySize = Vector3.new(2.62, 2.5, 1.36) end
 	if kind == "Zucchini" or kind == "Maccherone" then bodySize = Vector3.new(1.95, 2.95, 1.65) end
 	if kind == "Carrot" then bodySize = Vector3.new(1.4, 3.0, 1.4) end
 	if kind == "Biscotto" then bodySize = Vector3.new(2.1, 2.9, 0.9) end
-	make("Body", bodySize, Vector3.new(0, 1.8, 0), bodyColor,
-		rounded[kind] and Enum.PartType.Ball or nil)
+	if isToast then
+		toastSlice("BakedCrust", bodySize.X, bodySize.Y, bodySize.Z, 1.87, 0, accent)
+		toastSlice("GoldenCrumb", bodySize.X - 0.36, bodySize.Y - 0.35, 0.19, 1.90, -0.64, bodyColor)
+	else
+		local ball = rounded[kind]
+		local size = ball and bodySize or Vector3.new(bodySize.Y, bodySize.X, bodySize.Z)
+		make("Body", size, Vector3.new(0, 1.8, 0), bodyColor,
+			ball and Enum.PartType.Ball or Enum.PartType.Cylinder,
+			not ball and CFrame.Angles(0, 0, math.pi / 2) or nil)
+	end
 	for _, side in ipairs({ -1, 1 }) do
-		make("BootLeg", Vector3.new(0.42, 0.85, 0.5), Vector3.new(side * 0.62, 0.66, 0.05), accent)
-		make("MoonBoot", Vector3.new(0.75, 0.4, 0.95), Vector3.new(side * 0.62, 0.22, 0.05), accent)
-		make("Mitten", Vector3.new(0.5, 0.85, 0.6), Vector3.new(side * 1.3, 1.55, 0),
-			accent, Enum.PartType.Ball, CFrame.Angles(0, 0, side * 0.22))
+		local ankle = Vector3.new(side * 0.7, 0.48, 0.04)
+		pill("SuitLeg", 0.49, 0.9, 0.56, ankle + Vector3.new(0, 0.2, 0), accent)
+		pill("MoonBoot", 0.88, 0.56, 1.23, ankle + Vector3.new(0, -0.18, -0.18), accent)
+		pill("BootToe", 0.69, 0.34, 0.57, ankle + Vector3.new(0, -0.12, -0.54), Config.Palette.White)
+		local hand = Vector3.new(side * (isToast and 1.58 or 1.39), side == -1 and 1.57 or 1.76, -0.09)
+		pill("SuitSleeve", 0.64, 0.73, 0.7, hand + Vector3.new(-side * 0.14, 0.22, 0.13), accent)
+		pill("Mitten", 0.59, 0.62, 0.67, hand, Config.Palette.White)
+		pill("GloveThumb", 0.26, 0.37, 0.34, hand + Vector3.new(-side * 0.19, -0.04, -0.23), Config.Palette.White)
 	end
 	-- Each catalog kind has its own recognizable silhouette or food detail.
-	if kind == "Toast" or kind == "Bruschetta" then
-		for _, side in ipairs({ -1, 1 }) do
-			make("Crust", Vector3.new(0.22, 2.65, 1.3), Vector3.new(side * 1.12, 1.8, 0), accent)
-		end
-		make("ToastTop", Vector3.new(2.4, 0.45, 1.25), Vector3.new(0, 3.1, 0), accent, Enum.PartType.Ball)
+	if isToast then
 		if kind == "Bruschetta" then
 			make("Blackhole", Vector3.new(0.8, 0.8, 0.15), Vector3.new(0, 1.1, -0.65),
 				Config.Palette.Ink, Enum.PartType.Ball)
 			orbit(2, 1.1, accent, 0.2)
+		else
+			make("ButterVisorPeak", Vector3.new(1.05, 0.25, 0.68), Vector3.new(-0.38, 3.19, -0.47),
+				Config.Palette.Sun, nil, CFrame.Angles(-0.15, -0.22, 0.19))
+			pill("JamBadge", 0.54, 0.39, 0.16, Vector3.new(0, 0.99, -0.78), Color3.fromRGB(235, 77, 109))
+			local radio = make("ToasterRadio", Vector3.new(1.5, 1.29, 0.73), Vector3.new(0, 1.85, 0.92),
+				Color3.fromRGB(98, 127, 149))
+			radio.Material = Enum.Material.Metal
+			for _, side in ipairs({ -1, 1 }) do
+				pill("ToasterCoil", 0.24, 0.8, 0.1, Vector3.new(side * 0.35, 1.93, 1.3),
+					Color3.fromRGB(255, 164, 71)).Material = Enum.Material.Neon
+			end
 		end
 	elseif kind == "Leaf" then
 		for index = -2, 2 do
-			make("LettuceCrown", Vector3.new(0.65, 1.3, 0.45), Vector3.new(index * 0.42, 3.2, 0),
-				accent, Enum.PartType.Ball, CFrame.Angles(0, 0, -index * 0.28))
+			local tilt = CFrame.Angles(0, 0, -index * 0.36)
+			local y = 3.17 - math.abs(index) * 0.15
+			make("LettuceCrown", Vector3.new(0.81, 1.5, 0.59), Vector3.new(index * 0.51, y, 0.24),
+				bodyColor:Lerp(accent, 0.18 + math.abs(index) * 0.39), Enum.PartType.Ball, tilt)
+			make("LeafVein", Vector3.new(0.10, 0.86, 0.14), Vector3.new(index * 0.53, y + 0.06, -0.05),
+				accent, Enum.PartType.Ball, tilt)
 		end
 	elseif kind == "Raviolo" or kind == "Gnocco" then
 		for index = -2, 2 do
@@ -193,8 +238,11 @@ function BrainrotModel.Create(record, frame, parent, forSale)
 			make("ToastyStripe", Vector3.new(0.13, 1.8, 0.12), Vector3.new(index * 0.6, 1.8, -0.8), accent)
 		end
 	elseif kind == "Zucchini" then
-		make("VeggieStem", Vector3.new(0.6, 0.5, 0.6), Vector3.new(0, 3.42, 0), accent)
-		make("VeggieStripe", Vector3.new(0.18, 2.3, 0.13), Vector3.new(-0.8, 1.8, -0.62), accent)
+		pill("VeggieStem", 0.55, 0.58, 0.55, Vector3.new(0, 3.33, 0), accent)
+		for _, side in ipairs({ -1, 1 }) do
+			make("SquashStripe", Vector3.new(0.24, 2.54, 0.42), Vector3.new(side * 0.65, 1.81, -0.35),
+				accent, Enum.PartType.Ball, CFrame.Angles(0, 0, side * 0.07))
+		end
 	elseif kind == "Gelato" then
 		for index = 1, 3 do
 			make("GelatoScoop", Vector3.one * 1.1, Vector3.new((index - 2) * 0.66, 3.05, 0),
@@ -318,12 +366,21 @@ function BrainrotModel.Create(record, frame, parent, forSale)
 		make("Sceptre", Vector3.new(0.18, 3.8, 0.18), Vector3.new(1.8, 2.1, 0), glow)
 		make("SceptreStar", Vector3.one * 0.8, Vector3.new(1.8, 4.0, 0), glow, Enum.PartType.Ball)
 	elseif kind == "Bean" or kind == "Olive" then
-		make("BeanBelt", Vector3.new(2.05, 0.26, 1.6), Vector3.new(0, 1.2, 0), accent)
+		if kind == "Bean" then
+			pill("BeanCurve", 1.31, 2.48, 1.54, Vector3.new(-0.48, 1.79, 0.15), bodyColor)
+			pill("BeanCheek", 0.74, 0.67, 0.48, Vector3.new(0.59, 1.53, -0.67), bodyColor:Lerp(accent, 0.24))
+			local dish = make("MoonBeanDish", Vector3.new(0.97, 0.97, 0.22), Vector3.new(-0.77, 3.15, 0.13),
+				accent, Enum.PartType.Ball, CFrame.Angles(-0.5, -0.36, 0))
+			dish.Material = Enum.Material.Metal
+			pill("DishReceiver", 0.17, 0.25, 0.17, Vector3.new(-0.82, 3.28, -0.15), glow).Material = Enum.Material.Neon
+		else
+			pill("PimentoBuckle", 0.8, 0.72, 0.31, Vector3.new(0, 0.98, -0.64), Color3.fromRGB(251, 108, 73))
+		end
 	end
 	-- Rank silhouettes read before a label: food cadets, jetpack pilots,
 	-- utensil navigators, comet captains, then shard-crowned space royalty.
-	if rarity.Rank == 1 then
-		make("LunchboxBackpack", Vector3.new(1.5, 1.3, 0.65), Vector3.new(0, 1.8, 0.95), accent)
+	if rarity.Rank == 1 and not isToast then
+		pill("LunchboxBackpack", 1.58, 1.34, 0.84, Vector3.new(0, 1.8, 0.95), accent)
 	elseif rarity.Rank == 2 or rarity.Rank == 4 then
 		for _, side in ipairs({ -1, 1 }) do
 			make("EspressoJetTank", Vector3.new(0.65, 1.85, 0.7), Vector3.new(side * 0.8, 1.75, 0.95), accent,

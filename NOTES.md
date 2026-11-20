@@ -13,8 +13,9 @@
   with radius 700 and a faint SmoothPlastic rim. Other sky bodies sit
   beyond 1,000 studs. Events colour the shield domes locally. The verifier
   checks the flat centered rail, halo clearance, atmosphere and planet bounds.
-- [ ] Item 6. Sculpt the toast and green characters, improve expressions,
-  and step up the silhouettes and effects across rarity tiers.
+- [x] Item 6. Sculpted the toast crust and crumb, gave the green mascots
+  distinct curves and accessories, and rounded the suit boots and gloves.
+- [ ] Item 6. Improve expressions and step up the rarity silhouettes and effects.
 - [ ] Check cover framing and update the capture guide for the lowered ring.
 - [ ] Owner phone playtest and four genuine Studio captures.
 
