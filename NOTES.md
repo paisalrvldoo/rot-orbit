@@ -16,7 +16,11 @@ the judging plan immediately below. Core systems pass; no new side systems.
   repeatable poses. Geometry checks assert halo height, opposite rotation,
   triple portal rims and the existing title sightlines. Full verifier passes.
   Source geometry is not a rendered appearance check.
-- [ ] Item 3: review remaining phone banner/layout clutter.
+- [x] Item 0+3: phone events now use a 680x38 compact band with short explicit
+  shield/lock/zap instructions. Desktop retains full copy. Rival thief world
+  text no longer contains a keyboard hint. Existing Crew action is inside the
+  left MENU, clear of Jump; no extra edge button added. Actual event-copy and
+  touch-control regressions pass. Owner phone visual approval remains pending.
 - [ ] Item 4: refine premium physical leaderboard podium.
 - [ ] Brainrot silhouettes/expressions, then Item 5 cover presets as time allows.
 - [ ] Owner live phone playtest and genuine screenshots; never block source work.

@@ -87,6 +87,19 @@ function HudController.Text(parent, name, text, position, size, textSize, color)
 	return label
 end
 
+function HudController.EventCopy(event, compact)
+	if not compact then return event.Text end
+	local short = {
+		Meteor = "METEOR SHOWER · FIND A SHIELD",
+		SolarFlare = "SOLAR FLARE · ALL BAYS x2",
+		AuroraSurge = "AURORA SURGE · MUTATED CARGO",
+	}
+	if event.Name == "Gremlin" then
+		return event.Text:find("CAPTAIN") and "CAPTAIN RAID · TAP ZAP" or "GREMLIN RAID · LOCK / ZAP"
+	end
+	return short[event.Name] or event.Text:gsub("%s*%[L%]", ""):gsub("%s*%[F%]", "")
+end
+
 local function startEventBanner(gui, network)
 	local banner = Instance.new("TextLabel")
 	banner.Name = "EventBanner"
@@ -118,6 +131,9 @@ local function startEventBanner(gui, network)
 	end)
 	RunService.RenderStepped:Connect(function()
 		local now = workspace:GetServerTimeNow()
+		local compact = HudController.IsCompact()
+		banner.Size = UDim2.fromOffset(compact and 680 or 1136, compact and 38 or 49)
+		textLimit.MaxTextSize = compact and 24 or 40
 		local selected
 		for name, event in pairs(active) do
 			if event.EndsAt <= now and not event.FrozenSeconds then active[name] = nil
@@ -126,10 +142,7 @@ local function startEventBanner(gui, network)
 		banner.Visible = selected ~= nil or nextMeteorAt ~= nil
 		if selected then
 			local countdown = selected.FrozenSeconds or math.ceil(selected.EndsAt - now)
-			local eventText = selected.Text
-			if HudController.IsCompact() then
-				eventText = eventText:gsub("%s*%[L%]", ""):gsub("%s*%[F%]", "")
-			end
+			local eventText = HudController.EventCopy(selected, compact)
 			banner.Text = selected.HideCountdown and eventText or (eventText .. "  ·  " .. countdown .. "s")
 			banner.TextColor3 = selected.Color or Config.Palette.Sun
 		elseif nextMeteorAt then

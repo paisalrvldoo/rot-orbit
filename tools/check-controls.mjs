@@ -53,6 +53,12 @@ local Format = Traits.Format
 local compact = true
 local HudController = { IsCompact = function() return compact end,
     ButtonFeedback = function(button, callback) button.Activate = callback; return callback end }
+${source('src/client/HudController.luau').slice(source('src/client/HudController.luau').indexOf('function HudController.EventCopy('), source('src/client/HudController.luau').indexOf('local function startEventBanner('))}
+local meteor={Name='Meteor',Text='METEOR SHOWER! GET UNDER THE SHIELD DOME'}
+assert(HudController.EventCopy(meteor,true)=='METEOR SHOWER · FIND A SHIELD')
+assert(HudController.EventCopy(meteor,false)==meteor.Text,'desktop event instructions must be preserved')
+assert(HudController.EventCopy({Name='Gremlin',Text='CAPTAIN RAID! ZAP [F]'},true)=='CAPTAIN RAID · TAP ZAP')
+assert(not HudController.EventCopy({Name='Other',Text='LOCK [L] OR ZAP [F]'},true):find('%['))
 ${client.slice(client.indexOf('local InputController ='), client.indexOf('local function startCrewPanel'))}
 local state = { Upgrades = {}, Found = {}, Catalog = table.create(43), Rebirths = 0, SaveStatus = 'SAVED' }
 local sent = {}

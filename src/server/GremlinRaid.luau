@@ -216,7 +216,7 @@ function GremlinRaid:Patrol()
 	local enemy = self:Spawn(bay, (rival.Frame * CFrame.new(0, 1, -12)).Position)
 	enemy.Patrol = true
 	enemy.Model.Name = "RivalCrewThief"
-	enemy.Label.Text = "RIVAL THIEF! · ZAP [F]"
+	enemy.Label.Text = "RIVAL THIEF! · CHASE AND ZAP"
 	self.Economy.Network.Notice:FireClient(bay.Owner, "THIEF APPROACHING YOUR BAY! ZAP [F] OR LOCK [L]")
 end
 
