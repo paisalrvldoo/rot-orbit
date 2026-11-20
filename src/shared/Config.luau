@@ -47,7 +47,7 @@ local Config = {
 		DomeOrbit = 63,
 		PlanetPosition = Vector3.new(-600, -900, -1700),
 		PlanetRadius = 700,
-		StarCount = 340,
+		StarCount = 1400,
 		StarBandCount = 300,
 	},
 	Conveyor = {
@@ -129,7 +129,7 @@ local Config = {
 	} },
 	Palette = {
 	-- Dark station metal lets the teal and gold orbit guides read on phones.
-	Deck = Color3.fromRGB(38, 46, 57),
+	Deck = Color3.fromRGB(58, 64, 70),
 		Teal = Color3.fromRGB(17, 183, 186),
 		Mint = Color3.fromRGB(104, 255, 222),
 		Ink = Color3.fromRGB(11, 31, 52),
