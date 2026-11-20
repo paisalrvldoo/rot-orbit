@@ -264,8 +264,9 @@ function BillboardFx.Start()
 				if camera then
 					local offset = camera.CFrame.Position - position
 					local direction = Vector3.new(offset.X, 0, offset.Z)
-					if direction.Magnitude > 1 and direction.Magnitude < 48 then
-						-- Let shoppers on either side of the orbit see the face.
+					if direction.Magnitude > 1 then
+						-- Show faces along the far arc from arrival as well as
+						-- to shoppers standing on either side of the track.
 						frame = CFrame.lookAt(position, position + direction)
 					end
 				end

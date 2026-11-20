@@ -29,6 +29,8 @@ Work ONLY in this order; no further pedestal/UI/new-system polish:
   The front pylon used to sit between the spawn camera and the title. Two
   supports now flank the view. Verification traces sightlines from both ends
   of the title camera slide as well as the live Play camera.
+  Live cargo on the far arc now faces the viewer from arrival. The old
+  48-stud turn limit left the far-side brainrots showing their backs.
 - [ ] **0: v8 defects**, only after 0a is visibly approved: unclipped title,
   visible deep-space background, graphite floor, single phone raid warning,
   correct empty-and-not-carrying bottom hint. See refs.md for full requirements.
