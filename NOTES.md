@@ -14,8 +14,9 @@
   checks still use the same interface. Added real-function regressions for
   upgrade/rebirth bonuses, active/recharge spam, exact expiry, inactive/preview
   guards and delayed cleanup after a bay changes owner. Full verifier passes.
-- [ ] Correct the README's superseded sunny/orange-planet capture guidance
-  and reconcile the completed v10 checklist with the measured v11 handoff.
+- [x] Corrected the README's superseded sunny/orange-planet capture guidance
+  and reconciled the completed v10 checklist with the measured v11 handoff.
+  CAPTURE.md includes new model review points and bay-lock lifecycle checks.
 - [ ] Owner live phone review and four genuine Studio captures.
 
 Research priorities remain: staged late-game cover; 42–45 originals (43);
@@ -57,7 +58,7 @@ renderer or fabricate captures. Verify and commit each working piece.
 
 Core systems pass. The judging plan from the owner research remains a staged
 late-game cover, 43 original brainrots within the 42–45 target, four genuine
-captures, roughly 20–24 purposeful scripts (currently 25), a large world title,
+captures, roughly 20–24 purposeful scripts (now 24), a large world title,
 readable hazards and shields, six mutations, live buttons with a quest card
 and action feed, readable rarity and value cards, and earned progression.
 The v11 measurements govern the orbit and sky.
@@ -78,8 +79,9 @@ captures using CAPTURE.md. No renderer was awaited and no captures fabricated.
   with two atmosphere shells, wide layered Saturn discs, cratered moon and
   red planet. Full verification includes the rebuilt place and dossier.
 - [x] Urgent 5: superseded by the measured v11 orbit fix above.
-- [ ] Urgent 6: sculpt the toast and green characters and step up rarity gear.
-- [ ] Reframe staged Cover around the new orbit geometry and capture guidance.
+- [x] Urgent 6: sculpted toast/greens, stepped up rarity gear, then improved
+  early pasta and space-pilot silhouettes in the latest continuation.
+- [x] Reframed staged Cover around the v11 orbit geometry and capture guidance.
 - [ ] Owner live phone playtest and four Studio captures.
 
 Top 3 plan from the research, in judging order: staged late-game cover,

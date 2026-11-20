@@ -42,7 +42,12 @@ raid and its summon key remain future work.
   `PLAY.json` to `/output`, leaving out every name that starts with a dot (such as `.gitkeep` or `.DS_Store`, which
   fail an entry), and writes `/output/dossier.json` with `vendor/makefun-roblox.ts`, the kit's copy, unchanged.
 - `game.rbxl` is rebuilt from `src/` and `default.project.json` after every source
-  change. `WorldBuilder` creates the sunny station, orange planet, bays and domes at runtime.
+  change. `WorldBuilder` creates the dark-metal station, bays, domes and starfield
+  at runtime. The cargo rail is flat at Y=9 around the hub axis; three concentric
+  cyan/violet/gold halos crown it at Y=80. Black space, distant small planets and
+  a faint blue planet below the deck horizon keep the station's neon readable.
+- The project has 24 Luau scripts. `BaseService` owns docking, cargo and bay
+  locks together, including shield cleanup when a bay resets or changes owner.
 - [Play ROT ORBIT](https://www.roblox.com/games/75703852342218). The kit verified
   the Public start place, universe and description code on 19 November 2026.
 - `screenshots/` still contains starter placeholders. Genuine Studio captures
@@ -57,10 +62,11 @@ raid and its summon key remain future work.
   another preset name). These previews disable saving of staged progress. Stop
   and restart the playtest to return to normal play. Capture the client viewport
   at 1280x720; save each JPEG under 256 KiB with the filename in the tour. Before
-  keeping a shot, check that the title sign is inside the frame, the orange planet
-  is visible behind the deck, hero billboards are readable, and the top-left Roblox
-  menu area stays clear. The Cover preset stages 32/43 found and a Diamond Cosmo
-  Cornetto carry; Index should visibly read 32/43 FOUND.
+  keeping a shot, check that the title sign is clear, the rail and overhead halos
+  share the hub centre, the sky has no cyan hills or bright horizon band, hero
+  billboards are readable, and the top-left Roblox menu area stays clear. The
+  Cover preset stages 32/43 found, five docked heroes, six real cargo pods and a
+  Diamond Cosmo Cornetto carry; Index should visibly read 32/43 FOUND.
 
 `node tools/verify.mjs` rebuilds the place, compiles every Luau script, runs the
 gameplay/save/rebirth/combat/crew/phone-control regressions and checks the

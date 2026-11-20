@@ -59,6 +59,9 @@ triple-rim portals, tall orbital hologram, dark bay floors at every rebirth,
 short phone event banner, luxury trophy podium and sculpted brainrots. Check Toastronaut's rounded crust and crumb face,
 the lettuce leaves and bean dish, rounded gloves/boots, large expressive eyes,
 Epic capes, Mythic mantles, Cosmic moons and SECRET royal cape/crown.
+The early parade now also has crimped ravioli, a satellite receiver dish,
+turbo penguin flippers/goggles/skis and curved Cornetto pastry tips. Check that
+the goggles frame the penguin's eyes and the pasta details leave faces clear.
 The source harness builds all 602 plain/mutation and dock/cargo combinations;
 confirm their faces, clipping and glow in Studio.
 These changes pass source/build checks; their rendered appearance is unverified.
@@ -137,9 +140,13 @@ Live recovery / combat smoke test (19 November continuation):
   R2 Blink goes farther, R3 periodically adds shared Mythic supply, R4 has a
   title/aura. Check mint/blue/gold/rose bays, announcement and fireworks.
 
-- Republish the rebuilt place first. Confirm **zero server errors**, the sunny
-  deck, planet and bays all spawning. FallenPartsDestroyHeight is now authored
+- Republish the rebuilt place first. Confirm **zero server errors**, the dark
+  metal deck, black starfield, centered orbit and bays all spawning. FallenPartsDestroyHeight is authored
   in the place rather than written by a restricted runtime thread.
+- Test LOCK twice quickly: one shield and one cooldown. Let it expire, wait
+  for recharge and lock again. Upgrades/rebirth should extend its duration.
+  With two clients, leave a locked bay and have the other player claim the
+  released bay; the old timer must never clear the new owner's shield.
 - Dock a Common. A rival thief can patrol after 30s; first raid is within 75s
   of loading and repeats every 135s. Check the six-second red warning, arrival
   portal, HP bars, F beam, stolen-cargo recovery and kill/defence cash. Third
