@@ -19,7 +19,7 @@ Public-link verification passes. The published place still needs the latest
 
 | File | Server Command Bar | Visible proof to check |
 | --- | --- | --- |
-| 01-cover.jpg | `require(game.ReplicatedStorage.ScreenshotMode).Cover(0)` | $867.5M, live income, rebirth 3, 18s meteor banner, Diamond Cosmo Cornetto carry, five docked heroes with the Supernova SECRET in the middle; a genuine buyable Aurora SECRET on the left cargo arc; raised dark-metal showcase balcony, full-width elevated orbit, clear world title and deep-space backdrop. |
+| 01-cover.jpg | `require(game.ReplicatedStorage.ScreenshotMode).Cover(0)` | $867.5M, live income, rebirth 3, 18s meteor banner, Diamond Cosmo Cornetto carry, five docked heroes with the Supernova SECRET in the middle; a genuine buyable Aurora SECRET on the left cargo arc; low dark-metal showcase balcony, broad flat cargo ring, clear world title and deep-space backdrop. |
 | 02-index.jpg | `require(game.ReplicatedStorage.ScreenshotMode).Index(0)` | Exactly 32/43 FOUND, seven rarity counts, undiscovered silhouettes, six mutation tabs and next cash reward. |
 | 03-raid.jpg | `require(game.ReplicatedStorage.ScreenshotMode).Raid(0)` | 27s raid banner, crowned captain escaping with cargo (18/32 HP, wave 3), one zapped gremlin and dropped recoverable cargo, shared captain health bar. |
 | 04-upgrades.jpg | `require(game.ReplicatedStorage.ScreenshotMode).Upgrades(0)` | Five upgrade tracks with levels/costs; rebirth x3 → x4.5, +3s shield, next Orbit Ace aura and keep-best text; three contracts with progress/rewards and 4/15 done. |
@@ -27,16 +27,16 @@ Public-link verification passes. The published place still needs the latest
 Check the cover at 768 pixels wide and the three secondary pictures at 253
 pixels wide. Keep the title and SECRET face clear of the HUD; confirm names,
 rarity cards, income, banner and bottom controls remain readable. The saved
-55° camera sits at (5, 49, 70), looking toward (0, 31, 4). The temporary
-showcase balcony is at 30 studs beside the actual elevated conveyor; the rail
-should span the frame above the docked heroes. Look for the Aurora SECRET on
+55° camera sits at (5, 26, 70), looking toward (0, 8, 4). The temporary
+showcase origin is at (0, 7.3, 35), beside the flat 9-stud cargo ring; the rail
+should span the frame behind the docked heroes. Look for the Aurora SECRET on
 the far-left cargo arc and the Diamond Cosmic on the right. Tall cargo now
 stays farther back so its crown can fit below the event band. The avatar
 carries its Cornetto between the left docked heroes; check silhouette separation.
 Exactly one cargo BUY card stays
 visible in the frozen cover, showing the Aurora SECRET's real price/income.
 The five dock cards spread below their models with separate projected
-rectangles. The existing station marquee rises for Cover and restores its
+rectangles. The existing station marquee shifts for Cover and restores its
 normal pose for Index/Raid/Upgrades; repeat Cover to check there is no drift.
 Foreground SECRET pillars stop just above their crowns to clear the title.
 Check that the BUY card clears the dock cards, all six real pods fit cleanly,
@@ -45,19 +45,29 @@ frame. Source tests check actual balcony staging, rail width, title sightlines,
 pillar clearance and five card rectangles. Actual brightness, faces, particles,
 all pod occlusion and text readability still need Studio approval.
 
-20 November source update: the cargo rail is 36 studs high and the Cover
-camera/showcase now share that elevated composition. Other presets restore the
-normal title and remove the balcony through the existing preview cleanup.
-Phone review should include the three sky-scale cyan/violet/gold halos,
+20 November v11 source update: the cargo rail is flat at Y=9. All orbit
+centres share the hub axis X=0, Z=0. The three overhead cyan/violet/gold
+halos share (0, 80, 0), radii 60/72/84 and tilts 0/+10/−10 degrees.
+The arrival camera is at (0, 15, 64), looking at (0, 27, −2). Confirm the
+rail stays low and both ramps reach it. Pan all the way around at the deck
+edge: the sky should stay deep black/navy with stars and no cyan hills or
+bright horizon band. Azure is far below the deck horizon; other small sky
+bodies sit more than 1,000 studs away. Event colour stays on the domes.
+Other presets restore the normal title and remove the balcony through the
+existing preview cleanup. Phone review should include the concentric halos,
 triple-rim portals, tall orbital hologram, dark bay floors at every rebirth,
-short phone event banner, luxury trophy podium and new brainrot faces/gear.
+short phone event banner, luxury trophy podium and sculpted brainrots. Check Toastronaut's rounded crust and crumb face,
+the lettuce leaves and bean dish, rounded gloves/boots, large expressive eyes,
+Epic capes, Mythic mantles, Cosmic moons and SECRET royal cape/crown.
+The source harness builds all 602 plain/mutation and dock/cargo combinations;
+confirm their faces, clipping and glow in Studio.
 These changes pass source/build checks; their rendered appearance is unverified.
 
 For the phone smoke pass, also confirm the dark station deck separates the
 teal/gold paths, a player with zero docked cargo sees a clear dock-a-brainrot
 hint instead of a misleading `$0/s`, and joining-crew signs stay legible without
 overlapping. Check the title flyby and first spawn for a nearby moving pod,
-the pod buy prompt on both sides of the tilted track, and the gap between the
+the pod buy prompt on both sides of the flat track, and the gap between the
 world title and spinning core. Pan quickly to confirm cargo cards clear the
 cash and event HUD. Keep the gremlin warning short enough to fit at 1024×460.
 

@@ -22,7 +22,11 @@
   plus plain, at dock and cargo scales; checked nonblocking parts and SECRET
   crown height. Lowered the Aurora loop and emperor sceptre tip slightly to
   retain the existing warp crown budget.
-- [ ] Check cover framing and update the capture guide for the lowered ring.
+- [x] Checked the current Cover geometry: its 55° camera at (5, 26, 70)
+  looks toward (0, 8, 4), with the low showcase at (0, 7.3, 35). The real rail
+  width, marquee sightlines, five separate value cards and SECRET hero size
+  still pass. Updated CAPTURE.md with the lowered composition, concentric
+  halos, 360° black-sky review and new model review points.
 - [ ] Owner phone playtest and four genuine Studio captures.
 
 Core systems pass. The judging plan from the owner research remains a staged
@@ -31,6 +35,13 @@ captures, roughly 20–24 purposeful scripts (currently 25), a large world title
 readable hazards and shields, six mutations, live buttons with a quest card
 and action feed, readable rarity and value cards, and earned progression.
 The v11 measurements govern the orbit and sky.
+
+Session handoff: `eca28ff` restores the measured orbit, `45e4473` fixes
+the horizon, `675f3f5` sculpts the toast and green mascots, and `52f5d1e`
+adds expressive faces and rank gear. Full verifier passes: 25 Luau scripts,
+602 model builds, sky/orbit geometry, gameplay regressions and dossier export.
+The next useful input is the owner's live phone review, then four genuine
+captures using CAPTURE.md. No renderer was awaited and no captures fabricated.
 
 ## v10 phone feedback continuation
 
