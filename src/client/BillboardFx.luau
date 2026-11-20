@@ -282,10 +282,13 @@ function BillboardFx.Start()
 				local seed = model:GetAttribute("BrainrotId") or 0
 				local zeroG = model:GetAttribute("Mutation") == "Zero-G"
 				local cargo = state == "Cargo"
-				local bob = math.sin(time * (cargo and 4.8 or 2) + seed) * (cargo and 0.28 or 0.16)
+				local rank = model:GetAttribute("RarityRank") or 1
+				local idleBob = rank >= 6 and 0.27 or rank >= 4 and 0.22 or 0.16
+				local bob = math.sin(time * (cargo and 4.8 or 2) + seed) * (cargo and 0.28 or idleBob)
 					+ (zeroG and 0.65 or 0)
-				local rareWobble = (model:GetAttribute("RarityRank") or 1) >= 5 and (cargo and 0.3 or 0.19) or 0.09
-				local spin = zeroG and time * 0.6 or math.sin(time * 0.8 + seed) * rareWobble
+				local rareWobble = rank >= 5 and (cargo and 0.3 or 0.19) or 0.09
+				local spin = zeroG and time * 0.6 or state == "Pedestal" and rank >= 4
+					and time * (rank >= 6 and 0.16 or 0.11) or math.sin(time * 0.8 + seed) * rareWobble
 				local age = time - (model:GetAttribute("DockedAt") or -math.huge)
 				local secret = (model:GetAttribute("RarityRank") or 1) == 7
 				local config = Config.SecretDock

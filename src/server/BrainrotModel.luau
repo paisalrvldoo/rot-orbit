@@ -51,7 +51,7 @@ local function billboard(record, root, scale, forSale)
 	corner.Parent = card
 	local stroke = Instance.new("UIStroke")
 	stroke.Color = rarity.Color
-	stroke.Thickness = 2
+	stroke.Thickness = rarity.Rank >= 4 and 3 or 2
 	stroke.Parent = card
 	if forSale then
 		gui.Size = UDim2.fromOffset(148, 40)
@@ -75,9 +75,13 @@ local function billboard(record, root, scale, forSale)
 	limit.MinTextSize = 12
 	limit.MaxTextSize = 20
 	limit.Parent = name
-	label(card, "Rarity", string.upper(entry.Rarity) .. (record.Mutation
+	local rarityLabel = label(card, "Rarity", string.upper(entry.Rarity) .. (record.Mutation
 		and ("  ·  ×" .. Mutation.Multiplier(record.Mutation)) or ""),
 		39, 20, 15, rarity.Color)
+	if rarity.Rank >= 4 then
+		rarityLabel.TextStrokeColor3 = Config.Palette.Ink
+		rarityLabel.TextStrokeTransparency = 0.35
+	end
 	label(card, "Value", Format.Money(Catalog.Income(record)) .. "/s", 61, 24, 17, Config.Palette.Mint)
 	return gui
 end

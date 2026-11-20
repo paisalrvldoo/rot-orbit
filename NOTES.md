@@ -14,7 +14,12 @@
   Reused the existing built-in ping through SoundService; capture transitions
   cancel effects and restore model scale. Purchases show their real cost,
   docking shows income per second and steals show cargo value, not extra cash.
-- [ ] Final 3: premium high-rarity pedestal presentation within phone budgets.
+- [x] Final 3: occupied pedestal sockets keep their rarity-coloured neon rings;
+  Legendary+ dock cards now use a stronger tier frame and outlined rarity tag,
+  with a slower model-level idle bob/spin. Expanded the 602-build regression
+  to verify tier-coloured labels and premium card contrast. Full verifier passes;
+  no parts, lights or emitters were added. Rendered phone appearance still
+  needs owner review.
 - [ ] Final 4: assert HUD rectangles clear at 844×390 and 390×844.
 - [ ] Final 5: document four cover presets and restoration; final clean handoff.
 

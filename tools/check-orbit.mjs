@@ -432,6 +432,18 @@ for _,entry in ipairs(Catalog.Entries) do
    local model=BrainrotModel.Create({Id=entry.Id,Mutation=Mutation.Order[variant]},CFrame.identity,world.Geometry,sale)
    local scale=model:GetAttribute('VisualScale')
    local counts,maxY={},0
+   if not sale then
+    local gui=model.PrimaryPart:FindFirstChild('BrainrotBillboard')
+    local card,rarityLabel,cardStroke
+    for _,child in ipairs(gui:GetChildren()) do if child:IsA('Frame') then card=child end end
+    for _,child in ipairs(card:GetChildren()) do
+     if child.Name=='Rarity' then rarityLabel=child elseif child:IsA('UIStroke') then cardStroke=child end
+    end
+    local rank=Rarity.ByName[entry.Rarity].Rank
+    assert(rarityLabel.TextColor3==Rarity.ByName[entry.Rarity].Color,'docked rarity tag must use its tier colour')
+    assert(cardStroke.Thickness==(rank>=4 and 3 or 2),'high-rarity dock cards need a premium frame')
+    assert((rarityLabel.TextStrokeTransparency or 1)==(rank>=4 and 0.35 or 1),'high-rarity tags need readable contrast')
+   end
    for _,part in ipairs(model:GetChildren()) do
     if part:IsA('BasePart') then
      assert(part.Size.X>0 and part.Size.Y>0 and part.Size.Z>0,'invalid sculpted geometry')
