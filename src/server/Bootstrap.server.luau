@@ -7,7 +7,6 @@ local EconomyService = require(script.Parent:WaitForChild("EconomyService"))
 local ConveyorService = require(script.Parent:WaitForChild("ConveyorService"))
 local StealService = require(script.Parent:WaitForChild("StealService"))
 local MeteorSolarEvents = require(script.Parent:WaitForChild("MeteorSolarEvents"))
-local LockService = require(script.Parent:WaitForChild("LockService"))
 local GremlinRaid = require(script.Parent:WaitForChild("GremlinRaid"))
 local CrewService = require(script.Parent:WaitForChild("CrewService"))
 local UpgradeRebirthService = require(script.Parent:WaitForChild("UpgradeRebirthService"))
@@ -25,15 +24,14 @@ local economy = EconomyService.new(bases, network)
 local conveyor = ConveyorService.new(world, economy)
 local stealing = StealService.new(bases, economy, network)
 local meteors = MeteorSolarEvents.new(world, bases, economy)
-local locks = LockService.new(bases, economy)
-local gremlins = GremlinRaid.new(world, bases, economy, locks)
+local gremlins = GremlinRaid.new(world, bases, economy, bases)
 local crews = CrewService.new(world, bases, economy, gremlins)
 local upgrades = UpgradeRebirthService.new(bases, economy)
 local contracts = ContractService.new(economy)
 local data = DataService.new(bases, economy)
 local screenshots = ScreenshotService.new({ Bases = bases, Economy = economy, Data = data,
 	Meteors = meteors, Gremlins = gremlins, Conveyor = conveyor })
-local actions = { Lock = function(player) locks:Activate(player) end,
+local actions = { Lock = function(player) bases:ActivateLock(player) end,
 	Zap = function(player) gremlins:Zap(player) end,
 	Skill = function(player, name) gremlins:Skill(player, name) end,
 	Crew = function(player, id) crews:Join(player, id) end,

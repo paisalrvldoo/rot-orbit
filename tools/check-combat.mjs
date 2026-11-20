@@ -10,6 +10,66 @@ local Color3 = { fromRGB = function(...) return {...} end }
 local Vector3 = { new = function(...) return {...} end }
 local workspace = { GetServerTimeNow = function() return 100 end }
 local Config = ${moduleBody('src/shared/Config.luau', 'local Config =')}
+-- Exercise real bay-lock timing and lifecycle guards after service consolidation.
+do
+    local now, frozen, created, sent, destroyed = 100, false, 0, 0, 0
+    local workspace = { GetServerTimeNow = function() return now end }
+    local Enum = { Material = { ForceField = 'ForceField' }, PartType = { Ball = 'Ball' } }
+    local CFrame = { new = function() return {} end }
+    local WorldBuilder = { Part = function()
+        created += 1
+        return { Destroy = function() destroyed += 1 end }
+    end }
+    local delayed = {}
+    local task = { delay = function(seconds, callback) table.insert(delayed, { seconds, callback }) end }
+    local BaseService = ${moduleBody('src/server/BaseService.luau', 'local BaseService =')}
+    local user, replacement = {}, {}
+    local attributes = {}
+    local bay = { Owner = user, Frame = setmetatable({}, { __mul = function() return {} end }), Model = {
+        GetAttribute = function(_, key) return attributes[key] end,
+        SetAttribute = function(_, key, value) attributes[key] = value end } }
+    local state = { Bay = bay }
+    local profile = { Upgrades = { LockDuration = 2 }, Rebirths = 3 }
+    local bases = setmetatable({ Players = { [user] = state },
+        World = { Root = { GetAttribute = function() return frozen end } },
+        Network = { Notice = { FireClient = function() end } },
+        Economy = { Profiles = { [user] = profile }, Send = function() sent += 1 end } }, BaseService)
+    for _, flag in ipairs({ 'Loading', 'Closing' }) do
+        state[flag] = true; bases:ActivateLock(user); state[flag] = nil
+    end
+    profile.Demo = true; bases:ActivateLock(user); profile.Demo = nil
+    frozen = true; bases:ActivateLock(user); frozen = false
+    bases:ActivateLock({})
+    assert(created == 0 and #delayed == 0, 'inactive and preview bays must not lock')
+    local duration = Config.Lock.Duration + 2 * Config.Upgrades.LockDuration.Step + 3 * Config.Rebirth.LockSecondsPerLevel
+    bases:ActivateLock(user)
+    assert(created == 1 and sent == 1 and bases:IsLocked(bay))
+    assert(state.LockUntil == now + duration and state.LockReadyAt == now + duration + Config.Lock.Cooldown)
+    assert(delayed[1][1] == duration, 'shield lifetime must include upgrade and rebirth bonuses')
+    bases:ActivateLock(user)
+    now = state.LockUntil
+    assert(not bases:IsLocked(bay), 'shield expires at its exact deadline')
+    bases:ActivateLock(user)
+    assert(created == 1, 'neither active shield nor recharge can be spammed')
+    delayed[1][2]()
+    assert(attributes.LockedUntil == 0 and destroyed == 1)
+    now = state.LockReadyAt
+    bases:ActivateLock(user)
+    assert(created == 2 and bases:IsLocked(bay), 'lock must work again after cooldown')
+    -- A callback from a previous lock must not clear a replacement shield.
+    attributes.LockedUntil += 1
+    delayed[2][2]()
+    assert(attributes.LockedUntil == now + duration + 1)
+    now = state.LockReadyAt
+    bases:ActivateLock(user)
+    bay.Owner = replacement
+    local replacementUntil = now + duration + 100
+    attributes.LockedUntil = replacementUntil
+    delayed[3][2]()
+    assert(attributes.LockedUntil == replacementUntil, 'departed owner cannot unlock the next owner')
+    assert(created == 3 and sent == 3 and destroyed == 3)
+end
+print('Bay lock checks passed: bonuses, active/recharge spam, exact expiry, preview guards and replacement-owner cleanup.')
 local GremlinRaid = ${moduleBody('src/server/GremlinRaid.luau', 'local GremlinRaid =')}
 local player, other, preview, loading = {}, {}, {}, {}
 local profiles = { [player] = { Cash = 0 }, [other] = { Cash = Config.MaxCash - 1 },

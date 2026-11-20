@@ -9,8 +9,11 @@
   goggles/skis and curved chocolate-tipped croissant horns. Belly pasta lines
   no longer cross faces. All 602 model combinations and full verifier pass;
   a regression checks that penguin goggle rims sit behind the eyes.
-- [ ] Reach the research's 20–24 purposeful-script target by merging the
-  tiny bay-lock service into its existing bay owner, with lock regressions.
+- [x] Reached 24 purposeful scripts: merged the tiny bay-lock service into
+  BaseService, which already resets/releases shields. Existing raid shield
+  checks still use the same interface. Added real-function regressions for
+  upgrade/rebirth bonuses, active/recharge spam, exact expiry, inactive/preview
+  guards and delayed cleanup after a bay changes owner. Full verifier passes.
 - [ ] Correct the README's superseded sunny/orange-planet capture guidance
   and reconcile the completed v10 checklist with the measured v11 handoff.
 - [ ] Owner live phone review and four genuine Studio captures.
