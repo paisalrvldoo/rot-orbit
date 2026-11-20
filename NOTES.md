@@ -26,6 +26,9 @@ Work ONLY in this order; no further pedestal/UI/new-system polish:
   the exposed neon and light chasers have a clear line of sight past the track.
   The centre pad projects a rotating cyan globe with latitude lines and an
   orbit beneath the existing ROT ORBIT title. Phone capture is still required.
+  The front pylon used to sit between the spawn camera and the title. Two
+  supports now flank the view. Verification traces sightlines from both ends
+  of the title camera slide as well as the live Play camera.
 - [ ] **0: v8 defects**, only after 0a is visibly approved: unclipped title,
   visible deep-space background, graphite floor, single phone raid warning,
   correct empty-and-not-carrying bottom hint. See refs.md for full requirements.

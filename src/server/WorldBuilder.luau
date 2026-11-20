@@ -445,8 +445,10 @@ local function buildCargoRing(world)
 			segment.Color = a:Lerp(b, sector - tier):Lerp(palette.Teal, side == 1 and 0.08 or 0.45)
 		end
 	end
-	for index = 1, 14 do
-		local angle = (index - 0.5) * math.pi * 2 / 14
+	-- Split the near span between two supports to leave a clear view of the
+	-- title from arrival. A support at pi/2 stands directly in front of it.
+	for index = 1, 12 do
+		local angle = (index - 0.5) * math.pi * 2 / 12
 		local position = Config.World.RailFrame(angle, radius, -0.62).Position
 		local height = position.Y
 		local frame = CFrame.new(position.X, height / 2, position.Z) * CFrame.Angles(0, -angle, 0)

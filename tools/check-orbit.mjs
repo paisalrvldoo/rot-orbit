@@ -121,11 +121,43 @@ local function bounds(part)
  return low,high
 end
 local tl,th=bounds(title)
+local function blocksSightline(part, origin, target)
+ local start=part.CFrame:PointToObjectSpace(origin)
+ local delta=part.CFrame:PointToObjectSpace(target)-start
+ local first,last=0,1
+ for _,axis in ipairs({'X','Y','Z'}) do
+  local half=part.Size[axis]/2
+  if math.abs(delta[axis])<1e-8 then
+   if math.abs(start[axis])>half then return false end
+  else
+   local a,b=(-half-start[axis])/delta[axis],(half-start[axis])/delta[axis]
+   first,last=math.max(first,math.min(a,b)),math.min(last,math.max(a,b))
+   if first>last then return false end
+  end
+ end
+ return true
+end
+local titleSightlines={}
+for x=-20,20,2 do
+ for y=-3.3,3.3,1.65 do
+  table.insert(titleSightlines,title.CFrame*Vector3.new(x,y,title.Size.Z/2))
+ end
+end
 for _,p in ipairs(parts) do
  if p.Parent.Name~='StationTitle' then
   local low,high=bounds(p)
   assert(high.X<tl.X or low.X>th.X or high.Y<tl.Y or low.Y>th.Y or high.Z<tl.Z or low.Z>th.Z,
    p.Name..' intersects the station title')
+  -- The title camera also slides two studs in either direction before Play.
+  if high.Y>=math.min(tl.Y,camera.Position.Y) and low.Y<=math.max(th.Y,camera.Position.Y)
+   and high.Z>=tl.Z and low.Z<=camera.Position.Z then
+   for slide=-2,2,2 do
+    local origin=camera*Vector3.new(slide,0,0)
+    for _,target in ipairs(titleSightlines) do
+     assert(not blocksSightline(p,origin,target),p.Name..' obscures the title from arrival')
+    end
+   end
+  end
  end
 end
 local ramps=named('CargoAccessRamp');assert(#ramps==2)
@@ -150,7 +182,7 @@ local portalRadius=(aperture.Position-gate.Position).Magnitude
 local crownHeight=4.35*Rarity.ByName.SECRET.Scale*Config.Conveyor.ModelScale+Config.Conveyor.HoverHeight
 local crownLocal=gate:PointToObjectSpace(entry+Vector3.new(0,crownHeight,0))
 assert(math.sqrt(crownLocal.X^2+crownLocal.Z^2)+0.8<portalRadius,'enlarged SECRET crown clips portal rim')
-print(string.format('Orbit geometry checks passed: 1170x540 rail x%.0f–%.0f y%.0f–%.0f, two walkable ramps, title world clearance and SECRET portal headroom. NOT a rendered screenshot.',loX,hiX,loY,hiY))
+print(string.format('Orbit geometry checks passed: 1170x540 rail x%.0f–%.0f y%.0f–%.0f, two walkable ramps, clear orbit-to-title sightlines and SECRET portal headroom. NOT a rendered screenshot.',loX,hiX,loY,hiY))
 `;
 const scratch = join(root, 'out', 'orbit-check');
 mkdirSync(scratch, { recursive: true });
