@@ -221,6 +221,21 @@ function CrewService:BuildBoard()
 	local frame = CFrame.lookAt(Vector3.new(35, 7.5, 43), Vector3.new(0, 7.5, 0))
 	local board = WorldBuilder.Part("CrewRankingBoard", Vector3.new(26, 10.6, 0.8),
 		frame, palette.Ink, Enum.Material.Metal, self.World.Geometry)
+	-- A freestanding trophy gallery: graphite stone, chrome and narrow gold
+	-- inlays. The cargo track remains the larger landmark above this side bay.
+	WorldBuilder.Part("RankGalleryPlinth", Vector3.new(28, 0.65, 8.2),
+		frame * CFrame.new(0, -7.1, -2.5), Color3.fromRGB(36, 40, 52),
+		Enum.Material.Marble, board)
+	WorldBuilder.Part("RankGalleryInlay", Vector3.new(27.4, 0.1, 7.6),
+		frame * CFrame.new(0, -6.72, -2.5), palette.Sun, Enum.Material.Metal, board, nil, false)
+	for _, side in ipairs({ -1, 1 }) do
+		WorldBuilder.Part("RankGoldFrame", Vector3.new(0.25, 11, 1.05),
+			frame * CFrame.new(side * 13.2, 0, 0), palette.Sun, Enum.Material.Metal, board, nil, false)
+		WorldBuilder.Part("RankEdgeGlow", Vector3.new(0.07, 10.4, 0.12),
+			frame * CFrame.new(side * 12.95, 0, -0.49), palette.Mint, Enum.Material.Neon, board, nil, false)
+		WorldBuilder.Part("RankGoldLintel", Vector3.new(26.5, 0.22, 1.05),
+			frame * CFrame.new(0, side * 5.4, 0), palette.Sun, Enum.Material.Metal, board, nil, false)
+	end
 	local shine = WorldBuilder.Part("CrownLight", Vector3.new(25, 0.16, 0.14),
 		frame * CFrame.new(0, 4.98, -0.48), palette.Sun, Enum.Material.Neon, board, nil, false)
 	shine.Transparency = 0.48
@@ -266,19 +281,34 @@ function CrewService:BuildBoard()
 	end
 	caption("Title", 0, 19, 780, 48, 39, palette.Sun, "CREW  RANKS")
 	self.Board = caption("Empty", 0, 120, 780, 65, 35, palette.White)
-	caption("Footer", 0, 268, 780, 37, 21, palette.Muted, "SERVER DEFENCE  ·  ALL-TIME IN CREWS [Y]")
+	caption("Footer", 0, 268, 780, 37, 21, palette.Muted, "SERVER DEFENCE  ·  ALL-TIME IN CREWS")
 	self.BoardRows = {}
 	for column, rank in ipairs(displayOrder) do
 		local x = 7 + (column - 1) * 258
 		local y = rank == 1 and 86 or 109
 		local color = medallions[rank]
 		local podiumHeight = ({ 2.2, 1.5, 1.15 })[rank]
-		local display = WorldBuilder.Part("RankPodium" .. rank, Vector3.new(7.2, podiumHeight, 2.3),
-			frame * CFrame.new((column - 2) * 8.6, -7.5 + podiumHeight / 2, -0.25),
+		local display = WorldBuilder.Part("RankPodium" .. rank, Vector3.new(7.2, podiumHeight, 5.6),
+			frame * CFrame.new((column - 2) * 8.6, -6.65 + podiumHeight / 2, -3.2),
 			color, Enum.Material.Metal, board, nil, false)
 		local strip = WorldBuilder.Part("CrewColour" .. rank, Vector3.new(6.8, 0.18, 0.12),
-			display.CFrame * CFrame.new(0, podiumHeight * 0.29, -1.19),
+			display.CFrame * CFrame.new(0, podiumHeight * 0.29, -2.84),
 			color, Enum.Material.Neon, board, nil, false)
+		local trophyFrame = display.CFrame * CFrame.new(0, podiumHeight / 2 + 1.15, -0.3)
+		WorldBuilder.Part("BrainrotTrophy", Vector3.new(1.8, 2.15, 1.4), trophyFrame,
+			color, Enum.Material.Metal, board, Enum.PartType.Ball, false)
+		for _, side in ipairs({ -1, 1 }) do
+			WorldBuilder.Part("TrophyMoonBoot", Vector3.new(0.65, 0.3, 0.9),
+				trophyFrame * CFrame.new(side * 0.5, -1, -0.1), palette.Ink, Enum.Material.Metal, board, nil, false)
+			WorldBuilder.Part("TrophyEye", Vector3.new(0.23, 0.32, 0.12),
+				trophyFrame * CFrame.new(side * 0.35, 0.3, -0.68), palette.Mint,
+				Enum.Material.Neon, board, Enum.PartType.Ball, false)
+		end
+		WorldBuilder.Part("TrophyAntenna", Vector3.new(0.12, 0.65, 0.12),
+			trophyFrame * CFrame.new(0, 1.25, 0), color, Enum.Material.Metal, board, nil, false)
+		WorldBuilder.Part("TrophyBeacon", Vector3.one * 0.38,
+			trophyFrame * CFrame.new(0, 1.6, 0), palette.Mint,
+			Enum.Material.Neon, board, Enum.PartType.Ball, false)
 		self.BoardRows[rank] = {
 			Rank = caption("Rank" .. rank, x, y, 250, 33, 28, color, "#" .. rank),
 			Name = caption("Crew" .. rank, x, y + 36, 250, 31, 24, color),

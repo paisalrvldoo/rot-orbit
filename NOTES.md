@@ -21,7 +21,11 @@ the judging plan immediately below. Core systems pass; no new side systems.
   text no longer contains a keyboard hint. Existing Crew action is inside the
   left MENU, clear of Jump; no extra edge button added. Actual event-copy and
   touch-control regressions pass. Owner phone visual approval remains pending.
-- [ ] Item 4: refine premium physical leaderboard podium.
+- [x] Item 4: luxury leaderboard gallery with dark marble foundation, metallic
+  gold perimeter, narrow cyan light edges and deeper gold/silver/bronze podiums.
+  Three original brainrot astronaut trophies replace bare blocks. Existing
+  rotating crown, live crew strips, empty-rank suppression and update shine
+  retained. Full verifier passes; actual phone appearance remains unverified.
 - [ ] Brainrot silhouettes/expressions, then Item 5 cover presets as time allows.
 - [ ] Owner live phone playtest and genuine screenshots; never block source work.
 
