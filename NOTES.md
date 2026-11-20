@@ -16,8 +16,17 @@
   so they clear the title, and remove keyboard-only hints from the Raid preset's
   world caption/action feed. Added actual staging tests for pillar/marquee
   clearance and rail/pylon/balcony sightlines; full verification passes.
-- [ ] Item 5: make all four preset transitions and capture guidance agree with
-  the revised layout; add source projection checks, then full verify + commit.
+- [x] Item 5: make all four preset transitions and capture guidance agree with
+  the revised layout. CAPTURE.md describes the raised balcony, 55° camera,
+  restored title, left-flank cargo and source checks. The existing four TOUR
+  calls remain correct. All 25 scripts compile, matching place rebuilds and
+  dossier export pass. Actual phone/Studio rendering remains an owner step.
+
+Committed this session: recovery `0003541`; raised cover `5f8fce7`; title-safe
+pillars and touch-safe preset text `8f846ea`; capture handoff follows. Stop at
+about 11:28 WIB with a clean tree. NEXT: owner publish/playtest and four genuine
+captures using CAPTURE.md, then `node tools/verify.mjs --submission`. Preserve
+current core systems and theme; do not restart old historical checklists below.
 - [ ] Owner: publish/playtest and capture four real Studio images. No renderer
   exists here; source geometry checks are not rendered appearance approval.
 
@@ -61,7 +70,8 @@ the judging plan immediately below. Core systems pass; no new side systems.
   Added a gentle live side-to-side idle sway, frozen by screenshot mode.
   Existing unique food geometry, mutation auras and crown height retained.
   All source/build checks pass; phone appearance remains an owner check.
-- [ ] Item 5: cover presets for the raised ring and new celestial landmarks.
+- [x] Item 5: cover presets for the raised ring and new celestial landmarks
+  completed in the current continuation above (source/build pass).
 - [ ] Owner live phone playtest and genuine screenshots; never block source work.
 
 Stopped at about 10:30 WIB with every working piece committed: `0800bbe`
