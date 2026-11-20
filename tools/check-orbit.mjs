@@ -105,24 +105,26 @@ end
 local loX,hiX,loY,hiY=math.huge,-math.huge,math.huge,-math.huge
 for _,p in ipairs(parts) do
  if p.Parent.Name=='TrackChassis' then
-  assert(p.CanCollide,'elevated shopping track must be walkable')
-  assert(p.Position.Y>24,'cargo orbit regressed to floor level')
+  assert(p.CanCollide,'shopping track must be walkable')
+  assert(p.Position.Y>4 and p.Position.Y<19,'shopping track must stay near deck level')
   local x,y=project(p.Position);loX,hiX=math.min(loX,x),math.max(hiX,x);loY,hiY=math.min(loY,y),math.max(hiY,y)
  end
 end
 assert(hiX-loX>=1170*0.6,'orbit must span at least 60% of the phone frame')
-assert(loY>90 and hiY<270,'arrival orbit must arc in the upper half below the money area')
-assert(hiY-loY>110,'orbit must have a visible elevated arc, not a flat horizon line')
+assert(loY>155 and hiY<490,'arrival cargo rail must clear the HUD and fit above the controls')
+assert(hiY-loY>100,'the low cargo track must still project as a visible arc')
 local title=named('TitlePanel')[1]
 local halos={};local haloCount=0;local reverse=false
 for _,arc in ipairs(named('CelestialEnergyArc')) do
  assert(not arc.CanCollide,'sky halo must never block players')
- assert(arc.Position.Y>48,'celestial halo must stay above the station/title zone')
+ assert(arc.Position.Y>56,'celestial halo must stay above the portal and hologram')
  local halo=arc.Parent
  if not halos[halo] then
   halos[halo]=true;haloCount+=1
   local speed=halo:GetAttribute('HaloSpeed')
   assert(speed and math.abs(speed)<0.05,'celestial halo must rotate slowly')
+  local pivot=halo:GetAttribute('HaloFrame').Position
+  assert(pivot.X==0 and pivot.Z==0 and pivot.Y>Config.World.RailHeight+40 and pivot.Y>=70 and pivot.Y<=90,'sky halo must orbit high above the hub centre')
   if speed<0 then reverse=true end
  end
 end
@@ -130,7 +132,12 @@ assert(haloCount==3 and reverse,'three celestial halos must counterrotate')
 local outerRims=0
 for _,arc in ipairs(parts) do if arc.Parent.Name=='WarpOuterCrown' then outerRims+=1 end end
 assert(outerRims==112,'both portals need two additional deep outer rims')
-assert(named('HologramGlobe')[1].Position.Y>=26,'central hologram must rise above the title')
+local core=named('HologramGlobe')[1].Position
+assert(core.X==0 and core.Z==0 and core.Y>=44,'the hologram must rise high above the hub centre')
+assert(Config.World.RailTilt==0 and Config.World.RailHeight>=8 and Config.World.RailHeight<=10,
+ 'the cargo rail must be flat and 8–10 studs above the deck')
+assert(Config.World.RailPlane().Position.X==0 and Config.World.RailPlane().Position.Z==0,
+ 'the cargo ring must also share the hub centre')
 assert(#named('HologramSatellite')==3,'hologram needs three orbital energy shards')
 for _,p in ipairs(corners(title)) do
 	local x,y=project(p);assert(x>120 and x<1050 and y>145 and y<455,'title must stay below the HUD and inside the clear phone region')
@@ -195,7 +202,7 @@ for _,r in ipairs(ramps) do
  local high=r.CFrame*Vector3.new(0,0,-r.Size.Z/2)
  local d=high-low;local slope=math.deg(math.atan2(d.Y,math.sqrt(d.X*d.X+d.Z*d.Z)))
  assert(slope>0 and slope<35,'ramp is too steep for a carrying player')
- assert(low.Y<0.2 and high.Y>25,'ramp must connect deck and elevated shopping track')
+ assert(low.Y<0.2 and high.Y>6 and high.Y<12,'ramp must connect deck and low shopping track')
  assert(math.abs(math.sqrt(high.X^2+high.Z^2)-Config.World.RailRadius)<6,'ramp misses ring')
  local pod=Config.World.RailFrame(math.atan2(high.Z/math.cos(Config.World.RailTilt),high.X),Config.World.RailRadius,Config.Conveyor.HoverHeight).Position
  assert((pod-(high+Vector3.new(0,3,0))).Magnitude<Config.InteractionDistance,'ordinary buy range must still reach cargo')

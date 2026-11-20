@@ -21,18 +21,18 @@ local Config = {
 	DropLifetime = 35,
 	MaxCash = 1e15,
 	Capture = {
-		CoverPosition = Vector3.new(5, 49, 70),
-		CoverTarget = Vector3.new(0, 31, 4),
+		CoverPosition = Vector3.new(5, 26, 70),
+		CoverTarget = Vector3.new(0, 8, 4),
 		CoverFOV = 55,
-		ShowcasePosition = Vector3.new(0, 30.3, 35),
-		TitleOffset = Vector3.new(0, 33, -19),
+		ShowcasePosition = Vector3.new(0, 7.3, 35),
+		TitleOffset = Vector3.new(0, 10, -19),
 	},
 	World = {
 		DeckRadius = 132,
 		DeckThickness = 6,
 		RailRadius = 42,
-		RailHeight = 36,
-		RailTilt = math.rad(15),
+		RailHeight = 9,
+		RailTilt = 0,
 		RailSegments = 84,
 		RailEdgeOffset = 5.35,
 		RailChaserHeight = -1.1,
@@ -159,7 +159,7 @@ function Config.World.SpawnFrame()
 end
 
 function Config.World.SpawnCamera()
-	return CFrame.lookAt(Vector3.new(0, 11, 60), Vector3.new(0, 27, -2))
+	return CFrame.lookAt(Vector3.new(0, 15, 64), Vector3.new(0, 27, -2))
 end
 
 function Config.Rebirth.Cost(level)

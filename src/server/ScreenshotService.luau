@@ -98,8 +98,8 @@ local function stageCover(state, root, meteors)
 	local effects = meteors.Effects
 	-- The sun is the key; two restrained studio lamps separate the hero silhouettes.
 	for _, lamp in ipairs({
-		{ "DockFill", Vector3.new(-22, 43, 49), Color3.fromRGB(203, 230, 255), 1.1 },
-		{ "DockRim", Vector3.new(14, 45, 22), Color3.fromRGB(255, 221, 163), 1.8 },
+		{ "DockFill", Vector3.new(-22, 20, 49), Color3.fromRGB(203, 230, 255), 1.1 },
+		{ "DockRim", Vector3.new(14, 22, 22), Color3.fromRGB(255, 221, 163), 1.8 },
 	}) do
 		local mount = WorldBuilder.Part(lamp[1], Vector3.one, CFrame.new(lamp[2]),
 			Config.Palette.White, Enum.Material.SmoothPlastic, effects, nil, false)
@@ -147,13 +147,13 @@ local function stageCover(state, root, meteors)
 		card.Enabled = true
 	end
 	-- Keep the carried Cornetto to the left of the SECRET face and its beam.
-	root.CFrame = CFrame.new(-10, 33.4, 43) * CFrame.Angles(0, math.rad(152), 0)
+	root.CFrame = CFrame.new(-10, 10.4, 43) * CFrame.Angles(0, math.rad(152), 0)
 	for _, offset in ipairs({ Vector3.new(-26, 0.16, 12), Vector3.new(28, 0.16, 10), Vector3.new(23, 0.16, -12) }) do
 		WorldBuilder.Ring("PreviewWarning", 7, 0.34, 0.15, CFrame.new(offset),
 			palette.Sun, Enum.Material.Neon, effects, 24, false)
 	end
-	for _, center in ipairs({ Vector3.new(-28, 55, -20), Vector3.new(30, 56, -13),
-		Vector3.new(42, 58, -40), Vector3.new(-44, 60, -46) }) do
+	for _, center in ipairs({ Vector3.new(-28, 32, -20), Vector3.new(30, 33, -13),
+		Vector3.new(42, 35, -40), Vector3.new(-44, 37, -46) }) do
 		meteors:CreateMeteor(center, 2.5, Vector3.new(5, 10, -4))
 	end
 	return CFrame.lookAt(Config.Capture.CoverPosition, Config.Capture.CoverTarget), Config.Capture.CoverFOV

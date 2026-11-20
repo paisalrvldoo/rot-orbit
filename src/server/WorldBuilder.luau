@@ -454,14 +454,14 @@ local function buildCargoRing(world)
 	-- These are sky-scale energy orbits, separate from the walkable cargo
 	-- track. Their lowest points stay above the portals and station title.
 	for index, spec in ipairs({
-		{ Radius = 94, Tilt = 28, Pitch = -12, Color = palette.Teal, Speed = 0.035 },
-		{ Radius = 108, Tilt = -34, Pitch = 16, Color = Color3.fromRGB(169, 109, 255), Speed = -0.027 },
-		{ Radius = 120, Tilt = 19, Pitch = -22, Color = palette.Sun, Speed = 0.019 },
+		{ Radius = 60, Tilt = 0, Color = palette.Teal, Speed = 0.035 },
+		{ Radius = 72, Tilt = 10, Color = Color3.fromRGB(169, 109, 255), Speed = -0.027 },
+		{ Radius = 84, Tilt = -10, Color = palette.Sun, Speed = 0.019 },
 	}) do
 		local halo = Instance.new("Model")
 		halo.Name = "CelestialHalo_" .. index
-		local frame = CFrame.new(0, 116, -26)
-			* CFrame.Angles(math.rad(spec.Pitch), 0, math.rad(spec.Tilt))
+		local frame = CFrame.new(0, 80, 0)
+			* CFrame.Angles(math.rad(spec.Tilt), 0, 0)
 		halo.WorldPivot = frame
 		halo:SetAttribute("HaloFrame", frame)
 		halo:SetAttribute("HaloSpeed", spec.Speed)
@@ -480,12 +480,10 @@ local function buildCargoRing(world)
 	end
 	WorldBuilder.Ring("TrackChassis", radius, 11.2, 0.6, plane * CFrame.new(0, -0.42, 0),
 		palette.Ink, Enum.Material.Metal, track, Config.World.RailSegments, true)
-	-- Raising the real conveyor must not strand its purchase prompts in the
-	-- sky. Two broad, solid ramps connect the deck to the annular shopping walk.
-	-- They sit to either side of arrival, leaving the title sightline open.
+	-- Two short walk-up ramps flank the approach to the low shopping track.
 	for _, angle in ipairs({ math.pi / 4, math.pi * 3 / 4 }) do
 		local top = Config.World.RailFrame(angle, radius, -0.48).Position
-		local foot = Vector3.new(math.cos(angle) * 86, -0.42, math.sin(angle) * 86)
+		local foot = Vector3.new(math.cos(angle) * 62, -0.42, math.sin(angle) * 62)
 		local frame = CFrame.lookAt((top + foot) / 2, top)
 		local length = (top - foot).Magnitude + 2
 		WorldBuilder.Part("CargoAccessRamp", Vector3.new(9, 0.8, length), frame,
@@ -648,14 +646,14 @@ local function buildCargoRing(world)
 	WorldBuilder.Ring("HubTrim", 13, 1.5, 0.25, CFrame.new(0, 0.17, 0),
 		palette.Teal, Enum.Material.SmoothPlastic, world.Geometry, 48, false)
 	WorldBuilder.Part("ReactorBase", Vector3.new(0.65, 11, 11),
-		CFrame.new(0, 0.4, -16) * CFrame.Angles(0, 0, math.pi / 2), palette.Ink,
+		CFrame.new(0, 0.4, 0) * CFrame.Angles(0, 0, math.pi / 2), palette.Ink,
 		Enum.Material.SmoothPlastic, world.Geometry, Enum.PartType.Cylinder)
 	WorldBuilder.Part("HologramProjector", Vector3.new(0.16, 5.2, 5.2),
-		CFrame.new(0, 0.75, -16) * CFrame.Angles(0, 0, math.pi / 2), palette.Teal,
+		CFrame.new(0, 0.75, 0) * CFrame.Angles(0, 0, math.pi / 2), palette.Teal,
 		Enum.Material.Neon, world.Geometry, Enum.PartType.Cylinder, false)
 	local hologram = Instance.new("Model")
 	hologram.Name = "HologramCore"
-	local core = WorldBuilder.Part("HologramGlobe", Vector3.one * 9.2, CFrame.new(0, 27, -16),
+	local core = WorldBuilder.Part("HologramGlobe", Vector3.one * 11.6, CFrame.new(0, 47, 0),
 		palette.Teal, Enum.Material.Neon, hologram, Enum.PartType.Ball, false)
 	core.Transparency = 0.78
 	local light = Instance.new("PointLight")
@@ -663,23 +661,23 @@ local function buildCargoRing(world)
 	light.Brightness = 0.6
 	light.Range = 14
 	light.Parent = core
-	-- The projection rises behind the sign; the sign face remains unobstructed.
+	-- Keep the hologram and its light above the marquee.
 	local axis = core.CFrame * CFrame.Angles(math.rad(24), 0, math.rad(12))
 	for _, latitude in ipairs({ -0.54, 0, 0.54 }) do
-		WorldBuilder.Ring("HologramLatitude", 4.7 * math.cos(latitude), 0.16, 0.16,
-			axis * CFrame.new(0, 4.7 * math.sin(latitude), 0), palette.Teal,
+		WorldBuilder.Ring("HologramLatitude", 5.9 * math.cos(latitude), 0.16, 0.16,
+			axis * CFrame.new(0, 5.9 * math.sin(latitude), 0), palette.Teal,
 			Enum.Material.Neon, hologram, 16, false)
 	end
 	for index = 1, 3 do
 		local orbit = axis * CFrame.Angles(index * 0.37, 0, index * 0.3)
-		WorldBuilder.Ring("HologramOrbit", 5.2 + index * 0.8, 0.2, 0.18, orbit,
+		WorldBuilder.Ring("HologramOrbit", 6.6 + index * 0.8, 0.2, 0.18, orbit,
 			index == 2 and palette.Sun or palette.Mint, Enum.Material.Neon, hologram, 24, false)
 		WorldBuilder.Part("HologramSatellite", Vector3.new(0.6, 1.65, 0.6),
-			orbit * CFrame.new(5.2 + index * 0.8, 0, 0) * CFrame.Angles(0, 0, 0.6),
+			orbit * CFrame.new(6.6 + index * 0.8, 0, 0) * CFrame.Angles(0, 0, 0.6),
 			palette.Mint, Enum.Material.Neon, hologram, nil, false)
 	end
 	local beamFoot = Instance.new("Attachment", core)
-	beamFoot.Position = Vector3.new(0, -26, 0)
+	beamFoot.Position = Vector3.new(0, -15, 0)
 	local beamTip = Instance.new("Attachment", core)
 	beamTip.Position = Vector3.new(0, 9, 0)
 	local projection = Instance.new("Beam", core)
