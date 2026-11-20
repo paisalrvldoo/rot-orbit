@@ -1,6 +1,31 @@
 # ACTIVE OWNER OVERRIDE — 20 November: TOP 3
 
-## Current 20 November continuation (10:04 WIB, 25-minute limit)
+## Current continuation — 20 November, 11:03 WIB (25-minute limit)
+
+- [x] Step 1: clean status/diff, full verifier passed, immediate checkpoint
+  `0003541`. Read handoff, recent log and owner research; core systems pass.
+- [x] Item 5: reframe the cover around the elevated real conveyor, stage a
+  dark orbital showcase balcony, protect the title and preserve six real pods,
+  one BUY card, five docked heroes, late-game income and isolated preview data.
+  55° camera now looks along the raised track, with the showcase at 30 studs.
+  The existing marquee rises only for Cover and resets without drift on every
+  other preset. All five dock value cards have separate projected rectangles;
+  the docked SECRET exceeds 24% of capture height. Full verifier passes.
+  These are source geometry checks, not a rendered screenshot.
+- [ ] Item 5: make all four preset transitions and capture guidance agree with
+  the revised layout; add source projection checks, then full verify + commit.
+- [ ] Owner: publish/playtest and capture four real Studio images. No renderer
+  exists here; source geometry checks are not rendered appearance approval.
+
+The owner's TOP 3/theme override governs. Research top-ten plan: (1) staged
+late-game cover; (2) 42–45 original brainrots (43); (3) four genuine captures;
+(4) roughly 20–24 purposeful scripts (25, avoid risky consolidation this pass);
+(5) large world title; (6) readable hazards/shields; (7) six mutations;
+(8) live HUD/button states, quest card and action feed; (9) readable rarity and
+value cards; (10) earned progression. Existing core systems come before polish.
+Keep the dark metal/neon station, deep-space sky and elevated brainrot orbit.
+
+## Previous continuation (10:04 WIB, 25-minute limit)
 
 Initial status/diff clean; full verification passed. Recovery checkpoint
 `24117de` records that state. Read owner refs.md once; its ten priorities remain

@@ -59,6 +59,8 @@ local Instance={}
 function Instance.new(class,parent)
  local item={ClassName=class,Children={},Attributes={}}
  function item:GetChildren() return self.Children end
+ function item:IsA(class) return self.ClassName==class or class=='BasePart' and self.ClassName=='Part' end
+ function item:FindFirstChild(name) for _,v in ipairs(self.Children) do if v.Name==name then return v end end end
  function item:SetAttribute(k,v) self.Attributes[k]=v end
  function item:GetAttribute(k) return self.Attributes[k] end
  function item:GetAttributeChangedSignal() return {Connect=function() end} end
@@ -92,11 +94,13 @@ local function corners(p)
  end end end;return result
 end
 local camera=Config.World.SpawnCamera()
-local function project(p)
+local viewFov=65
+local function project(p, width, height)
+ width,height=width or 1170,height or 540
  local q=camera:PointToObjectSpace(p);local depth=-q.Z
  assert(depth>0,'review geometry is behind arrival camera')
- local focal=270/math.tan(math.rad(65/2))
- return 585+focal*q.X/depth,270-focal*q.Y/depth
+ local focal=(height/2)/math.tan(math.rad(viewFov/2))
+ return width/2+focal*q.X/depth,height/2-focal*q.Y/depth
 end
 local loX,hiX,loY,hiY=math.huge,-math.huge,math.huge,-math.huge
 for _,p in ipairs(parts) do
@@ -206,6 +210,67 @@ local portalRadius=(aperture.Position-gate.Position).Magnitude
 local crownHeight=4.35*Rarity.ByName.SECRET.Scale*Config.Conveyor.ModelScale+Config.Conveyor.HoverHeight
 local crownLocal=gate:PointToObjectSpace(entry+Vector3.new(0,crownHeight,0))
 assert(math.sqrt(crownLocal.X^2+crownLocal.Z^2)+0.8<portalRadius,'enlarged SECRET crown clips portal rim')
+-- Execute the actual cover staging and marquee restoration, not copied poses.
+local UDim2={fromOffset=function(x,y) return {Width=x,Height=y} end}
+local ScreenshotService=(function()
+${section(read('src/server/ScreenshotService.luau'), 'local ScreenshotService =')}
+end)()
+local screenshots=setmetatable({Bases={World=world}},ScreenshotService)
+local liveTitle=title.CFrame
+screenshots:StageTitle('Cover')
+local coverTitle=title.CFrame
+screenshots:StageTitle('Cover')
+assert((title.CFrame.Position-coverTitle.Position).Magnitude<0.001,'repeat Cover must not drift the title')
+for _,shot in ipairs({'Index','Raid','Upgrades'}) do
+ screenshots:StageTitle(shot)
+ assert((title.CFrame.Position-liveTitle.Position).Magnitude<0.001,'other presets must restore live title')
+end
+screenshots:StageTitle('Cover')
+local state={Bay={Slots={}}}
+for i,name in ipairs({'Epic','Cosmic','SECRET','Cosmic','SECRET'}) do
+ local model={PrimaryPart={BrainrotBillboard={}}}
+ function model:GetAttribute() return name end
+ function model:SetAttribute(k,v) self[k]=v end
+ function model:PivotTo(f) self.Frame=f end
+ state.Bay.Slots[i]={Occupant={Model=model}}
+end
+function WorldBuilder.ColorSocket() end
+local rootPart={}
+local effects=folder('PreviewEffects')
+local meteorCount=0
+local meteors={Effects=effects,CreateMeteor=function() meteorCount+=1 end}
+-- stageCover is private; Prepare's source invokes it via this tiny exported
+-- test closure. No runtime API is added for the source harness.
+local stageSource=[==[${section(read('src/server/ScreenshotService.luau'), 'local function pose(', 'function ScreenshotService.new(')}]==]
+local stage=assert(loadstring(stageSource..' return stageCover'))
+-- loadstring has no access to our lexical builder/config; use setfenv.
+setfenv(stage,setmetatable({WorldBuilder=WorldBuilder,Config=Config,Rarity=Rarity,
+ CFrame=CFrame,Vector3=Vector3,UDim2=UDim2,Color3=Color3,Enum=Enum,Instance=Instance},{__index=getfenv()}))
+camera,viewFov=stage()(state,rootPart,meteors)
+assert(viewFov==55 and meteorCount==4)
+for _,point in ipairs(corners(title)) do
+ local x,y=project(point,1280,720)
+ assert(x>440 and x<860 and y>151 and y<240,'cover marquee must clear money/event HUD')
+end
+local minRail,maxRail=math.huge,-math.huge
+for _,p in ipairs(parts) do if p.Parent.Name=='TrackChassis' then
+ local x=project(p.CFrame.Position,1280,720);minRail,maxRail=math.min(minRail,x),math.max(maxRail,x)
+end end
+assert(maxRail-minRail>1280*0.6,'cover must be dominated by the real orbit')
+local lastRight=-math.huge
+for _,slot in ipairs(state.Bay.Slots) do
+ local model=slot.Occupant.Model
+ local card=model.PrimaryPart.BrainrotBillboard
+ local x,y=project(model.Frame.Position+card.StudsOffsetWorldSpace,1280,720)
+ assert(x-card.Size.Width/2>lastRight,'five dock value cards must not overlap')
+ assert(y-card.Size.Height/2>420 and y+card.Size.Height/2<598,'dock cards must clear faces and counts strip')
+ lastRight=x+card.Size.Width/2
+end
+local hero=state.Bay.Slots[3].Occupant.Model.Frame.Position
+local _,foot=project(hero,1280,720)
+local _,crown=project(hero+Vector3.new(0,4.35*Rarity.ByName.SECRET.Scale,0),1280,720)
+assert(foot-crown>=720*0.24,'docked SECRET must be a cover hero, not a distant speck')
+print('Cover source checks passed: elevated balcony, real orbit width, clear marquee, five separated cards and repeatable title restoration. NOT a rendered screenshot.')
 print(string.format('Orbit geometry checks passed: 1170x540 rail x%.0f–%.0f y%.0f–%.0f, two walkable ramps, clear orbit-to-title sightlines and SECRET portal headroom. NOT a rendered screenshot.',loX,hiX,loY,hiY))
 `;
 const scratch = join(root, 'out', 'orbit-check');

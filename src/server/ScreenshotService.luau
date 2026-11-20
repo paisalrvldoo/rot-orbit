@@ -12,6 +12,28 @@ local valid = { Cover = true, Index = true, Raid = true, Upgrades = true }
 local lineup = { 13, 38, 30, 40, 42, 22, 28, 29, 18 }
 local mutations = { "Gold", "Diamond", "Supernova", "Neon", "Aurora", "Gold", "Zero-G", "Neon", "Gold" }
 
+-- Move the existing station marquee for the orbital balcony composition.
+-- Store its real pose once, so every other preset restores the live world.
+function ScreenshotService:StageTitle(shot)
+	local title = self.Bases.World.Geometry:FindFirstChild("StationTitle")
+	if not title then return end
+	for _, part in ipairs(title:GetChildren()) do
+		if not part:IsA("BasePart") then continue end
+		local frame = part:GetAttribute("CaptureRestFrame") or part.CFrame
+		local size = part:GetAttribute("CaptureRestSize") or part.Size
+		part:SetAttribute("CaptureRestFrame", frame)
+		part:SetAttribute("CaptureRestSize", size)
+		local offset = shot == "Cover" and Config.Capture.TitleOffset or Vector3.zero
+		if part.Name == "TitleSupport" then
+			part.Size = Vector3.new(size.X, size.Y + offset.Y, size.Z)
+			part.CFrame = CFrame.new(offset.X, offset.Y / 2, offset.Z) * frame
+		else
+			part.Size = size
+			part.CFrame = CFrame.new(offset) * frame
+		end
+	end
+end
+
 function ScreenshotService:StageDiscoveries(state)
 	state.Found, state.Variants = {}, {}
 	for index, id in ipairs(lineup) do
@@ -28,11 +50,11 @@ function ScreenshotService:StageCargo(shot)
 		capsule:Destroy()
 	end
 	local records = shot == "Cover" and {
-		-- The enlarged SECRET sits left of the dock lineup, with its full
-		-- silhouette inside the saved camera instead of covering two heroes.
-		{ Id = 30, Mutation = "Aurora", Angle = math.pi * 0.80, Card = true },
+		-- Tall cargo belongs on the far-left arc; the raised near arc would
+		-- put its crown outside the frame. Leave the centre for the title.
+		{ Id = 30, Mutation = "Aurora", Angle = math.pi * 1.18, Card = true },
 		{ Id = 41, Mutation = "Diamond", Angle = math.pi * 0.035 },
-		{ Id = 7, Angle = math.pi * 1.09 }, { Id = 18, Mutation = "Gold", Angle = math.pi * 1.28 },
+		{ Id = 7, Angle = math.pi * 0.86 }, { Id = 18, Mutation = "Gold", Angle = math.pi * 1.37 },
 		{ Id = 23, Angle = math.pi * 1.71 }, { Id = 27, Mutation = "Gold", Angle = math.pi * 1.90 },
 	} or {
 		{ Id = 7 }, { Id = 11, Mutation = "Gold" }, { Id = 15 },
@@ -45,7 +67,8 @@ function ScreenshotService:StageCargo(shot)
 			for _, model in ipairs(capsule:GetChildren()) do
 				if model:IsA("Model") and model.PrimaryPart then
 					local position = capsule:GetPivot().Position
-					local frame = CFrame.lookAt(position, Vector3.new(5, position.Y, 64))
+					local eye = Config.Capture.CoverPosition
+					local frame = CFrame.lookAt(position, Vector3.new(eye.X, position.Y, eye.Z))
 					model:PivotTo(frame)
 					model:SetAttribute("RestFrame", frame)
 					-- Only this genuine buyable pod gets a staged card; the client
@@ -75,8 +98,8 @@ local function stageCover(state, root, meteors)
 	local effects = meteors.Effects
 	-- The sun is the key; two restrained studio lamps separate the hero silhouettes.
 	for _, lamp in ipairs({
-		{ "DockFill", Vector3.new(-22, 13, 45), Color3.fromRGB(203, 230, 255), 1.1 },
-		{ "DockRim", Vector3.new(14, 15, 16), Color3.fromRGB(255, 221, 163), 1.8 },
+		{ "DockFill", Vector3.new(-22, 43, 49), Color3.fromRGB(203, 230, 255), 1.1 },
+		{ "DockRim", Vector3.new(14, 45, 22), Color3.fromRGB(255, 221, 163), 1.8 },
 	}) do
 		local mount = WorldBuilder.Part(lamp[1], Vector3.one, CFrame.new(lamp[2]),
 			Config.Palette.White, Enum.Material.SmoothPlastic, effects, nil, false)
@@ -85,12 +108,14 @@ local function stageCover(state, root, meteors)
 		local light = Instance.new("PointLight", mount)
 		light.Color, light.Brightness, light.Range = lamp[3], lamp[4], 55
 	end
-	-- Dock inside the near arc: the real cargo rail crosses the foreground,
-	-- with the title and planet beyond the collection instead of behind camera.
-	local platform = CFrame.new(0, 0.3, 27)
+	-- An orbital viewing balcony keeps the docked cast beside the real raised
+	-- conveyor. Its graphite fascia replaces the old empty-floor composition.
+	local platform = CFrame.new(Config.Capture.ShowcasePosition)
 	local palette = Config.Palette
 	WorldBuilder.Part("ShowcaseDock", Vector3.new(54, 0.6, 12), platform,
-		palette.Deck, Enum.Material.SmoothPlastic, effects)
+		palette.Deck, Enum.Material.Metal, effects)
+	WorldBuilder.Part("ShowcaseFascia", Vector3.new(54, 1.2, 0.5), platform * CFrame.new(0, -0.65, 6),
+		palette.Ink, Enum.Material.Metal, effects, nil, false)
 	for _, side in ipairs({ -1, 1 }) do
 		WorldBuilder.Part("ShowcaseTrim", Vector3.new(54, 0.12, 0.24),
 			platform * CFrame.new(0, 0.32, side * 5.8), palette.Teal, Enum.Material.Neon, effects, nil, false)
@@ -98,7 +123,7 @@ local function stageCover(state, root, meteors)
 	for index = 1, 5 do
 		local column = index - 3
 		local pedestal = state.Bay.Slots[index]
-		local center = platform * CFrame.new(column * 10.2, 0.8, -math.abs(column) * 0.85)
+		local center = platform * CFrame.new(column * 8.8, 0.8, -math.abs(column) * 0.85)
 		local rarity = Rarity.ByName[pedestal.Occupant.Model:GetAttribute("Rarity")]
 		local color = rarity.Color
 		WorldBuilder.Part("ShowcasePedestal", Vector3.new(1, 6.2, 6.2),
@@ -111,20 +136,20 @@ local function stageCover(state, root, meteors)
 		local card = pose(pedestal, center * CFrame.new(0, 0.55, 0) * CFrame.Angles(0, math.pi, 0))
 		card.Size = UDim2.fromOffset(164, 90)
 		card.MaxDistance = 80
-		card.StudsOffsetWorldSpace = Vector3.new(column * 1.9, -0.48, 1)
+		card.StudsOffsetWorldSpace = Vector3.new(column * 2.5, -2.0, 1)
 		card.Enabled = true
 	end
 	-- Keep the carried Cornetto to the left of the SECRET face and its beam.
-	root.CFrame = CFrame.new(-7, 3.4, 39) * CFrame.Angles(0, math.rad(152), 0)
+	root.CFrame = CFrame.new(-10, 33.4, 43) * CFrame.Angles(0, math.rad(152), 0)
 	for _, offset in ipairs({ Vector3.new(-26, 0.16, 12), Vector3.new(28, 0.16, 10), Vector3.new(23, 0.16, -12) }) do
 		WorldBuilder.Ring("PreviewWarning", 7, 0.34, 0.15, CFrame.new(offset),
 			palette.Sun, Enum.Material.Neon, effects, 24, false)
 	end
-	for _, center in ipairs({ Vector3.new(-28, 15, -20), Vector3.new(30, 16, -13),
-		Vector3.new(42, 18, -40), Vector3.new(-44, 20, -46) }) do
+	for _, center in ipairs({ Vector3.new(-28, 55, -20), Vector3.new(30, 56, -13),
+		Vector3.new(42, 58, -40), Vector3.new(-44, 60, -46) }) do
 		meteors:CreateMeteor(center, 2.5, Vector3.new(5, 10, -4))
 	end
-	return CFrame.lookAt(Vector3.new(5, 18, 64), Vector3.new(0, 6, 27)), 58
+	return CFrame.lookAt(Config.Capture.CoverPosition, Config.Capture.CoverTarget), Config.Capture.CoverFOV
 end
 
 function ScreenshotService.new(context)
@@ -156,6 +181,7 @@ function ScreenshotService:Prepare(player, shot)
 	world.Root:SetAttribute("SolarFlareActive", false)
 	world.Root:SetAttribute("AuroraSurgeUntil", 0)
 	self.Meteors.Effects:ClearAllChildren()
+	self:StageTitle(shot)
 	self.Meteors:SetShowerLook(shot == "Cover", true)
 	for _, gremlin in pairs(self.Gremlins.Gremlins) do self.Gremlins:Remove(gremlin, false) end
 	self.Economy.Events = {}

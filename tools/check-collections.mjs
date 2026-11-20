@@ -201,11 +201,11 @@ for _, shot in ipairs({ "Cover", "Index", "Raid", "Upgrades", "Cover" }) do
         if capsule.Card.Enabled then
             cards += 1
             assert(shot == "Cover" and Catalog.Get(capsule.Record.Id).Rarity == "SECRET")
-            assert(math.sin(capsule.Angle) > 0, "buyable hero must be on the near arc")
+            assert(math.cos(capsule.Angle) < -0.7, "tall buyable hero belongs on the clear left flank")
             assert(capsule.Details.Visible and capsule.Card.MaxDistance == 80)
         end
         if shot == "Cover" then
-            assert(capsule.Model.Frame.Target.Z == 64, "frozen cargo faces the saved camera")
+            assert(capsule.Model.Frame.Target.Z == Config.Capture.CoverPosition.Z, "frozen cargo faces the saved camera")
             assert(capsule.Model:GetAttribute("RestFrame") == capsule.Model.Frame)
         end
     end
@@ -338,7 +338,7 @@ assert(closingBases:IsBayReady({}), "NPC bays remain raidable")
 print("Collection checks passed: unique variants, independent tabs, one-time rewards, preview/load guards, cap, save isolation.")
 print("Rebirth checks passed: actual reset, best mutated cargo, immediate income, two bonus pods, bay colour/title cleanup, Blink and guarded Mythic supply.")
 print("Screenshot discovery checks passed: 32/43, 10 Gold, owned SECRET and repeatable presets.")
-print("Screenshot cargo checks passed: six pods, near-arc SECRET, saved poses, one BUY card and clean transitions across all four presets.")
+print("Screenshot cargo checks passed: six pods, left-flank SECRET, saved poses, one BUY card and clean transitions across all four presets.")
 print("Save lease checks passed: same-server rejoin, stale write rejection, renewal, transient failure and queued release.")
 print("Departure checks passed: freeze before save, block raids/prompts/drops and retain NPC stealing.")
 `;

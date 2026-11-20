@@ -20,6 +20,13 @@ local Config = {
 		Drop = 0.3, Tilt = 0.065, Radius = 28 },
 	DropLifetime = 35,
 	MaxCash = 1e15,
+	Capture = {
+		CoverPosition = Vector3.new(5, 49, 70),
+		CoverTarget = Vector3.new(0, 31, 4),
+		CoverFOV = 55,
+		ShowcasePosition = Vector3.new(0, 30.3, 35),
+		TitleOffset = Vector3.new(0, 33, -19),
+	},
 	World = {
 		DeckRadius = 132,
 		DeckThickness = 6,
