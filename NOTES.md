@@ -1,5 +1,27 @@
 # ACTIVE OWNER OVERRIDE — 20 November: TOP 3
 
+## Final polish continuation — 20 November, 16:03 WIB (25-minute limit)
+
+- [x] Recovery: clean status/diff, full verifier passed; checkpoint `c311b67`.
+  Read recent log and the owner research once. Core systems already pass.
+- [x] Final 1: short BUY / DOCK / COLLECT card derives progress from the live
+  carry/income state. One tapered ground beam points toward the rail, then
+  YOUR bay; both hide after the first income payment and in capture mode.
+  Returning earners skip the introduction. No new gameplay or save system.
+- [ ] Final 2: brief, disposable buy/dock/steal/collect feedback.
+- [ ] Final 3: premium high-rarity pedestal presentation within phone budgets.
+- [ ] Final 4: assert HUD rectangles clear at 844×390 and 390×844.
+- [ ] Final 5: document four cover presets and restoration; final clean handoff.
+
+Owner research top-ten plan: staged late-game cover; 42–45 originals (43);
+four genuine captures; 20–24 purposeful scripts (24, tiny shared modules merged);
+big in-world title; readable hazards/shields; six mutations; live button states,
+quest card and action feed; readable rarity/value cards; earned progression.
+Core systems come first and already pass. This window adds only visible polish;
+preserve every v11/v12 numeric/geometry check. Phone limits: 2,500 Parts,
+40 lights, 15 emitters, 500 star Parts. No renderer is available here: source
+verification and rebuilt place commits precede owner phone review.
+
 ## v12 phone feedback continuation, 20 November
 
 - [x] Started from clean `9cefd7f`. The full verifier passed before edits.

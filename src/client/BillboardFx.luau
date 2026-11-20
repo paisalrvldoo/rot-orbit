@@ -85,7 +85,7 @@ local function updateCargoCards(visuals, frozen, hud)
 	local narrow = viewport.Y <= 540
 	if hud then
 		for _, name in ipairs({ "Cash", "Income", "EventBanner", "CaptainHealth", "Counts",
-			"Carrying", "QuestCard", "ContractsTab", "Action1", "Action2", "Action3",
+			"Carrying", "QuestCard", "ContractCard", "ContractsTab", "Action1", "Action2", "Action3",
 			"UpgradePanel", "IndexPanel", "CrewPanel", "MobileMenu", "Lock", "Zap",
 			"Blink", "Sprint", "Logo", "SaveStatus", "Hint", "RaidStatus",
 			"Upgrades", "Rebirth", "Index", "Crews", "Contracts" }) do

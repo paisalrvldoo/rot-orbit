@@ -59,6 +59,11 @@ assert(HudController.EventCopy(meteor,true)=='METEOR SHOWER · FIND A SHIELD')
 assert(HudController.EventCopy(meteor,false)==meteor.Text,'desktop event instructions must be preserved')
 assert(HudController.EventCopy({Name='Gremlin',Text='CAPTAIN RAID! ZAP [F]'},true)=='CAPTAIN RAID · TAP ZAP')
 assert(not HudController.EventCopy({Name='Other',Text='LOCK [L] OR ZAP [F]'},true):find('%['))
+assert(HudController.FirstStep({Inventory={},Carrying=false},false)==1,'first arrival must point to BUY')
+assert(HudController.FirstStep({Inventory={},Carrying={Id=1}},false)==2,'carried cargo must point to YOUR bay')
+assert(HudController.FirstStep({Inventory={{Id=1}},Carrying=false},false)==3,'docked cargo must explain income collection')
+assert(HudController.FirstStep({Inventory={{Id=1}}},true)==0,'first payment must hide the guide')
+assert(HudController.FirstStep({Inventory={},Rebirths=1},false)==0,'rebirth players must skip first steps')
 ${client.slice(client.indexOf('local InputController ='), client.indexOf('local function startCrewPanel'))}
 local state = { Upgrades = {}, Found = {}, Catalog = table.create(43), Rebirths = 0, SaveStatus = 'SAVED' }
 local sent = {}

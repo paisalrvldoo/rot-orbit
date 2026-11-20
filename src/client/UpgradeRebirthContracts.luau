@@ -174,7 +174,7 @@ function Progression.StartContracts(hud, upgrades)
 	local rows = {}
 	local detailHeader = panel:FindFirstChildOfClass("TextLabel")
 	local quest = Instance.new("Frame")
-	quest.Name = "QuestCard"
+	quest.Name = "ContractCard"
 	quest.Position = UDim2.fromOffset(1024, 168)
 	quest.Size = UDim2.fromOffset(240, 226)
 	quest.BackgroundColor3 = Config.Palette.Ink

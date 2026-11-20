@@ -100,6 +100,14 @@ function HudController.EventCopy(event, compact)
 	return short[event.Name] or event.Text:gsub("%s*%[L%]", ""):gsub("%s*%[F%]", "")
 end
 
+-- The first loop uses existing carry/income snapshots; no extra save state.
+function HudController.FirstStep(snapshot, collected)
+	if collected or (snapshot.Rebirths or 0) > 0 then return 0 end
+	if #(snapshot.Inventory or {}) > 0 then return 3 end
+	if snapshot.Carrying then return 2 end
+	return 1
+end
+
 local function startEventBanner(gui, network)
 	local banner = Instance.new("TextLabel")
 	banner.Name = "EventBanner"
@@ -240,6 +248,22 @@ function HudController.Start()
 	end
 	startEventBanner(gui, network)
 	local state
+	local collected = false
+	local quest = Instance.new("Frame")
+	quest.Name = "QuestCard"
+	quest.Position, quest.Size = UDim2.fromOffset(24, 360), UDim2.fromOffset(320, 148)
+	quest.BackgroundColor3, quest.BackgroundTransparency = Config.Palette.Ink, 0.08
+	quest.BorderSizePixel, quest.Visible = 0, false
+	quest.Parent = gui
+	Instance.new("UICorner", quest).CornerRadius = UDim.new(0, 12)
+	local questTitle = HudController.Text(quest, "Title", "YOUR FIRST ORBIT", UDim2.fromOffset(160, 8),
+		UDim2.fromOffset(300, 28), 23, Config.Palette.Mint)
+	local steps = {}
+	for index, copy in ipairs({ "BUY a brainrot at the rail", "DOCK it at YOUR bay", "COLLECT cash · paid every second" }) do
+		steps[index] = HudController.Text(quest, "Step" .. index, "", UDim2.fromOffset(160, 38 + (index - 1) * 34),
+			UDim2.fromOffset(302, 32), 20)
+		steps[index]:SetAttribute("Copy", copy)
+	end
 	local marker = Instance.new("Part")
 	marker.Name = "YourBayBeacon"
 	marker.Size = Vector3.one
@@ -248,6 +272,14 @@ function HudController.Start()
 	marker.CanQuery = false
 	marker.Transparency = 1
 	marker.Parent = workspace
+	local guideStart, guideEnd = Instance.new("Attachment", marker), Instance.new("Attachment", marker)
+	local guide = Instance.new("Beam", marker)
+	guide.Name = "FirstOrbitGuide"
+	guide.Attachment0, guide.Attachment1 = guideStart, guideEnd
+	guide.Width0, guide.Width1 = 1.5, 0.05
+	guide.FaceCamera, guide.LightEmission = true, 1
+	guide.Color, guide.Transparency = ColorSequence.new(Config.Palette.Mint), NumberSequence.new(0.12)
+	guide.Enabled = false
 	local beacon = Instance.new("BillboardGui")
 	beacon.Adornee = marker
 	beacon.Size = UDim2.fromOffset(140, 30)
@@ -274,6 +306,7 @@ function HudController.Start()
 	local showedOfflineHaul = false
 	local function update(snapshot)
 		if not snapshot.Ready then return end
+		if not state and ((snapshot.Income or 0) > 0 or (snapshot.Rebirths or 0) > 0) then collected = true end
 		state = snapshot
 		boss.Visible = snapshot.Boss ~= nil
 		if snapshot.Boss then
@@ -326,6 +359,10 @@ function HudController.Start()
 		Debris:AddItem(anchor, 1)
 	end
 	network.CashPop.OnClientEvent:Connect(function(pops)
+		if state and state.SaveStatus ~= "STUDIO PREVIEW" and #state.Inventory > 0 and #pops > 0 then
+			if not collected then showNotice("FIRST ORBIT COMPLETE · KEEP BUYING, DOCKING & EARNING") end
+			collected = true
+		end
 		local camera = workspace.CurrentCamera
 		if not camera then return end
 		for index, pop in ipairs(pops) do
@@ -348,6 +385,34 @@ function HudController.Start()
 		raidStatus.Visible = not compact
 		for index = 2, #feedLabels do feedLabels[index].Visible = not compact and feed[index] ~= nil end
 		local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+		local step = state and HudController.FirstStep(state, collected) or 0
+		local panelOpen = gui:GetAttribute("MobileMenuOpen") == true
+		for _, name in ipairs({ "UpgradePanel", "IndexPanel", "CrewPanel", "ContractCard" }) do
+			local panel = gui:FindFirstChild(name)
+			panelOpen = panelOpen or (panel and panel.Visible) or false
+		end
+		quest.Visible = step > 0 and state.SaveStatus ~= "STUDIO PREVIEW" and not panelOpen
+		guide.Enabled = quest.Visible and root ~= nil
+		if quest.Visible then
+			questTitle.Text = "YOUR FIRST ORBIT · " .. step .. "/3"
+			for index, row in ipairs(steps) do
+				row.Text = (index < step and "✓ " or index == step and "→ " or "  ") .. row:GetAttribute("Copy")
+				row.TextColor3 = index == step and Config.Palette.Mint or index < step and Config.Palette.Sun or Config.Palette.Muted
+			end
+		end
+		if guide.Enabled then
+			local target = state.BayPosition
+			if step == 1 then
+				local angle = math.atan2(root.Position.Z, root.Position.X)
+				target = Config.World.RailFrame(angle, Config.World.RailRadius, 0).Position
+			end
+			local delta = Vector3.new(target.X - root.Position.X, 0, target.Z - root.Position.Z)
+			if delta.Magnitude > 3 then
+				local foot = root.Position - Vector3.new(0, 2.6, 0)
+				guideStart.WorldPosition = foot + delta.Unit * 3
+				guideEnd.WorldPosition = foot + delta.Unit * math.min(10, delta.Magnitude)
+			else guide.Enabled = false end
+		end
 		hint.Visible = false
 		if state and root then
 			local distance = math.floor((root.Position - state.BayPosition).Magnitude)
@@ -356,7 +421,7 @@ function HudController.Start()
 			if state.Carrying and state.SaveStatus ~= "STUDIO PREVIEW" then
 				carrying.Text = "CARRYING " .. state.Carrying.Name .. " → "
 					.. (distance > 23 and ("YOUR BAY · " .. distance .. "m") or "DOCK AT AN EMPTY PEDESTAL")
-			elseif not state.Carrying and (state.Income or 0) == 0 and #state.Inventory == 0 then
+			elseif not quest.Visible and not state.Carrying and (state.Income or 0) == 0 and #state.Inventory == 0 then
 				hint.Text = "DOCK A BRAINROT AT YOUR BAY TO START EARNING"
 				hint.Visible = state.SaveStatus ~= "STUDIO PREVIEW"
 			elseif not state.Carrying and #state.Inventory >= state.Slots then
