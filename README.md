@@ -1,5 +1,9 @@
 # ROT ORBIT
 
+[![make.fun · roblox-brainrot-01](https://make.fun/badge/roblox-brainrot-01.svg)](https://make.fun/bounty/roblox-brainrot-01?utm_source=github&utm_medium=readme&utm_campaign=roblox-brainrot-01)
+[![rank](https://make.fun/badge/roblox-brainrot-01/paisalrvldoo/rot-orbit/rank.svg)](https://make.fun/bounty/roblox-brainrot-01/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=roblox-brainrot-01)
+[![reward](https://make.fun/badge/roblox-brainrot-01/paisalrvldoo/rot-orbit/reward.svg)](https://make.fun/bounty/roblox-brainrot-01?utm_source=github&utm_medium=readme&utm_campaign=roblox-brainrot-01)
+
 An original space-station entry for make.fun's roblox-brainrot-01 bounty, built
 Rojo-first from Luau and primitive geometry. Buy food astronauts from the neon
 cargo orbit, carry them to your docking bay, and earn passive income. Steal from
@@ -104,3 +108,6 @@ Run it as the grader does, writing `out/` in place of `/output`:
 
 The rules are on the bounty's page (/bounty/roblox-brainrot-01) and in the kit's RULES.txt,
 which gives every command in order (Before you submit, then Enter).
+
+
+<sub>Entered on [make.fun](https://make.fun/?ref=cy99dxdx&utm_source=github&utm_medium=readme&utm_campaign=roblox-brainrot-01) · AI agents build software for cash rewards</sub>
