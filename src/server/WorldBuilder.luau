@@ -73,9 +73,9 @@ local function lighting()
 	Lighting.Brightness = 3.2
 	Lighting.ClockTime = 0
 	Lighting.GeographicLatitude = 18
-	Lighting.Ambient = Color3.fromRGB(45, 48, 55)
-	Lighting.OutdoorAmbient = Color3.fromRGB(48, 52, 59)
-	Lighting.ExposureCompensation = 0
+	Lighting.Ambient = Color3.fromRGB(92, 100, 118)
+	Lighting.OutdoorAmbient = Color3.fromRGB(105, 112, 130)
+	Lighting.ExposureCompensation = 0.35
 	Lighting.GlobalShadows = true
 	Lighting.EnvironmentDiffuseScale = 0.65
 	Lighting.EnvironmentSpecularScale = 0.7
@@ -106,8 +106,8 @@ local function skyAndPlanet(parent)
 	for index = 1, Config.World.StarCount do
 		local angle = index * math.pi * (3 - math.sqrt(5))
 		local distance = random:NextNumber(480, 800)
-		-- Uniform in height gives equal-area coverage from below the horizon to zenith.
-		local elevation = -0.22 + 1.22 * (index - 0.5) / Config.World.StarCount
+		-- Golden-angle equal-area coverage stays above the deck in every direction.
+		local elevation = 0.02 + 0.98 * (index - 0.5) / Config.World.StarCount
 		local horizontal = distance * math.sqrt(1 - elevation ^ 2)
 		local position = Vector3.new(math.cos(angle) * horizontal, elevation * distance, math.sin(angle) * horizontal)
 		local bright = index % 14 == 0
@@ -119,21 +119,20 @@ local function skyAndPlanet(parent)
 			CollectionService:AddTag(point, "OrbitSkyStar")
 		end
 	end
-	-- Give the arrival skyline a sloped Milky Way with stars and soft dust.
+	-- Four gently rising arcs wrap the station instead of a one-sided wall.
 	local lilac, cyan = Color3.fromRGB(161, 107, 208), Color3.fromRGB(81, 179, 220)
 	for index = 1, Config.World.StarBandCount do
-		local x = random:NextNumber(-590, 580)
-		local scatter = random:NextNumber(-1, 1) + random:NextNumber(-1, 1)
-		local y = 42 + x * 0.27 + scatter * 42
+		local angle = (index - 0.5) * math.pi * 2 / Config.World.StarBandCount
+		local distance = random:NextNumber(690, 790)
+		local elevation = 0.13 + 0.16 * (0.5 + 0.5 * math.sin(angle * 4)) + random:NextNumber(0, 0.08)
 		local color = lilac:Lerp(cyan, random:NextNumber())
 		if index % 4 == 0 then color = color:Lerp(palette.White, 0.72) end
-		star(Vector3.new(x, y, random:NextNumber(-790, -690)), random:NextNumber(1.0, 2.7), color,
-			0.25 + math.abs(scatter) * 0.18)
+		star(Vector3.new(math.cos(angle) * distance, elevation * distance, math.sin(angle) * distance),
+			random:NextNumber(1.0, 2.7), color, 0.3)
 	end
-	for index = 1, 19 do
-		local x = (index - 10) * 41
-		local y = 65 + x * 0.27 + random:NextNumber(-30, 30)
-		local source = star(Vector3.new(x, y, random:NextNumber(-570, -505)), 0.2, cyan, 1)
+	for index = 1, 4 do
+		local angle = (index - 0.5) * math.pi / 2
+		local source = star(Vector3.new(math.cos(angle) * 650, 160, math.sin(angle) * 650), 0.2, cyan, 1)
 		source.Name = "NebulaSource"
 		local cloud = Instance.new("ParticleEmitter")
 		cloud.Name = "NebulaDust"
@@ -576,7 +575,7 @@ local function buildCargoRing(world)
 					frame * CFrame.Angles(0, -spin, 0) * CFrame.new(11.46, 0, 0),
 					color, Enum.Material.Neon, rotor, nil, false)
 				shard.CanQuery = false
-				if segment == 0 then
+				if segment == 0 and arc == 0 then
 					local sparks = Instance.new("ParticleEmitter", shard)
 					sparks.Name = "WarpMotes"
 					sparks.Texture = "rbxasset://textures/particles/sparkles_main.dds"

@@ -91,6 +91,7 @@ function WorldBuilder.Part(name,size,cf,color,material,parent,shape,solid)
  local p=Instance.new('Part',parent)
  p.Name,p.Size,p.CFrame,p.Position,p.Color,p.Material,p.CanCollide=name,size,cf,cf.Position,color,material,solid~=false
  p.Shape=shape
+ p.Anchored,p.CanTouch,p.CastShadow=true,solid~=false,solid~=false
  table.insert(parts,p);return p
 end
 ${section(builder, 'function WorldBuilder.Ring(', 'function WorldBuilder.Billboard(')}
@@ -101,12 +102,28 @@ for _,effect in ipairs(Lighting:GetChildren()) do
  assert(not effect:IsA('Atmosphere') or effect.Density<=0,'positive Lighting atmosphere washes out the black sky')
 end
 for _,ambient in ipairs({Lighting.Ambient,Lighting.OutdoorAmbient}) do
- for _,channel in ipairs(ambient) do assert(channel>=40 and channel<=60,'space ambient must stay within RGB 40–60') end
+ for _,channel in ipairs(ambient) do assert(channel>=80 and channel<=140,'readable metal requires ambient channels >=80') end
 end
 local sky=Lighting:FindFirstChild('OrbitSky')
 assert(sky and sky.StarCount>=3000 and not sky.CelestialBodiesShown,'keep the rich night sky')
 local space=folder('SkyCheck')
 skyAndPlanet(space)
+local stars,sectors=0,table.create(8,0)
+for _,point in ipairs(space:FindFirstChild('Starfield'):GetChildren()) do
+ if point.Name=='Star' then
+  stars+=1
+  local p=point.Position
+  assert(p.Y>=0,'star elevation must remain above the deck')
+  assert(point.Anchored and not point.CanCollide and not point.CanQuery and not point.CanTouch and not point.CastShadow,'stars must be inert')
+  assert(point.Material==Enum.Material.Neon and #point:GetChildren()==0,'stars must have no lights or emitters')
+  local sector=math.floor((math.atan2(p.Z,p.X)%(2*math.pi))/(math.pi/4))+1
+  sectors[sector]+=1
+ end
+end
+assert(stars<=500 and stars>=340,'star part budget exceeded')
+for _,count in ipairs(sectors) do assert(count>=stars*0.08,'uneven star azimuth sector') end
+assert(Lighting.ExposureCompensation>=0.3,'deck exposure must remain readable')
+for _,channel in ipairs(palette.Deck) do assert(channel>=58 and channel<=70,'keep mid-graphite deck') end
 local planets=space:FindFirstChild('Starfield'):FindFirstChild('BackdropPlanets')
 assert(planets and #planets:GetChildren()>=4,'expected authored backdrop bodies')
 for _,body in ipairs(planets:GetChildren()) do
@@ -120,7 +137,7 @@ local rim=planets:FindFirstChild('AzureRim')
 assert(azure.Shape==Enum.PartType.Ball and azure.Position.Y+azure.Size.Y/2<0,'Azure belongs below the horizon')
 assert(rim.Material==Enum.Material.SmoothPlastic and rim.Transparency>=0.9,'Azure rim must stay faint and non-emissive')
 table.clear(parts)
-print('Sky checks passed: no positive atmosphere, dark ambient, built-in stars and distant backdrop planets.')
+print('Sky checks passed: no positive atmosphere, readable ambient, even inert stars within budget, built-in stars and distant backdrop planets.')
 local function signFace() return {} end
 ${section(builder, 'local function buildTitle(', 'function WorldBuilder.CreatePedestal(')}
 ${section(builder, 'local function buildCargoRing(', 'local function buildDomes(')}
