@@ -27,6 +27,9 @@
   This installed kit reports level 26 versus current site level 27; rerun with
   a current kit before submitting. Site-only checks and genuine captures are
   still pending.
+- [x] Item 6: enriched the cover's Gelato hero with a dessert bowl, cherry and
+  rolled wafer; rounded coffee-pilot handles and foam/coffee surfaces. All
+  602 model builds pass, including wafer-stripe alignment at both scales.
 - [ ] Owner live phone review and four genuine Studio captures.
 
 Research priorities remain: staged late-game cover; 42–45 originals (43);

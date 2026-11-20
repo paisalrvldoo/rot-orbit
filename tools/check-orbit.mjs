@@ -409,6 +409,16 @@ for _,entry in ipairs(Catalog.Entries) do
     assert(eye.CFrame.Position.Z-eye.Size.Z/2<rim.CFrame.Position.Z-rim.Size.Z/2,'goggle frame must sit behind the eyes')
    end
    if entry.Kind=='Cornetto' then assert(counts.CroissantTip==2 and counts.PastryFold==2,'keep the croissant crescent') end
+   if entry.Kind=='Gelato' then
+    assert(counts.DessertBowl==1 and counts.RolledWafer==1 and counts.GelatoCherry==1,'gelato needs a complete dessert silhouette')
+    local wafer=model:FindFirstChild('RolledWafer')
+    for _,part in ipairs(model:GetChildren()) do
+     if part.Name=='WaferStripe' then
+      assert((part.CFrame.Position-wafer.CFrame.Position).Magnitude/scale<0.5,'wafer stripes must follow model scale exactly once')
+     end
+    end
+   end
+   if entry.Kind=='Cappuccino' or entry.Kind=='Espresso' then assert(counts.CeramicHandle==9,'coffee pilots need an open rounded cup handle') end
    if entry.Rarity=='SECRET' then
     assert(counts.RoyalCometCape==3 and counts.CrownPoint==5,'SECRET needs a regal silhouette')
     assert(maxY<=4.35,'SECRET sculpture exceeds the checked warp crown height: '..entry.Name..' '..tostring(maxY))

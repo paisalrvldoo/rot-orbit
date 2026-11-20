@@ -113,6 +113,14 @@ function BrainrotModel.Create(record, frame, parent, forSale)
 	local function pill(name, width, height, depth, position, color)
 		return make(name, Vector3.new(width, height, depth), position, color, Enum.PartType.Ball)
 	end
+	local function cupHandle()
+		-- Open ceramic arc connects to the cup, with a real gap through the handle.
+		for index = 0, 8 do
+			local angle = -math.pi / 2 + index * math.pi / 8
+			pill("CeramicHandle", 0.39, 0.43, 0.43,
+				Vector3.new(1.19 + math.cos(angle) * 0.79, 1.9 + math.sin(angle) * 0.86, 0.08), bodyColor)
+		end
+	end
 	-- A straight-sided slice with soft corners and a curved top.
 	local function toastSlice(name, width, height, depth, y, z, color)
 		local corner = width * 0.16
@@ -283,6 +291,19 @@ function BrainrotModel.Create(record, frame, parent, forSale)
 			make("GelatoScoop", Vector3.one * 1.1, Vector3.new((index - 2) * 0.66, 3.05, 0),
 				index == 2 and accent or bodyColor, Enum.PartType.Ball)
 		end
+		pill("DessertBowl", 2.46, 0.62, 1.83, Vector3.new(0, 0.98, 0.05), accent)
+		for _, side in ipairs({ -1, 1 }) do
+			pill("GelatoDrip", 0.3, 0.76, 0.46, Vector3.new(side * 0.94, 2.63, -0.14), bodyColor)
+		end
+		local waferFrame = CFrame.new(1.04, 3.55, 0.3) * CFrame.Angles(0, 0, 1.21)
+		make("RolledWafer", Vector3.new(1.72, 0.44, 0.44), waferFrame.Position,
+			Color3.fromRGB(233, 179, 105), Enum.PartType.Cylinder, waferFrame.Rotation)
+		for index = -1, 1 do
+			make("WaferStripe", Vector3.new(0.11, 0.46, 0.46),
+				waferFrame * Vector3.new(index * 0.43, 0, 0), accent, Enum.PartType.Cylinder, waferFrame.Rotation)
+		end
+		pill("GelatoCherry", 0.48, 0.45, 0.45, Vector3.new(-0.12, 3.68, -0.02), Color3.fromRGB(237, 64, 103))
+		pill("CherryStem", 0.11, 0.39, 0.11, Vector3.new(-0.06, 3.96, 0), accent)
 	elseif kind == "Pastry" or kind == "Panettone" then
 		make("BakeryDome", Vector3.new(2.4, 1.1, 1.9), Vector3.new(0, 3, 0), bodyColor, Enum.PartType.Ball)
 		for index = 1, 5 do
@@ -306,11 +327,13 @@ function BrainrotModel.Create(record, frame, parent, forSale)
 				nil, nil, "WedgePart")
 		end
 	elseif kind == "Cappuccino" then
-		for _, y in ipairs({ 1.3, 2.5 }) do
-			make("CupHandle", Vector3.new(1, 0.25, 0.4), Vector3.new(1.4, y, 0), bodyColor)
-		end
-		make("HandleSide", Vector3.new(0.25, 1.3, 0.4), Vector3.new(1.8, 1.9, 0), bodyColor)
+		cupHandle()
 		make("MilkFoam", Vector3.new(2.2, 0.4, 1.7), Vector3.new(0, 3.1, 0), Config.Palette.White, Enum.PartType.Ball)
+		pill("CoffeeCrema", 1.71, 0.13, 1.23, Vector3.new(0, 3.31, 0), Color3.fromRGB(166, 105, 66))
+		for index = -1, 1 do
+			make("LatteLeaf", Vector3.new(0.32, 0.07, 0.57), Vector3.new(index * 0.34, 3.38, 0),
+				Config.Palette.White, Enum.PartType.Ball, CFrame.Angles(0, index * 0.45, 0))
+		end
 	elseif kind == "Tiramisu" then
 		for index = 1, 3 do
 			make("CreamLayer", Vector3.new(2.28, 0.21, 1.78), Vector3.new(0, 0.8 + index * 0.65, 0),
@@ -371,8 +394,10 @@ function BrainrotModel.Create(record, frame, parent, forSale)
 				bodyColor, nil, CFrame.Angles(0, 0, index * 0.16))
 		end
 	elseif kind == "Espresso" then
+		cupHandle()
 		make("Saucer", Vector3.new(3.5, 0.2, 2.6), Vector3.new(0, 0.65, 0), accent, Enum.PartType.Ball)
-		make("Crema", Vector3.new(2.2, 0.28, 1.7), Vector3.new(0, 3.1, 0), accent)
+		pill("Crema", 2.2, 0.28, 1.7, Vector3.new(0, 3.1, 0), accent)
+		pill("CoffeeSurface", 1.78, 0.11, 1.27, Vector3.new(0, 3.24, 0), Color3.fromRGB(70, 40, 37))
 		orbit(1.7, 3.6, glow, 0.4)
 	elseif kind == "Dragonfruit" then
 		for index = 1, 7 do
