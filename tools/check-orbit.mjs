@@ -47,6 +47,7 @@ function cm.__mul(a,b)
 end
 function cm.__index(c,k)
  if k=='LookVector' then return -c.B end
+ if k=='Rotation' then return frame(Vector3.zero,c.R,c.U,c.B) end
  if k=='PointToObjectSpace' then return function(_,p) local d=p-c.Position;return Vector3.new(dot(d,c.R),dot(d,c.U),dot(d,c.B)) end end
 end
 function CFrame.Angles(x,y,z)
@@ -69,7 +70,8 @@ function Instance.new(class,parent)
  local item={ClassName=class,Children={},Attributes={}}
  if class=='Atmosphere' then item.Density=0.395 end
  function item:GetChildren() return self.Children end
- function item:IsA(class) return self.ClassName==class or class=='BasePart' and self.ClassName=='Part' end
+ function item:PivotTo(cf) assert(self.PrimaryPart,'model requires a root');self.Pivot=cf end
+ function item:IsA(class) return self.ClassName==class or class=='BasePart' and (self.ClassName=='Part' or self.ClassName=='WedgePart') end
  function item:FindFirstChild(name) for _,v in ipairs(self.Children) do if v.Name==name then return v end end end
  function item:SetAttribute(k,v) self.Attributes[k]=v end
  function item:GetAttribute(k) return self.Attributes[k] end
@@ -256,7 +258,8 @@ local crownHeight=4.35*Rarity.ByName.SECRET.Scale*Config.Conveyor.ModelScale+Con
 local crownLocal=gate:PointToObjectSpace(entry+Vector3.new(0,crownHeight,0))
 assert(math.sqrt(crownLocal.X^2+crownLocal.Z^2)+0.8<portalRadius,'enlarged SECRET crown clips portal rim')
 -- Execute the actual cover staging and marquee restoration, not copied poses.
-local UDim2={fromOffset=function(x,y) return {Width=x,Height=y} end}
+local UDim2={fromOffset=function(x,y) return {Width=x,Height=y} end,fromScale=function() return {} end,new=function() return {} end}
+local UDim={new=function() return {} end}
 local ScreenshotService=(function()
 ${section(read('src/server/ScreenshotService.luau'), 'local ScreenshotService =')}
 end)()
@@ -338,6 +341,45 @@ local hero=state.Bay.Slots[3].Occupant.Model.Frame.Position
 local _,foot=project(hero,1280,720)
 local _,crown=project(hero+Vector3.new(0,4.35*Rarity.ByName.SECRET.Scale,0),1280,720)
 assert(foot-crown>=720*0.24,'docked SECRET must be a cover hero, not a distant speck')
+-- Build the actual cast at dock and conveyor scale: the new silhouettes must
+-- keep the portal crown budget and cannot become collidable/queryable scenery.
+local Traits=(function()
+${section(read('src/shared/BrainrotTraits.luau'), 'local Rarity =')}
+end)()
+local Mutation,Format=Traits.Mutation,Traits.Format
+local Catalog=(function()
+${section(read('src/server/BrainrotCatalog.luau'), 'local Catalog =')}
+end)()
+local BrainrotModel=(function()
+${section(read('src/server/BrainrotModel.luau'), 'local BrainrotModel =')}
+end)()
+local builds=0
+for _,entry in ipairs(Catalog.Entries) do
+ for variant=0,#Mutation.Order do
+  for _,sale in ipairs({false,true}) do
+   local model=BrainrotModel.Create({Id=entry.Id,Mutation=Mutation.Order[variant]},CFrame.identity,world.Geometry,sale)
+   local scale=model:GetAttribute('VisualScale')
+   local counts,maxY={},0
+   for _,part in ipairs(model:GetChildren()) do
+    if part:IsA('BasePart') then
+     assert(part.Size.X>0 and part.Size.Y>0 and part.Size.Z>0,'invalid sculpted geometry')
+     assert(not part.CanCollide and not part.CanQuery,'brainrot parts must not block movement or prompts')
+     counts[part.Name]=(counts[part.Name] or 0)+1
+     for _,corner in ipairs(corners(part)) do maxY=math.max(maxY,corner.Y/scale) end
+    end
+   end
+   assert(counts.EyeWhite==2 and counts.Pupil==2 and counts.Mitten==2,'keep the expressive suit silhouette')
+   if entry.Id==1 then assert(counts.BakedCrust and counts.GoldenCrumb and counts.ToasterRadio,'keep sculpted toast') end
+   if entry.Id==3 then assert(counts.LettuceCrown==5 and counts.LeafVein==5,'keep layered lettuce') end
+   if entry.Rarity=='SECRET' then
+    assert(counts.RoyalCometCape==3 and counts.CrownPoint==5,'SECRET needs a regal silhouette')
+    assert(maxY<=4.35,'SECRET sculpture exceeds the checked warp crown height: '..entry.Name..' '..tostring(maxY))
+   end
+   builds+=1
+  end
+ end
+end
+print(string.format('Model checks passed: %d dock/cargo builds across 43 originals and all six mutations; clear prompts and SECRET crown bounds.',builds))
 print('Cover source checks passed: elevated balcony, real orbit width, clear marquee, five separated cards and repeatable title restoration. NOT a rendered screenshot.')
 print(string.format('Orbit geometry checks passed: 1170x540 rail x%.0f–%.0f y%.0f–%.0f, two walkable ramps, clear orbit-to-title sightlines and SECRET portal headroom. NOT a rendered screenshot.',loX,hiX,loY,hiY))
 `;

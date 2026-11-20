@@ -364,7 +364,7 @@ function BrainrotModel.Create(record, frame, parent, forSale)
 		make("ImperialCape", Vector3.new(3.1, 3.0, 0.3), Vector3.new(0, 1.7, 0.85), accent)
 		make("SceptreGrip", Vector3.new(0.65, 0.27, 0.35), Vector3.new(1.55, 1.8, 0), accent)
 		make("Sceptre", Vector3.new(0.18, 3.8, 0.18), Vector3.new(1.8, 2.1, 0), glow)
-		make("SceptreStar", Vector3.one * 0.8, Vector3.new(1.8, 4.0, 0), glow, Enum.PartType.Ball)
+		make("SceptreStar", Vector3.one * 0.8, Vector3.new(1.8, 3.94, 0), glow, Enum.PartType.Ball)
 	elseif kind == "Bean" or kind == "Olive" then
 		if kind == "Bean" then
 			pill("BeanCurve", 1.31, 2.48, 1.54, Vector3.new(-0.48, 1.79, 0.15), bodyColor)
@@ -414,32 +414,73 @@ function BrainrotModel.Create(record, frame, parent, forSale)
 			end
 		end
 	end
+	-- Space suits stay behind the face; rank is visible in the outer silhouette.
+	if rarity.Rank <= 2 then
+		for _, side in ipairs({ -1, 1 }) do
+			local ear = make("RadioEarcup", Vector3.new(0.25, 0.67, 0.67),
+				Vector3.new(side * (isToast and 1.35 or 1.12), 2.57, 0.03),
+				accent, Enum.PartType.Cylinder)
+			ear.Material = Enum.Material.Metal
+			pill("EarcupLamp", 0.12, 0.21, 0.21,
+				Vector3.new(side * ((isToast and 1.35 or 1.12) + 0.14), 2.57, 0.03), glow).Material = Enum.Material.Neon
+		end
+	elseif rarity.Rank == 3 then
+		for _, side in ipairs({ -1, 1 }) do
+			make("NavigatorCape", Vector3.new(1.18, 1.72, 0.22), Vector3.new(side * 0.74, 1.53, 0.99),
+				accent, nil, CFrame.Angles(0.13, side * 0.22, -side * 0.21), "WedgePart")
+		end
+	elseif rarity.Rank >= 5 then
+		for _, side in ipairs({ -1, 1 }) do
+			local wing = make("CometMantle", Vector3.new(0.78, 1.98, 0.42),
+				Vector3.new(side * 1.39, 1.62, 0.98), accent, nil,
+				CFrame.Angles(0, side * 0.2, -side * 0.42), "WedgePart")
+			wing.Material = Enum.Material.Metal
+			local edge = make("MantleLight", Vector3.new(0.15, 1.54, 0.17),
+				Vector3.new(side * 1.68, 1.76, 0.71), glow, nil,
+				CFrame.Angles(0, 0, -side * 0.42))
+			edge.Material, edge.CastShadow = Enum.Material.Neon, false
+			if rarity.Rank >= 6 then
+				local moon = pill("CompanionMoon", 0.55, 0.55, 0.55,
+					Vector3.new(side * 2.16, 3.37, 0.28), accent)
+				moon.Material = Enum.Material.Metal
+				pill("MoonCrater", 0.21, 0.21, 0.08,
+					Vector3.new(side * 2.16, 3.4, 0.01), glow).Material = Enum.Material.Neon
+			end
+		end
+	end
 	-- Oversized expressive faces remain different even when mutations tint them.
-	local faceZ = -bodySize.Z / 2 - 0.06
+	local faceZ = -bodySize.Z / 2 - (isToast and 0.16 or 0.06)
 	local expression = entry.Id % 5
 	for _, side in ipairs({ -1, 1 }) do
-		make("EyeWhite", Vector3.new(0.6, expression == 2 and side == -1 and 0.2 or 0.7, 0.18),
-			Vector3.new(side * 0.48, 2.22, faceZ - 0.03),
+		make("EyeWhite", Vector3.new(0.67, expression == 2 and side == -1 and 0.2 or 0.77, 0.24),
+			Vector3.new(side * 0.48, 2.22 + (side == -1 and expression == 0 and 0.12 or 0), faceZ - 0.03),
 			Config.Palette.White, Enum.PartType.Ball)
-		make("Pupil", Vector3.new(0.29, expression == 2 and side == -1 and 0.1 or 0.4, 0.11),
-			Vector3.new(side * 0.48 + 0.04, 2.19, faceZ - 0.15),
+		make("Pupil", Vector3.new(0.33, expression == 2 and side == -1 and 0.1 or 0.44, 0.12),
+			Vector3.new(side * 0.48 + (expression == 1 and -side * 0.07 or 0.04), 2.19, faceZ - 0.18),
 			Config.Palette.Ink, Enum.PartType.Ball)
-		make("EyeGlint", Vector3.new(0.1, 0.12, 0.05), Vector3.new(side * 0.48 + 0.08, 2.28, faceZ - 0.22),
+		make("EyeGlint", Vector3.new(0.1, 0.12, 0.05), Vector3.new(side * 0.48 + 0.08, 2.28, faceZ - 0.26),
 			Config.Palette.White, Enum.PartType.Ball)
 		make("MemeEyebrow", Vector3.new(0.64, 0.13, 0.13), Vector3.new(side * 0.48, 2.76, faceZ - 0.05),
 			accent, nil, CFrame.Angles(0, 0, side * (expression == 3 and -0.28 or 0.16)))
+		pill("BlushCheek", 0.28, 0.17, 0.10, Vector3.new(side * 0.81, 1.83, faceZ - 0.05),
+			bodyColor:Lerp(Color3.fromRGB(255, 141, 158), 0.63))
 	end
 	if expression == 0 then
 		make("AstonishedMouth", Vector3.new(0.48, 0.55, 0.14), Vector3.new(0, 1.51, faceZ - 0.08),
 			Config.Palette.Ink, Enum.PartType.Ball)
 	else
-		make("Smile", Vector3.new(0.74, 0.21, 0.12), Vector3.new(0, 1.55, faceZ - 0.06),
+		make("Smile", Vector3.new(0.89, 0.36, 0.16), Vector3.new(0, 1.57, faceZ - 0.06),
 			Config.Palette.Ink, nil, CFrame.Angles(0, 0, expression == 2 and 0.15 or 0))
 		for _, side in ipairs({ -1, 1 }) do
 			make("SmileCorner", Vector3.new(0.12, 0.22, 0.1), Vector3.new(side * 0.34, 1.67, faceZ - 0.08), Config.Palette.Ink)
 		end
 		if expression == 1 or expression == 4 then
-			make("GoofyTooth", Vector3.new(0.22, 0.22, 0.13), Vector3.new(0.08, 1.52, faceZ - 0.14), Config.Palette.White)
+			for _, x in ipairs({ -0.15, 0.15 }) do
+				make("GoofyTooth", Vector3.new(0.22, x < 0 and 0.25 or 0.21, 0.13),
+					Vector3.new(x, 1.61, faceZ - 0.16), Config.Palette.White)
+			end
+		elseif expression == 3 then
+			pill("Tongue", 0.38, 0.24, 0.13, Vector3.new(0.15, 1.42, faceZ - 0.17), Color3.fromRGB(255, 130, 162))
 		end
 	end
 	if entry.Id % 4 == 0 then
@@ -467,11 +508,17 @@ function BrainrotModel.Create(record, frame, parent, forSale)
 		orbit(2.35, 2.3, glow, 0.4)
 	elseif record.Mutation == "Aurora" then
 		for index = 1, 3 do
-			orbit(1.7 + index * 0.25, 0.7 + index * 0.8,
+			orbit(1.7 + index * 0.25, 0.65 + index * 0.8,
 				index == 2 and Color3.fromRGB(186, 142, 255) or glow, index * 0.17)
 		end
 	end
 	if rarity.Rank == 7 then
+		for panel = -1, 1 do
+			make("RoyalCometCape", Vector3.new(1.0, 2.75, 0.25),
+				Vector3.new(panel * 0.83, 1.67, 1.12), panel == 0 and glow or accent, nil,
+				CFrame.Angles(0.10, panel * 0.15, -panel * 0.19), "WedgePart")
+		end
+		orbit(1.62, 3.62, Config.Palette.Sun, 0)
 		make("CrownBand", Vector3.new(2.6, 0.24, 1.9), Vector3.new(0, 3.7, 0), Config.Palette.Sun)
 		for index = -2, 2 do
 			local jewel = make("CrownPoint", Vector3.new(0.32, 0.65, 0.35),
@@ -517,11 +564,12 @@ function BrainrotModel.Create(record, frame, parent, forSale)
 		sparks.Texture = "rbxasset://textures/particles/sparkles_main.dds"
 		sparks.Color = ColorSequence.new(glow)
 		sparks.LightEmission = 0.9
-		sparks.Rate = mutation and 10 or 4
+		sparks.Rate = math.min(16, (mutation and 7 or 1) + rarity.Rank)
 		sparks.Lifetime = NumberRange.new(0.5, 1.15)
 		sparks.Speed = NumberRange.new(0.4, 1.6)
 		sparks.SpreadAngle = Vector2.new(180, 180)
-		sparks.Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.18), NumberSequenceKeypoint.new(1, 0) })
+		sparks.Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.12 + rarity.Rank * 0.025),
+			NumberSequenceKeypoint.new(1, 0) })
 		sparks.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.2), NumberSequenceKeypoint.new(1, 1) })
 		sparks.Parent = attachment
 	end

@@ -15,7 +15,13 @@
   checks the flat centered rail, halo clearance, atmosphere and planet bounds.
 - [x] Item 6. Sculpted the toast crust and crumb, gave the green mascots
   distinct curves and accessories, and rounded the suit boots and gloves.
-- [ ] Item 6. Improve expressions and step up the rarity silhouettes and effects.
+- [x] Item 6. Bolder cross-eyed/winking faces, cheeks, teeth and tongue;
+  radio earcups, Epic navigator capes, Mythic comet mantles, Cosmic companion
+  moons, SECRET royal capes and crown rings. Particle size/rate now steps up
+  with rank. Exercised all 602 combinations of 43 characters, six mutations
+  plus plain, at dock and cargo scales; checked nonblocking parts and SECRET
+  crown height. Lowered the Aurora loop and emperor sceptre tip slightly to
+  retain the existing warp crown budget.
 - [ ] Check cover framing and update the capture guide for the lowered ring.
 - [ ] Owner phone playtest and four genuine Studio captures.
 
