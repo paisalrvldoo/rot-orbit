@@ -146,21 +146,21 @@ local function skyAndPlanet(parent)
 	end
 	for index = 1, 15 do
 		local x = (index - 8) * 49
-		local y = 62 + x * 0.27 + random:NextNumber(-20, 20)
-		local source = star(Vector3.new(x, y, random:NextNumber(-475, -420)), 0.2, cyan, 1)
+		local y = 76 + x * 0.27 + random:NextNumber(-26, 26)
+		local source = star(Vector3.new(x, y, random:NextNumber(-570, -505)), 0.2, cyan, 1)
 		source.Name = "NebulaSource"
 		local cloud = Instance.new("ParticleEmitter")
 		cloud.Name = "NebulaDust"
 		cloud.Texture = "rbxasset://textures/particles/smoke_main.dds"
 		cloud.Color = ColorSequence.new(lilac:Lerp(cyan, (index % 5) / 4))
 		cloud.Transparency = NumberSequence.new({
-			NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(0.28, 0.78),
-			NumberSequenceKeypoint.new(0.63, 0.84), NumberSequenceKeypoint.new(1, 1),
+			NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(0.16, 0.78),
+			NumberSequenceKeypoint.new(0.63, 0.87), NumberSequenceKeypoint.new(1, 1),
 		})
-		cloud.Size = NumberSequence.new(30, 65)
-		cloud.Lifetime = NumberRange.new(13, 19)
-		cloud.Speed = NumberRange.new(0.2, 1.1)
-		cloud.Rate = 0.85
+		cloud.Size = NumberSequence.new(45, 92)
+		cloud.Lifetime = NumberRange.new(10, 16)
+		cloud.Speed = NumberRange.new(0.65, 2.1)
+		cloud.Rate = 1
 		cloud.SpreadAngle = Vector2.new(180, 180)
 		cloud.Rotation = NumberRange.new(-180, 180)
 		cloud.RotSpeed = NumberRange.new(-3, 3)
@@ -181,32 +181,35 @@ local function skyAndPlanet(parent)
 		end
 	end
 	azure("AzureHeroPlanet", Config.World.PlanetPosition, Config.World.PlanetRadius, Color3.fromRGB(64, 129, 204))
-	azure("AzurePlanet", Vector3.new(389, -242, -468), 222, Color3.fromRGB(48, 103, 166))
 
 	-- A Saturn-like ringed planet and a small red planet make the skyline
 	-- unmistakably space themed from the phone arrival view.
 	local saturn = Vector3.new(275, 142, -560)
-	WorldBuilder.Part("RingedSaturn", Vector3.one * 82, CFrame.new(saturn),
+	local saturnBody = WorldBuilder.Part("RingedSaturn", Vector3.one * 82, CFrame.new(saturn),
 		Color3.fromRGB(192, 151, 103), Enum.Material.SmoothPlastic, backdrop, Enum.PartType.Ball, false)
+	saturnBody.CanQuery = false
+	-- The opaque planet hides each translucent disc's centre. Overlapping
+	-- circular discs give the rings continuous edges and stepped colour bands.
 	local ringPlane = CFrame.new(saturn) * CFrame.Angles(math.rad(31), math.rad(-12), math.rad(16))
+		* CFrame.Angles(0, 0, math.pi / 2)
 	for index, band in ipairs({
-		{ 48, 8, Color3.fromRGB(198, 164, 207), 0.62 },
-		{ 59, 11, Color3.fromRGB(239, 193, 132), 0.47 },
-		{ 71, 8, Color3.fromRGB(166, 170, 242), 0.64 },
-		{ 78, 2, Color3.fromRGB(245, 218, 178), 0.40 },
+		{ 79, Color3.fromRGB(169, 180, 238), 0.83 },
+		{ 73, Color3.fromRGB(198, 164, 207), 0.79 },
+		{ 64, Color3.fromRGB(239, 193, 132), 0.69 },
+		{ 51, Color3.fromRGB(245, 218, 178), 0.81 },
 	}) do
-		local ring = WorldBuilder.Ring("SaturnBand" .. index, band[1], band[2], 0.28, ringPlane,
-			band[3], Enum.Material.Neon, backdrop, 80, false)
-		for _, arc in ipairs(ring:GetChildren()) do
-			arc.Transparency = band[4]
-			arc.CanQuery = false
-		end
+		local diameter = band[1] * 2
+		local ring = WorldBuilder.Part("SaturnBand", Vector3.new(0.2, diameter, diameter),
+			ringPlane * CFrame.new((index - 2.5) * 0.32, 0, 0), band[2],
+			Enum.Material.Neon, backdrop, Enum.PartType.Cylinder, false)
+		ring.Transparency, ring.CanQuery = band[3], false
 	end
 	local redPlanet = WorldBuilder.Part("RedPlanet", Vector3.one * 52, CFrame.new(-380, 116, -620),
 		Color3.fromRGB(173, 63, 72), Enum.Material.SmoothPlastic, backdrop, Enum.PartType.Ball, false)
 	redPlanet.CanQuery = false
-	WorldBuilder.Ring("RedPlanetGlow", 27, 0.8, 0.7, CFrame.new(-380, 116, -620) * CFrame.Angles(math.rad(20), 0, math.rad(-18)),
-		Color3.fromRGB(255, 119, 101), Enum.Material.Neon, backdrop, 48, false)
+	local redRim = WorldBuilder.Part("RedPlanetGlow", Vector3.one * 54, redPlanet.CFrame,
+		Color3.fromRGB(255, 119, 101), Enum.Material.Neon, backdrop, Enum.PartType.Ball, false)
+	redRim.Transparency, redRim.CanQuery = 0.92, false
 
 	local moonPosition = Vector3.new(157, 10, -408)
 	local moon = WorldBuilder.Part("PearlMoon", Vector3.one * 46, CFrame.new(moonPosition),
