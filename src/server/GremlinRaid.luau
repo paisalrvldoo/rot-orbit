@@ -57,7 +57,7 @@ function GremlinRaid:Spawn(bay, position, boss, health)
 	end
 	model:PivotTo(CFrame.new(position))
 	model.Parent = self.World.Root
-	local label = WorldBuilder.Billboard(root, boss and "CAPTAIN GREMLIN · FIGHT TOGETHER!" or "SPACE GREMLIN · ZAP [F]", green,
+	local label = WorldBuilder.Billboard(root, boss and "CAPTAIN GREMLIN · FIGHT TOGETHER!" or "SPACE GREMLIN · ZAP IT", green,
 		Vector3.new(0, boss and 8 or 4, 0), boss and 420 or 250, 34)
 	local maxHealth = health or Config.Gremlin.Health
 	local hp = WorldBuilder.Billboard(root, "", Config.Palette.White,
@@ -154,9 +154,9 @@ function GremlinRaid:Grab(state, slotIndex)
 	state.LootModel = BrainrotModel.Create(state.Loot,
 		state.Model:GetPivot() * (state.Boss and CFrame.new(3.4, 4, 0) or CFrame.new(0, 3.4, 0)), state.Model)
 	state.LootModel:SetAttribute("VisualState", "Raided")
-	state.Label.Text = "STOLEN CARGO! ZAP [F]"
+	state.Label.Text = "STOLEN CARGO! CHASE AND ZAP"
 	self.Economy.Network.Notice:FireClient(bay.Owner,
-		"A GREMLIN TOOK " .. Catalog.DisplayName(state.Loot) .. "! Chase it and ZAP [F]!")
+		"A GREMLIN TOOK " .. Catalog.DisplayName(state.Loot) .. "! Chase it and ZAP!")
 	self.Economy:Send(bay.Owner)
 end
 
@@ -553,8 +553,6 @@ function GremlinRaid:Start()
 	local portal = WorldBuilder.Part("GremlinArrivalPortal", Vector3.new(12, 14, 1), CFrame.new(0, 7, -60),
 		Color3.fromRGB(151, 255, 81), Enum.Material.Neon, self.World.Root, Enum.PartType.Ball, false)
 	portal.Transparency = 0.3
-	WorldBuilder.Billboard(portal, boss and "CAPTAIN INCOMING!" or "GREMLIN RAID INCOMING!",
-		Config.Palette.Sun, Vector3.new(0, 9, 0), 420, 44)
 	Debris:AddItem(portal, Config.Gremlin.Duration + Config.Gremlin.Telegraph)
 	task.delay(Config.Gremlin.Telegraph, function()
 		if self.World.Root:GetAttribute("ScreenshotFrozen") then self.Active = false; return end

@@ -102,6 +102,8 @@ assert(input.Buttons.Sprint:GetAttribute('CooldownFraction') == 10 / Config.Skil
 assert(input.Buttons.Blink:GetAttribute('CooldownFraction') == 0)
 assert(input.Buttons.Blink:FindFirstChild('ActionIcon') and input.Buttons.Zap:FindFirstChild('ActionIcon'))
 assert(input.Buttons.Sprint:FindFirstChild('CooldownProgress').Visible)
+assert(input.Buttons.Lock.Text == 'LOCK\\nREADY' and not input.Buttons.Zap:FindFirstChild('ActionCaption').Text:find('%[F%]'),
+    'touch controls should show button names without keyboard-only hints')
 state.SkillReadyAt = {}; state.ZapReadyAt = 102; frame()
 assert(not input.Buttons.Sprint:GetAttribute('Unavailable'))
 assert(input.Buttons.Sprint:FindFirstChild('ActionCaption').Text == 'RUN\\nREADY')
@@ -110,6 +112,8 @@ assert(input.Buttons.Zap:GetAttribute('Unavailable') and input.Buttons.Zap:GetAt
 menu.Activate(); frame()
 checkBounds()
 assert(input.Buttons.Lock.Visible and input.Buttons.Rebirth.Visible and hud.Gui:GetAttribute('MobileMenuOpen'))
+state.LockUntil = 104; frame()
+assert(input.Buttons.Lock.Text == 'LOCK\\nLOCKED · 4s', 'touch lock state must stay readable without a key hint')
 input.Buttons.Upgrades.Activate(); frame()
 assert(upgrades.Visible and not input.Buttons.Lock.Visible and not hud.Gui:GetAttribute('MobileMenuOpen'))
 upgrades.Visible = false
@@ -118,8 +122,10 @@ assert(sent[#sent][1] == 'Skill' and sent[#sent][2] == 'Blink', 'keyboard must r
 state.SaveStatus = 'STUDIO PREVIEW'; frame()
 assert(not menu.Visible and input.Buttons.Lock.Visible and input.Buttons.Blink.Visible and input.Buttons.Sprint.Visible)
 assert(not input.Buttons.Sprint:FindFirstChild('CooldownProgress').Visible)
-state.SaveStatus = 'SAVED'; compact = false; frame()
+state.SaveStatus = 'SAVED'; state.LockUntil = nil; state = table.clone(state); compact = false; frame()
 assert(input.Buttons.Index.Visible and input.Buttons.Rebirth.Visible and not menu.Visible)
+assert(input.Buttons.Lock.Text == 'LOCK [L]\\nREADY' and input.Buttons.Zap:FindFirstChild('ActionCaption').Text:find('%[F%]'),
+    'desktop controls should retain keyboard hints')
 print('Control checks passed: round skill icons, phone arc/44px targets, jump clearance, cooldown/recovery, menu, keyboard, panels and staged/desktop restoration.')
 `;
 const directory = join(root, 'out', 'control-check');

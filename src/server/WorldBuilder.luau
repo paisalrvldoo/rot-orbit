@@ -235,12 +235,12 @@ local function buildTitle(parent)
 	end
 	for _, side in ipairs({ -1, 1 }) do
 		WorldBuilder.Part("TitleSupport", Vector3.new(1.05, height, 1.05),
-			CFrame.new(side * 18.8, height / 2, -3), palette.Teal, Enum.Material.SmoothPlastic, title)
+			CFrame.new(side * 21.2, height / 2, -3), palette.Teal, Enum.Material.SmoothPlastic, title)
 		WorldBuilder.Part("TitleTrim", Vector3.new(41, 0.27, 1.65),
-			CFrame.new(0, height + side * 3.4, -3), side == 1 and palette.Sun or palette.Mint,
+			CFrame.new(0, height + side * 3.55, -3), side == 1 and palette.Sun or palette.Mint,
 			Enum.Material.Neon, title, nil, false)
 		WorldBuilder.Part("TitleBeacon", Vector3.one * 1.1,
-			CFrame.new(side * 19.5, height + 4.15, -3), palette.Sun,
+			CFrame.new(side * 22.2, height + 4.3, -3), palette.Sun,
 			Enum.Material.Neon, title, Enum.PartType.Ball, false)
 	end
 end

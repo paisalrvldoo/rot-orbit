@@ -111,7 +111,7 @@ assert(loY>90 and hiY<270,'arrival orbit must arc in the upper half below the mo
 assert(hiY-loY>110,'orbit must have a visible elevated arc, not a flat horizon line')
 local title=named('TitlePanel')[1]
 for _,p in ipairs(corners(title)) do
- local x,y=project(p);assert(x>120 and x<1050 and y>120 and y<470,'title escapes its clear phone region')
+	local x,y=project(p);assert(x>120 and x<1050 and y>145 and y<455,'title must stay below the HUD and inside the clear phone region')
 end
 -- Conservative world AABBs: reject any track component intersecting the title.
 local function bounds(part)
@@ -123,6 +123,10 @@ local function bounds(part)
  return low,high
 end
 local tl,th=bounds(title)
+for _,support in ipairs(named('TitleSupport')) do
+	local low,high=bounds(support)
+	assert(high.X<tl.X or low.X>th.X,'title support must sit outside the sign face')
+end
 local function blocksSightline(part, origin, target)
  local start=part.CFrame:PointToObjectSpace(origin)
  local delta=part.CFrame:PointToObjectSpace(target)-start

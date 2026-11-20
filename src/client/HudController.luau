@@ -126,7 +126,11 @@ local function startEventBanner(gui, network)
 		banner.Visible = selected ~= nil or nextMeteorAt ~= nil
 		if selected then
 			local countdown = selected.FrozenSeconds or math.ceil(selected.EndsAt - now)
-			banner.Text = selected.HideCountdown and selected.Text or (selected.Text .. "  ·  " .. countdown .. "s")
+			local eventText = selected.Text
+			if HudController.IsCompact() then
+				eventText = eventText:gsub("%s*%[L%]", ""):gsub("%s*%[F%]", "")
+			end
+			banner.Text = selected.HideCountdown and eventText or (eventText .. "  ·  " .. countdown .. "s")
 			banner.TextColor3 = selected.Color or Config.Palette.Sun
 		elseif nextMeteorAt then
 			local seconds = math.max(0, math.ceil(nextMeteorAt - now))
@@ -240,6 +244,9 @@ function HudController.Start()
 	beacon.Parent = marker
 	local home = HudController.Text(beacon, "Home", "YOUR BAY ↓", UDim2.fromScale(0.5, 0), UDim2.fromScale(1, 1), 15, Config.Palette.Mint)
 	local function showNotice(message)
+		if HudController.IsCompact() then
+			message = message:gsub("%s*%[L%]", ""):gsub("%s*%[F%]", "")
+		end
 		if feed[1] ~= message then table.insert(feed, 1, message) end
 		feed[4] = nil
 		feedGeneration += 1
@@ -263,13 +270,8 @@ function HudController.Start()
 		cash.Text = Format.Money(snapshot.Cash)
 		raidStatus.Text = "RAIDS DEFENDED  " .. (snapshot.RaidsDefended or 0)
 		save.Text = snapshot.SaveStatus == "SAVED" and "PROGRESS SAVED" or snapshot.SaveStatus
-		if snapshot.Income > 0 then
-			detail.Text = Format.Money(snapshot.Income) .. "/s  ·  REBIRTH " .. snapshot.Rebirths
-				.. "  ·  x" .. snapshot.Multiplier .. " INCOME  ·  BAY " .. string.format("%02d", snapshot.BayIndex)
-		else
-			detail.Text = "DOCK A BRAINROT!  ·  x" .. snapshot.Multiplier .. " INCOME  ·  BAY "
-				.. string.format("%02d", snapshot.BayIndex)
-		end
+		detail.Text = Format.Money(snapshot.Income) .. "/s  ·  REBIRTH " .. snapshot.Rebirths
+			.. "  ·  x" .. snapshot.Multiplier .. " INCOME  ·  BAY " .. string.format("%02d", snapshot.BayIndex)
 		carrying.Visible = snapshot.Carrying ~= false
 		if snapshot.Carrying then carrying.Text = "CARRYING " .. snapshot.Carrying.Name .. " → RUN TO YOUR BAY" end
 		marker.Position = snapshot.BayPosition + Vector3.new(0, 11, 0)
@@ -341,8 +343,8 @@ function HudController.Start()
 			if state.Carrying and state.SaveStatus ~= "STUDIO PREVIEW" then
 				carrying.Text = "CARRYING " .. state.Carrying.Name .. " → "
 					.. (distance > 23 and ("YOUR BAY · " .. distance .. "m") or "DOCK AT AN EMPTY PEDESTAL")
-			elseif not state.Carrying and #state.Inventory == 0 then
-				hint.Text = "Buy a Common on the ring, then dock it at your bay"
+			elseif not state.Carrying and (state.Income or 0) == 0 and #state.Inventory == 0 then
+				hint.Text = "DOCK A BRAINROT AT YOUR BAY TO START EARNING"
 				hint.Visible = state.SaveStatus ~= "STUDIO PREVIEW"
 			elseif not state.Carrying and #state.Inventory >= state.Slots then
 				hint.Text = "Bay full · retire cargo or upgrade your bay"

@@ -178,13 +178,13 @@ function InputController.Start(hud)
 		end
 		local lock = self.Buttons.Lock
 		if (state.LockUntil or 0) > now then
-			lock.Text = "LOCK [L]\nLOCKED · " .. math.ceil(state.LockUntil - now) .. "s"
+			lock.Text = (compact and "LOCK" or "LOCK [L]") .. "\nLOCKED · " .. math.ceil(state.LockUntil - now) .. "s"
 			lock.BackgroundColor3 = Config.Palette.Teal
 		elseif (state.LockReadyAt or 0) > now then
-			lock.Text = "LOCK [L]\nRECHARGE · " .. math.ceil(state.LockReadyAt - now) .. "s"
+			lock.Text = (compact and "LOCK" or "LOCK [L]") .. "\nRECHARGE · " .. math.ceil(state.LockReadyAt - now) .. "s"
 			lock.BackgroundColor3 = Config.Palette.Ink
 		else
-			lock.Text = "LOCK [L]\nREADY"
+			lock.Text = (compact and "LOCK" or "LOCK [L]") .. "\nREADY"
 			lock.BackgroundColor3 = Config.Palette.Ink
 		end
 		self.Buttons.Zap.Text = (compact and "ZAP\n" or "ZAP [F]\n") .. ((state.ZapReadyAt or 0) > now

@@ -1,11 +1,36 @@
 # ACTIVE OWNER OVERRIDE — 20 November: TOP 3
 
-Read `/workspace/rbx/refs.md` current first 15 lines and the linked orbit,
-v8 phone and sky sections. These supersede ALL older continuation plans below.
-Initial status/diff were clean at `49337ea` and full verification passed.
+Recovery checkpoint `0edd687` records the clean, verified inherited state.
+Read `/workspace/rbx/refs.md` once. Follow the owner's current order immediately;
+do not wait on a Roblox render (the owner playtests and provides real shots).
+Keep each item small, run `node tools/verify.mjs`, and commit before moving on.
 
-Work ONLY in this order; no further pedestal/UI/new-system polish:
-- [ ] **0a: elevated orbit visible from spawn.** Source implementation raises
+Current judging plan, in priority order: (1) staged late-game cover; (2) 42–45
+original brainrots (43); (3) four real 16:9 captures; (4) roughly 20–24
+well-named scripts (25 currently); (5) large in-world ROT ORBIT title; (6)
+six mutations (6); (7) live HUD/button states; (8) quest card and action feed;
+(9) readable cargo values and rarity; (10) earned progression. Core loop and
+progression already pass. Keep all presentation faithful to the brainrot
+space-station conveyor/orbit, stealing, bay income, raids, lock/zap, rebirth,
+and index theme.
+
+Work in the latest explicit visual order, no side-system polish:
+- [x] **Item 0: phone sign/HUD defects.** Move title supports outside the sign
+  face, give its trim clear spacing, and assert the entire title stays below
+  the phone HUD region in the arrival projection. Raid appears once, touch copy
+  has no keyboard hints, and the empty-bay tip only appears at zero income with
+  no docked or carried cargo. Added mobile/desktop control state regressions;
+  full `node tools/verify.mjs` passes. Studio visual review remains with owner.
+  Keep the title readable, separated
+  from HUD and supports; raid appears once, touch copy has no keyboard hints,
+  and empty-bay tip only appears when no cargo is docked or carried.
+- [ ] **Items 0+6: deep-space sky.** Put the giant planet limb, ringed planet,
+  cratered moon, red planet, dense Milky Way and many stars clearly in the
+  ordinary phone view behind the station, without covering sign/HUD.
+- [ ] **Items 0+2: deck.** Dark metallic panels with crisp cyan/purple neon trim.
+- [ ] **Phone HUD cleanup** (as part of Item 0 above), then Item 3 tidy luxury
+  layout, Item 4 luxury leaderboard podium, and Item 5 cover presets.
+- [x] **0a: elevated orbit visible from spawn.** Source implementation raises
   the actual 42-stud-radius conveyor to 36 studs with 15° tilt (lowest rail
   ~25 studs), retains its 11.2-stud-wide chassis/double rarity rails/chasers,
   increases cargo models to 2x catalog size and gives the real track two solid
@@ -34,11 +59,7 @@ Work ONLY in this order; no further pedestal/UI/new-system polish:
   Each glass pod now shines a short rarity-coloured spotlight onto the track.
   Both portal rims leave short trails of sparks from their rotating arcs.
   The sparks clear when a fixed screenshot preset freezes the world.
-- [ ] **0: v8 defects**, only after 0a is visibly approved: unclipped title,
-  visible deep-space background, graphite floor, single phone raid warning,
-  correct empty-and-not-carrying bottom hint. See refs.md for full requirements.
-- [ ] **1–6:** orbit spectacle → dark deck → text clutter → crew podium →
-  cover framing → deep-space sky, respecting the latest ordering above.
+- [ ] Owner's genuine phone render/playtest and publish after source fixes.
 
 Owner research top-ten targets remain subordinate: staged late-game cover;
 42–45 original cast (43); four genuine captures; about 20–24 purposeful scripts
@@ -47,11 +68,9 @@ states, quests and feed; readable cargo value cards; earned progression.
 Core systems already pass. Old white-deck/orange-planet direction is superseded
 by dark metal/neon and deep space. No additional side systems this session.
 
-This machine has no Roblox Studio/runtime renderer. Do not mark 0a complete,
-advance to 0, or invent a screenshot. Next: obtain the genuine
-spawn screenshot using docs/shots/README.md before continuing. The old Cover
-preset was framed for the low ring and will need review at the cover step;
-it is not visually approved for the elevated ring. Rebuild and verify before each commit.
+This machine has no Roblox Studio/runtime renderer; source projections are not
+visual approval. The old Cover preset was framed for the low ring and needs
+review at Item 5. Rebuild and verify before each commit.
 
 # ROT ORBIT build notes
 
