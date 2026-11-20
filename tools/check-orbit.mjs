@@ -228,7 +228,8 @@ end
 screenshots:StageTitle('Cover')
 local state={Bay={Slots={}}}
 for i,name in ipairs({'Epic','Cosmic','SECRET','Cosmic','SECRET'}) do
- local model={PrimaryPart={BrainrotBillboard={}}}
+ local pillar={Attachment1={Position=Vector3.new(0,24.675,2)}}
+ local model={PrimaryPart={BrainrotBillboard={},FindFirstChild=function() return name=='SECRET' and pillar or nil end}}
  function model:GetAttribute() return name end
  function model:SetAttribute(k,v) self[k]=v end
  function model:PivotTo(f) self.Frame=f end
@@ -251,6 +252,28 @@ assert(viewFov==55 and meteorCount==4)
 for _,point in ipairs(corners(title)) do
  local x,y=project(point,1280,720)
  assert(x>440 and x<860 and y>151 and y<240,'cover marquee must clear money/event HUD')
+end
+local signLow,signHigh=math.huge,-math.huge
+for _,point in ipairs(corners(title)) do
+ local _,y=project(point,1280,720);signLow,signHigh=math.min(signLow,y),math.max(signHigh,y)
+end
+for _,slot in ipairs(state.Bay.Slots) do
+ local model=slot.Occupant.Model
+ local pillar=model.PrimaryPart:FindFirstChild('SecretLightPillar')
+ if pillar then
+  assert(pillar.Attachment1.Position.Y==12,'foreground SECRET beam must stop above crown')
+  local _,top=project(model.Frame.Position+pillar.Attachment1.Position,1280,720)
+  assert(top>signHigh+12,'foreground beam must not cross the world marquee')
+ end
+end
+-- Check actual solid rails/pylons and balcony scenery against the moved sign.
+for _,p in ipairs(parts) do
+ if p.Parent.Name~='StationTitle' and (p.Transparency or 0)<0.7 then
+  for x=-18,18,3 do
+   local target=title.CFrame*Vector3.new(x,0,title.Size.Z/2)
+   assert(not blocksSightline(p,camera.Position,target),p.Name..' blocks cover title')
+  end
+ end
 end
 local minRail,maxRail=math.huge,-math.huge
 for _,p in ipairs(parts) do if p.Parent.Name=='TrackChassis' then

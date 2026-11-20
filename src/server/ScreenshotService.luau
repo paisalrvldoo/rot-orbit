@@ -123,6 +123,13 @@ local function stageCover(state, root, meteors)
 	for index = 1, 5 do
 		local column = index - 3
 		local pedestal = state.Bay.Slots[index]
+		-- Keep the foreground SECRET's pillar above its crown, but below the
+		-- distant marquee. Its full live pillar would cross the title and cash.
+		local pillar = pedestal.Occupant.Model.PrimaryPart:FindFirstChild("SecretLightPillar")
+		if pillar and pillar.Attachment1 then
+			local tip = pillar.Attachment1.Position
+			pillar.Attachment1.Position = Vector3.new(tip.X, math.min(tip.Y, 12), tip.Z)
+		end
 		local center = platform * CFrame.new(column * 8.8, 0.8, -math.abs(column) * 0.85)
 		local rarity = Rarity.ByName[pedestal.Occupant.Model:GetAttribute("Rarity")]
 		local color = rarity.Color
@@ -237,7 +244,7 @@ function ScreenshotService:Prepare(player, shot)
 		end
 		self.Gremlins:Grab(left, 4)
 		self.Gremlins:Grab(right, 2)
-		left.Label.Text = "CAPTAIN ESCAPING · ZAP [F]"
+		left.Label.Text = "CAPTAIN ESCAPING · ZAP!"
 		right.Label.Text = "ZAPPED!"
 		right.Label.TextColor3 = Config.Palette.Mint
 		local dropped = self.Gremlins:Stun(right, workspace:GetServerTimeNow())
@@ -249,7 +256,7 @@ function ScreenshotService:Prepare(player, shot)
 			WorldBuilder.Ring("ZapRecovery", 3.4, 0.2, 0.12, frame * CFrame.new(10, 0.79, 15),
 				Config.Palette.Mint, Enum.Material.Neon, self.Meteors.Effects, 22, false)
 		end
-		actions = { "ZAPPED! · E TO RECOVER THE CARGO", "A GREMLIN IS STILL ESCAPING" }
+		actions = { "ZAPPED! · RECOVER THE CARGO", "A GREMLIN IS STILL ESCAPING" }
 		camera = CFrame.lookAt((frame * CFrame.new(0.3, 9.2, 31)).Position, (frame * CFrame.new(0.4, 4.3, 9)).Position)
 		fieldOfView = 55
 	end

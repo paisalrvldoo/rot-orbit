@@ -12,6 +12,10 @@
   other preset. All five dock value cards have separate projected rectangles;
   the docked SECRET exceeds 24% of capture height. Full verifier passes.
   These are source geometry checks, not a rendered screenshot.
+- [x] Item 0+5: cap foreground preview SECRET pillars just above their crowns
+  so they clear the title, and remove keyboard-only hints from the Raid preset's
+  world caption/action feed. Added actual staging tests for pillar/marquee
+  clearance and rail/pylon/balcony sightlines; full verification passes.
 - [ ] Item 5: make all four preset transitions and capture guidance agree with
   the revised layout; add source projection checks, then full verify + commit.
 - [ ] Owner: publish/playtest and capture four real Studio images. No renderer
