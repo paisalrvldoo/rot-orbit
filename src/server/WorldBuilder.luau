@@ -81,12 +81,12 @@ local function lighting()
 	Lighting.EnvironmentSpecularScale = 0.7
 	local atmosphere = Instance.new("Atmosphere")
 	atmosphere.Name = "OrbitalDepth"
-	atmosphere.Density = 0.08
+	atmosphere.Density = 0.12
 	atmosphere.Offset = 0.15
 	atmosphere.Color = Color3.fromRGB(199, 222, 237)
 	atmosphere.Decay = Color3.fromRGB(255, 212, 167)
-	atmosphere.Haze = 0.35
-	atmosphere.Glare = 0.1
+	atmosphere.Haze = 0.42
+	atmosphere.Glare = 0.16
 	atmosphere.Parent = Lighting
 	local sky = Instance.new("Sky")
 	sky.Name = "OrbitSky"
@@ -95,14 +95,14 @@ local function lighting()
 	sky.Parent = Lighting
 	local bloom = Instance.new("BloomEffect")
 	bloom.Name = "SoftNeon"
-	bloom.Intensity = 0.39
+	bloom.Intensity = 0.52
 	bloom.Size = 24
-	bloom.Threshold = 1.24
+	bloom.Threshold = 1.08
 	bloom.Parent = Lighting
 	local grade = Instance.new("ColorCorrectionEffect")
 	grade.Name = "SunnyOrbit"
 	grade.Brightness = 0.02
-	grade.Saturation = 0.13
+	grade.Saturation = 0.18
 	grade.TintColor = Color3.fromRGB(255, 249, 237)
 	grade.Parent = Lighting
 end
