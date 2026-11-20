@@ -20,7 +20,11 @@ WASD moves; E buys, steals, recovers and docks; L locks; F zaps; U opens upgrade
 and contracts; R opens rebirth (click again to confirm); B opens the index.
 Q Blink crosses open deck (shorter with cargo). Shift Sprint gives a four-second burst.
 On phones, Run, Blink and Zap sit near the jump button. Menu holds bay
-controls, upgrades, rebirth, crews, the index and contracts.
+controls, upgrades, rebirth, crews, the index and contracts. New players get a
+three-step BUY → DOCK → COLLECT card and one ground guide toward the rail,
+then their own bay; the guide clears after the first income payment. Short
+buy/dock/steal/collect pops use one disposable burst per client, and premium
+pedestal cards/rings make Legendary, Mythic, Cosmic and SECRET cargo stand out.
 Choose Solo or Squad on the title screen and press Play to enter the station hub. Squad opens the crew picker. Solo respawns at your own dock.
 Y opens crews and live server ranks. Join Solar Sporks, Lunar Linguini or Comet
 Cannoli from the panel or coloured arrival pads. Crewmates cannot steal each
@@ -59,7 +63,11 @@ raid and its summon key remain future work.
   image replacement and publishing steps.
   During a Studio playtest, switch Command Bar to Server and run
   `require(game.ReplicatedStorage.ScreenshotMode).Cover(0)` (replace Cover with
-  another preset name). These previews disable saving of staged progress. Stop
+  another preset name). `TOUR.json` calls those same four server functions in
+  order, with player ID `0` selecting the first Studio player (wait until ready) and a
+  one-second capture delay. Repeat Cover → Index → Raid → Upgrades → Cover to
+  check that cameras, panels, cargo and the title reset between previews.
+  These previews disable saving of staged progress. Stop
   and restart the playtest to return to normal play. Capture the client viewport
   at 1280x720; save each JPEG under 256 KiB with the filename in the tour. Before
   keeping a shot, check that the title sign is clear, the rail and overhead halos
@@ -81,8 +89,13 @@ functions in the Luau interpreter.
 crew membership/reward and retry-safe global-score functions with deterministic
 server stubs. Live physics and multiplayer still need the CAPTURE.md smoke test.
 `node tools/check-controls.mjs` runs the actual input/layout controller with a
-small GUI host, checking phone bounds, non-overlap, 44px targets at 1024×460,
-menu, live cooldowns and desktop/preview restoration.
+small GUI host. It retains the 1024×460 control checks and adds whole-HUD
+bounds, pairwise non-overlap and 44px menu/skill targets at 844×390 and 390×844.
+The quest, action feed, captain bar, cash, events and crew menu are checked
+alongside the actual control declarations. The orbit harness compares those
+rectangles against the built arrival title. Capture checks exercise all four
+TOUR entry points and camera/FOV/panel replacement through a repeated Cover.
+Menu, live cooldown and desktop/preview restoration checks remain in place.
 It does not render Roblox or approve the final phone screenshot.
 
 Run it as the grader does, writing `out/` in place of `/output`:

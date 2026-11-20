@@ -66,6 +66,28 @@ The source harness builds all 602 plain/mutation and dock/cargo combinations;
 confirm their faces, clipping and glow in Studio.
 These changes pass source/build checks; their rendered appearance is unverified.
 
+Final phone polish smoke pass (20 November): use **844×390**, then **390×844**,
+and rotate back once. In ordinary play the portrait HUD uses a taller canvas;
+landscape keeps the established framing. Cash, income and the event band should
+have clear gaps. MENU, Run, Blink, Zap and each menu action must remain easy to
+tap. Open MENU: check the crew and contracts actions, then close it. The action
+feed should stay below MENU during play and hide while the menu is open. With a
+captain active, its health bar must clear MENU and the first-orbit card. Carry a
+brainrot and check its bottom strip clears all skill buttons. Keep the ROT ORBIT
+world sign readable in the arrival view. Automated bounds and non-overlap checks
+cover both sizes, including the sign projection; this still needs phone review.
+
+On a fresh arrival, follow BUY at the rail → DOCK at YOUR bay → COLLECT the
+first automatic income payment. One ground beam should change target from the
+rail to your bay and disappear with the quest card after payment. Open a panel
+mid-quest and check both hide temporarily. Buy, dock, steal and collect should
+give a brief model pop and floating amount; a purchase shows its cost, docking
+shows income per second, and stealing shows cargo value. There is at most one
+brief burst emitter per client; it is removed within one second. On occupied
+Legendary/Mythic/Cosmic/SECRET pedestals, inspect coloured rarity tags, layered
+rings and gentle model-level idle motion. Enter a capture preset during a pop:
+no leftover burst, pop label or enlarged model should remain.
+
 For the phone smoke pass, also confirm the dark station deck separates the
 teal/gold paths, a player with zero docked cargo sees a clear dock-a-brainrot
 hint instead of a misleading `$0/s`, and joining-crew signs stay legible without
@@ -91,7 +113,12 @@ pose/card overlaps at 768px wide, report the shot and object before capturing
 the final file; the preset is adjustable in ScreenshotService. Existing source
 checks cover cargo replacement, frozen card selection, repeat discoveries and
 Cover-to-other-preset title restoration,
-but do not simulate the full Roblox renderer or approve these images.
+and the actual client camera/FOV and exclusive-panel transitions. `TOUR.json`
+uses these exact four server entry points with argument `0` and a 1,000 ms wait;
+it is checked during every normal verification, independently of image files.
+These checks do not simulate the full Roblox renderer or approve these images.
+Preset-to-preset cleanup does not resume normal gameplay: stop and restart Play
+to restore prompts, the normal camera, avatar movement and the live saved profile.
 
 Copy these four real captures into `screenshots/`, then remove its three starter
 PNGs in the same change. Keep exactly four images. Verify and commit with

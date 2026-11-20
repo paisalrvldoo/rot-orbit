@@ -8,6 +8,17 @@ const source = path => readFileSync(join(root, path), 'utf8');
 const moduleBody = (path, marker) => `(function()\n${source(path).slice(source(path).indexOf(marker))}\nend)()`;
 const client = source('src/client/Game.client.luau');
 const hudSource = source('src/client/HudController.luau');
+const tour = JSON.parse(source('TOUR.json'));
+const presetNames = ['Cover', 'Index', 'Raid', 'Upgrades'];
+if (tour.tour !== 1 || tour.steps?.length !== 4) throw new Error('Expected the four documented capture presets');
+for (const [index, step] of tour.steps.entries()) {
+  if (step.call?.module !== 'ReplicatedStorage.ScreenshotMode' || step.call?.on !== 'Server'
+      || step.call?.fn !== presetNames[index] || step.call?.arg !== 0
+      || step.screenshot !== ['01-cover.jpg', '02-index.jpg', '03-raid.jpg', '04-upgrades.jpg'][index]
+      || step.keys?.length !== 0 || !Number.isInteger(step.wait_ms) || step.wait_ms < 0 || step.wait_ms > 3000) {
+    throw new Error('TOUR step must match CAPTURE.md: ' + presetNames[index]);
+  }
+}
 const section = (text, start, end) => text.slice(text.indexOf(start), text.indexOf(end, text.indexOf(start)));
 const harness = `
 local Color3 = { fromRGB = function(...) return {...} end }
@@ -186,6 +197,40 @@ for _, viewport in ipairs({ Vector2.new(844,390), Vector2.new(390,844) }) do
   end
  end
 end
+-- Exercise the public preset entry points and real client transition listener.
+local screenshotNetwork = { Screenshot = { OnClientEvent = signal() } }
+local Remotes = { Get = function() return screenshotNetwork end }
+local prompts = { Enabled = true }
+local game = { GetService = function(_, name)
+ assert(name == 'ProximityPromptService'); return prompts
+end }
+RunService.IsServer = function() return true end
+Enum.CameraType = { Scriptable = 'Scriptable' }
+local ScreenshotMode = ${moduleBody('src/shared/ScreenshotMode.luau', 'local ScreenshotMode =')}
+local requested
+ScreenshotMode.Configure(function(shot, id) requested = { shot, id }; return true end)
+for _, shot in ipairs({ 'Cover', 'Index', 'Raid', 'Upgrades' }) do
+ assert(ScreenshotMode[shot](0) and requested[1] == shot and requested[2] == 0, 'public TOUR preset routing')
+end
+local contract = Instance.new('Frame', gui); contract.Name = 'ContractPanel'
+local indexPanel = Instance.new('Frame', gui); indexPanel.Name = 'IndexPanel'
+local crewPanel = Instance.new('Frame', gui); crewPanel.Name = 'CrewPanel'
+workspace.CurrentCamera = {}
+ScreenshotMode.Listen(hud)
+for _, shot in ipairs({ 'Cover', 'Index', 'Raid', 'Upgrades', 'Cover' }) do
+ crewPanel.Visible = true
+ local pose = { Name = shot }
+ local scene = { Shot = shot, Camera = pose, FieldOfView = shot == 'Cover' and 55 or 64 }
+ screenshotNetwork.Screenshot.OnClientEvent:Fire(scene)
+ assert(not prompts.Enabled and not crewPanel.Visible, 'preset must hide prompts and crew panel')
+ assert(workspace.CurrentCamera.CFrame == pose and workspace.CurrentCamera.FieldOfView == scene.FieldOfView,
+  'each preset must replace camera pose and FOV')
+ assert(upgrades.Visible == (shot == 'Upgrades') and contract.Visible == (shot == 'Upgrades')
+  and indexPanel.Visible == (shot == 'Index'), 'each preset must replace prior panels')
+ local w,h,factor = HudController.Canvas(Vector2.new(1280,720), false)
+ assert(w==1280 and h==720 and factor==1, 'capture must retain the established 16:9 canvas after phone play')
+end
+print('Capture transition checks passed: four TOUR entry points, camera/FOV, exclusive panels and repeat Cover.')
 print('Phone HUD checks passed: 844x390 and 390x844 chrome, quest, captain, feed, crew/menu states and 44px targets.')
 print('Control checks passed: round skill icons, phone arc/44px targets, jump clearance, cooldown/recovery, menu, keyboard, panels and staged/desktop restoration.')
 `;

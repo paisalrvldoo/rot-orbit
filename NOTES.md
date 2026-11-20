@@ -8,7 +8,15 @@
 - [x] Continue final 4: phone HUD bounds, overlaps, tap targets and arrival-sign
   clearance; preserve the 43 originals, six mutations, 24 scripts and locked
   orbit/sky checks. No gameplay systems added.
-- [ ] Final 5: audit capture preset documentation/restoration and handoff.
+- [x] Final 5: README/CAPTURE now document the final phone quest, effects,
+  premium pedestal review and both target viewports. Audited all four TOUR
+  calls (unchanged and correct). Normal verification now checks the actual
+  public preset routing, camera/FOV and exclusive panels across Cover → Index
+  → Raid → Upgrades → Cover, alongside existing cargo/title restoration tests.
+  Restart Play to leave preview mode; no live-game restoration is claimed.
+- [ ] Owner-only: publish the rebuilt place, review on phone and replace starter
+  images with four genuine Studio JPEGs. Submission-image gate is intentionally
+  not complete; no renderer/captures are available here.
 
 ## Final polish continuation — 20 November, 16:03 WIB (25-minute limit)
 
@@ -38,7 +46,8 @@
   The orbit harness compares these actual rectangles with the built sign's
   projected bounds in both orientations. Full verifier passes; the matching
   place was rebuilt. Source geometry only; owner phone rendering still pending.
-- [ ] Final 5: document four cover presets and restoration; final clean handoff.
+- [x] Final 5: four presets and their transition/restart contract documented;
+  see the continuation above. Genuine captures/publishing remain owner work.
 
 Owner research top-ten plan: staged late-game cover; 42–45 originals (43);
 four genuine captures; 20–24 purposeful scripts (24, tiny shared modules merged);
