@@ -149,6 +149,7 @@ function BillboardFx.Start()
 	local powerCells = tagged("OrbitRailPowerCell")
 	local relays = tagged("OrbitCargoRelay")
 	local cores = tagged("OrbitHologramCore")
+	local halos = tagged("OrbitCelestialHalo")
 	local crowns = tagged("OrbitCrewCrown")
 	local stars = tagged("OrbitSkyStar")
 	local rotors = tagged("OrbitWarpRotor")
@@ -179,6 +180,12 @@ function BillboardFx.Start()
 		local world = workspace:FindFirstChild("ROT_ORBIT")
 		local frozen = world and world:GetAttribute("ScreenshotFrozen")
 		if not frozen or not railFrozen then
+			for halo in pairs(halos) do
+				local frame, speed = halo:GetAttribute("HaloFrame"), halo:GetAttribute("HaloSpeed")
+				if frame and speed then
+					halo:PivotTo(frame * CFrame.Angles(0, frozen and 0 or (time % 1200) * speed, 0))
+				end
+			end
 			for tracer in pairs(chasers) do
 				local phase = tracer:GetAttribute("OrbitPhase")
 				if phase then

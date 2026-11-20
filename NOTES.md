@@ -10,8 +10,12 @@ the judging plan immediately below. Core systems pass; no new side systems.
   rebirth/reset colours. Dark Metal panels, restrained seams and thin neon
   thresholds now match the station deck. Full verifier passes; phone rendering
   remains an owner check.
-- [ ] Item 0+6 / orbit: grand counter-rotating celestial halos, multi-ring
-  warp arches and a taller central orbital hologram, clear of title sightlines.
+- [x] Item 0+6 / orbit: three enormous cyan/violet/gold celestial halos with
+  opposing slow local rotation; deep triple-rim warp arches; a 35-stud beam
+  and tall central hologram with three orbital shards. Frozen presets restore
+  repeatable poses. Geometry checks assert halo height, opposite rotation,
+  triple portal rims and the existing title sightlines. Full verifier passes.
+  Source geometry is not a rendered appearance check.
 - [ ] Item 3: review remaining phone banner/layout clutter.
 - [ ] Item 4: refine premium physical leaderboard podium.
 - [ ] Brainrot silhouettes/expressions, then Item 5 cover presets as time allows.

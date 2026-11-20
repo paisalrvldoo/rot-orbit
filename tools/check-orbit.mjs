@@ -110,6 +110,24 @@ assert(hiX-loX>=1170*0.6,'orbit must span at least 60% of the phone frame')
 assert(loY>90 and hiY<270,'arrival orbit must arc in the upper half below the money area')
 assert(hiY-loY>110,'orbit must have a visible elevated arc, not a flat horizon line')
 local title=named('TitlePanel')[1]
+local halos={};local haloCount=0;local reverse=false
+for _,arc in ipairs(named('CelestialEnergyArc')) do
+ assert(not arc.CanCollide,'sky halo must never block players')
+ assert(arc.Position.Y>48,'celestial halo must stay above the station/title zone')
+ local halo=arc.Parent
+ if not halos[halo] then
+  halos[halo]=true;haloCount+=1
+  local speed=halo:GetAttribute('HaloSpeed')
+  assert(speed and math.abs(speed)<0.05,'celestial halo must rotate slowly')
+  if speed<0 then reverse=true end
+ end
+end
+assert(haloCount==3 and reverse,'three celestial halos must counterrotate')
+local outerRims=0
+for _,arc in ipairs(parts) do if arc.Parent.Name=='WarpOuterCrown' then outerRims+=1 end end
+assert(outerRims==112,'both portals need two additional deep outer rims')
+assert(named('HologramGlobe')[1].Position.Y>=26,'central hologram must rise above the title')
+assert(#named('HologramSatellite')==3,'hologram needs three orbital energy shards')
 for _,p in ipairs(corners(title)) do
 	local x,y=project(p);assert(x>120 and x<1050 and y>145 and y<455,'title must stay below the HUD and inside the clear phone region')
 end
