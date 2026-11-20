@@ -35,6 +35,15 @@ the judging plan immediately below. Core systems pass; no new side systems.
 - [ ] Item 5: cover presets for the raised ring and new celestial landmarks.
 - [ ] Owner live phone playtest and genuine screenshots; never block source work.
 
+Stopped at about 10:30 WIB with every working piece committed: `0800bbe`
+dark bay decks, `6eea870` celestial halos/portals/hologram, `b5039de` phone
+event copy, `7b57a7e` luxury podium, `70702f2` expressive brainrots. Each
+passed the full verifier and includes its matching rebuilt game.rbxl.
+NEXT: Item 5, reframe Cover for the elevated 36-stud cargo rail (the old
+camera still looks down toward the former low orbit). Keep its honest late-game
+inventory, six cargo pods, one BUY card and save isolation. Then owner phone
+playtest/publish and four real captures. No renderer or fake screenshots used.
+
 Recovery checkpoint `0edd687` records the clean, verified inherited state.
 Read `/workspace/rbx/refs.md` once. Follow the owner's current order immediately;
 do not wait on a Roblox render (the owner playtests and provides real shots).

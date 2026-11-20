@@ -2,7 +2,7 @@
 
 Play link: https://www.roblox.com/games/75703852342218
 Place ID: 75703852342218. Universe ID: 10777849208.
-Public-link verification passes. The published starter still needs the latest
+Public-link verification passes. The published place still needs the latest
 `game.rbxl` published to this same place; local commits do not update Roblox.
 
 1. Open this repository's latest `game.rbxl` in Studio. Use **Play**, wait for
@@ -19,7 +19,7 @@ Public-link verification passes. The published starter still needs the latest
 
 | File | Server Command Bar | Visible proof to check |
 | --- | --- | --- |
-| 01-cover.jpg | `require(game.ReplicatedStorage.ScreenshotMode).Cover(0)` | $867.5M, live income, rebirth 3, 18s meteor banner, Diamond Cosmo Cornetto carry, five docked heroes with the Supernova SECRET in the middle; a genuine buyable Aurora SECRET on the foreground cargo ring; station title and orange planet. |
+| 01-cover.jpg | `require(game.ReplicatedStorage.ScreenshotMode).Cover(0)` | $867.5M, live income, rebirth 3, 18s meteor banner, Diamond Cosmo Cornetto carry, five docked heroes with the Supernova SECRET in the middle; a genuine buyable Aurora SECRET on the cargo ring; station title and blue deep-space planets. Camera reframing for the raised ring remains pending. |
 | 02-index.jpg | `require(game.ReplicatedStorage.ScreenshotMode).Index(0)` | Exactly 32/43 FOUND, seven rarity counts, undiscovered silhouettes, six mutation tabs and next cash reward. |
 | 03-raid.jpg | `require(game.ReplicatedStorage.ScreenshotMode).Raid(0)` | 27s raid banner, crowned captain escaping with cargo (18/32 HP, wave 3), one zapped gremlin and dropped recoverable cargo, shared captain health bar. |
 | 04-upgrades.jpg | `require(game.ReplicatedStorage.ScreenshotMode).Upgrades(0)` | Five upgrade tracks with levels/costs; rebirth x3 → x4.5, +3s shield, next Orbit Ace aura and keep-best text; three contracts with progress/rewards and 4/15 done. |
@@ -37,6 +37,13 @@ The five dock cards spread below their models. Check that the BUY card clears
 the dock cards, the foreground ring clears the counts strip, and the crew rank
 board stays outside the useful frame. These are source-reviewed camera choices;
 actual brightness, silhouettes, occlusion and text still need Studio approval.
+
+20 November source update: the cargo rail is now 36 studs high. The Cover
+camera predates that elevation and must be reframed before final capture.
+Phone review should include the three sky-scale cyan/violet/gold halos,
+triple-rim portals, tall orbital hologram, dark bay floors at every rebirth,
+short phone event banner, luxury trophy podium and new brainrot faces/gear.
+These changes pass source/build checks; their rendered appearance is unverified.
 
 For the phone smoke pass, also confirm the dark station deck separates the
 teal/gold paths, a player with zero docked cargo sees a clear dock-a-brainrot
