@@ -1,5 +1,22 @@
 # ACTIVE OWNER OVERRIDE — 20 November: TOP 3
 
+## Current 20 November continuation (10:04 WIB, 25-minute limit)
+
+Initial status/diff clean; full verification passed. Recovery checkpoint
+`24117de` records that state. Read owner refs.md once; its ten priorities remain
+the judging plan immediately below. Core systems pass; no new side systems.
+
+- [x] Item 0+2: remove pale floors from every player/rival bay, including all
+  rebirth/reset colours. Dark Metal panels, restrained seams and thin neon
+  thresholds now match the station deck. Full verifier passes; phone rendering
+  remains an owner check.
+- [ ] Item 0+6 / orbit: grand counter-rotating celestial halos, multi-ring
+  warp arches and a taller central orbital hologram, clear of title sightlines.
+- [ ] Item 3: review remaining phone banner/layout clutter.
+- [ ] Item 4: refine premium physical leaderboard podium.
+- [ ] Brainrot silhouettes/expressions, then Item 5 cover presets as time allows.
+- [ ] Owner live phone playtest and genuine screenshots; never block source work.
+
 Recovery checkpoint `0edd687` records the clean, verified inherited state.
 Read `/workspace/rbx/refs.md` once. Follow the owner's current order immediately;
 do not wait on a Roblox render (the owner playtests and provides real shots).
@@ -24,10 +41,11 @@ Work in the latest explicit visual order, no side-system polish:
   Keep the title readable, separated
   from HUD and supports; raid appears once, touch copy has no keyboard hints,
   and empty-bay tip only appears when no cargo is docked or carried.
-- [ ] **Items 0+6: deep-space sky.** Put the giant planet limb, ringed planet,
+- [x] **Items 0+6: deep-space sky (source pass).** Put the giant planet limb, ringed planet,
   cratered moon, red planet, dense Milky Way and many stars clearly in the
   ordinary phone view behind the station, without covering sign/HUD.
-- [ ] **Items 0+2: deck.** Dark metallic panels with crisp cyan/purple neon trim.
+- [x] **Items 0+2: deck.** Dark metallic hub and all bay floors, including
+  rebirth colours, with crisp neon trim. Owner phone review remains pending.
 - [ ] **Phone HUD cleanup** (as part of Item 0 above), then Item 3 tidy luxury
   layout, Item 4 luxury leaderboard podium, and Item 5 cover presets.
 - [x] **0a: elevated orbit visible from spawn.** Source implementation raises

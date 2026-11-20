@@ -390,8 +390,17 @@ local function buildBays(world)
 		local depth = rival and 43 or 51
 		local floorZ = depth / 2 - 14
 		local floor = WorldBuilder.Part("DockFloor", Vector3.new(36, 0.7, depth),
-			frame * CFrame.new(0, 0.4, floorZ), rival and Color3.fromRGB(255, 235, 211)
-			or Color3.fromRGB(207, 238, 240), Enum.Material.SmoothPlastic, model)
+			frame * CFrame.new(0, 0.4, floorZ), rival and Color3.fromRGB(43, 37, 47)
+			or Config.Rebirth.FloorColors[0], Enum.Material.Metal, model)
+		floor.Reflectance = 0.035
+		-- Large dark panels stay quiet; narrow lit borders define each bay.
+		for seam = 0, 2 do
+			WorldBuilder.Part("DockPanelSeam", Vector3.new(34.6, 0.025, 0.1),
+				frame * CFrame.new(0, 0.766, -3 + seam * 12), palette.Ink,
+				Enum.Material.Metal, model, nil, false)
+		end
+		WorldBuilder.Part("DockThreshold", Vector3.new(34.8, 0.06, 0.18),
+			frame * CFrame.new(0, 0.8, -13.4), color, Enum.Material.Neon, model, nil, false)
 		for _, side in ipairs({ -1, 1 }) do
 			WorldBuilder.Part("DockLane", Vector3.new(0.25, 0.06, 26),
 				frame * CFrame.new(side * 5.6, 0.06, -27), color, Enum.Material.Neon, model, nil, false)
@@ -400,8 +409,8 @@ local function buildBays(world)
 			WorldBuilder.Part("SignPost", Vector3.new(0.7, 10.4, 0.7),
 				frame * CFrame.new(side * 16.3, 5.5, 23), palette.Teal, Enum.Material.SmoothPlastic, model)
 		end
-		WorldBuilder.Part("LandingMark", Vector3.new(12, 0.12, 6),
-			frame * CFrame.new(0, 0.82, -9.5), color, Enum.Material.SmoothPlastic, model, nil, false)
+		WorldBuilder.Part("LandingMark", Vector3.new(12, 0.06, 6),
+			frame * CFrame.new(0, 0.8, -9.5), palette.Ink, Enum.Material.Metal, model, nil, false)
 		for step = 1, 4 do
 			for _, side in ipairs({ -1, 1 }) do
 				WorldBuilder.Part("HomeArrow", Vector3.new(2.35, 0.05, 0.27),
