@@ -556,21 +556,29 @@ local function buildCargoRing(world)
 	WorldBuilder.Part("ReactorBase", Vector3.new(0.65, 11, 11),
 		CFrame.new(0, 0.4, 5) * CFrame.Angles(0, 0, math.pi / 2), palette.Ink,
 		Enum.Material.SmoothPlastic, world.Geometry, Enum.PartType.Cylinder)
+	WorldBuilder.Part("HologramProjector", Vector3.new(0.16, 5.2, 5.2),
+		CFrame.new(0, 0.75, 5) * CFrame.Angles(0, 0, math.pi / 2), palette.Teal,
+		Enum.Material.Neon, world.Geometry, Enum.PartType.Cylinder, false)
 	local hologram = Instance.new("Model")
 	hologram.Name = "HologramCore"
-	local core = WorldBuilder.Part("SunnyReactor", Vector3.one * 6.2, CFrame.new(0, 5.3, 5),
-		palette.Sun, Enum.Material.Neon, hologram, Enum.PartType.Ball, false)
-	core.Transparency = 0.26
+	local core = WorldBuilder.Part("HologramGlobe", Vector3.one * 6.2, CFrame.new(0, 5.3, 5),
+		palette.Teal, Enum.Material.Neon, hologram, Enum.PartType.Ball, false)
+	core.Transparency = 0.78
 	local light = Instance.new("PointLight")
-	light.Color = palette.Sun
-	light.Brightness = 0.9
-	light.Range = 19
+	light.Color = palette.Mint
+	light.Brightness = 0.6
+	light.Range = 14
 	light.Parent = core
 	-- Every piece stays inside a 4.5-stud sphere well clear of the title panel.
-	WorldBuilder.Ring("HologramEquator", 3.9, 0.18, 0.16,
-		core.CFrame * CFrame.Angles(math.rad(24), 0, math.rad(12)),
+	local axis = core.CFrame * CFrame.Angles(math.rad(24), 0, math.rad(12))
+	for _, latitude in ipairs({ -0.54, 0, 0.54 }) do
+		WorldBuilder.Ring("HologramLatitude", 3.18 * math.cos(latitude), 0.12, 0.12,
+			axis * CFrame.new(0, 3.18 * math.sin(latitude), 0), palette.Teal,
+			Enum.Material.Neon, hologram, 16, false)
+	end
+	WorldBuilder.Ring("HologramOrbit", 3.9, 0.18, 0.16, axis * CFrame.Angles(0.34, 0, 0),
 		palette.Mint, Enum.Material.Neon, hologram, 24, false)
-	WorldBuilder.Part("HologramSatellite", Vector3.one * 0.62, core.CFrame * CFrame.new(4.15, 0, 0),
+	WorldBuilder.Part("HologramSatellite", Vector3.one * 0.62, axis * CFrame.new(4.15, 0, 0),
 		palette.Mint, Enum.Material.Neon, hologram, Enum.PartType.Ball, false)
 	hologram.PrimaryPart = core
 	hologram:SetAttribute("CoreFrame", core.CFrame)
