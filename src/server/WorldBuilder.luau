@@ -297,6 +297,7 @@ function WorldBuilder.ColorSocket(socket, color, rank)
 		local mount = WorldBuilder.Part("AuraMount", Vector3.one * 0.1, frame,
 			color, Enum.Material.SmoothPlastic, accent, nil, false)
 		mount.Transparency, mount.CanQuery = 1, false
+		accent.PrimaryPart = mount
 		local foot = Instance.new("Attachment", mount)
 		local tip = Instance.new("Attachment", mount)
 		tip.Position = Vector3.new(0, 1.8, 0)
@@ -314,8 +315,6 @@ function WorldBuilder.ColorSocket(socket, color, rank)
 		sparks.SpreadAngle = Vector2.new(45, 45)
 		sparks.Size = NumberSequence.new(0.13, 0)
 		sparks.Transparency = NumberSequence.new(0.35, 1)
-		-- Geometry is already in world space; assign the pivot without moving it.
-		accent.WorldPivot = frame
 		accent.Parent = socket
 	end
 	accent:SetAttribute("SocketFrame", frame)

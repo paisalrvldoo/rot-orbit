@@ -21,6 +21,12 @@ progression. Core systems already pass; finish the pending pedestal accents.
   Full source/build/dossier checks pass; no renderer is available here.
 - [ ] Owner: Studio phone/cover playtest, four genuine captures and republish.
 
+Handoff: `b202fa0` adds live pedestal effects; `ecb6658` applies them to the
+cover. Accents use a replicated PrimaryPart at the socket centre so client
+rotation preserves the original placement. Continue with Studio appearance
+and capture approval before adding side systems; see CAPTURE.md for the
+90-stud culling, empty-slot cleanup and repeated-Cover checks.
+
 ## 20 November readability and socket continuation
 
 Recovered one uncommitted BillboardFx change; initial status/diff and full
@@ -38,9 +44,9 @@ finish remaining readability and pedestal accents before adding side systems.
   the HUD/camera moves. Actual-function tests cover 1024×460 HUD obstruction,
   edge clipping, overlapping carry/dock/buy cards and frozen preset ownership.
   All source/place/dossier checks pass; Studio rendering remains unverified.
-- [ ] Next code pass: lightweight layered moving pedestal accents, driven
+- [x] Next code pass: lightweight layered moving pedestal accents, driven
   locally and limited by distance; keep empty slots quiet and frozen presets
-  repeatable. Not started: the session time box elapsed after the card fix.
+  repeatable. Completed in the layered pedestal continuation above.
 - [ ] Studio phone/cover review, zero-error live boot and four genuine captures
   remain owner steps; this machine has no Roblox renderer.
 
