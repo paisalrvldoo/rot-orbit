@@ -17,6 +17,16 @@
 - [x] Corrected the README's superseded sunny/orange-planet capture guidance
   and reconciled the completed v10 checklist with the measured v11 handoff.
   CAPTURE.md includes new model review points and bay-lock lifecycle checks.
+- [x] Tightened the v11 checks to measure all 84 chassis pieces, 168 guide
+  pieces, 11 chasers and 168 halo arcs, plus a 36-sample moving-cargo circuit.
+  Verified rejection of five deliberately broken scratch harnesses: shifted
+  chassis, displaced halo arcs, shifted cargo path, positive atmosphere and a
+  nearby planet above the deck. Actual source was never altered for these
+  rejection tests. Full verifier passes.
+- [x] Local kit gate: five passed, zero failed, including the public play link.
+  This installed kit reports level 26 versus current site level 27; rerun with
+  a current kit before submitting. Site-only checks and genuine captures are
+  still pending.
 - [ ] Owner live phone review and four genuine Studio captures.
 
 Research priorities remain: staged late-game cover; 42–45 originals (43);

@@ -143,13 +143,29 @@ local function project(p, width, height)
  return width/2+focal*q.X/depth,height/2-focal*q.Y/depth
 end
 local loX,hiX,loY,hiY=math.huge,-math.huge,math.huge,-math.huge
+local function near(actual,expected,message)
+ assert(math.abs(actual-expected)<0.0001,message..': '..tostring(actual)..' expected '..tostring(expected))
+end
+local railPieces,guidePieces,chasers=0,0,0
 for _,p in ipairs(parts) do
  if p.Parent.Name=='TrackChassis' then
+  railPieces+=1
+  near(math.sqrt(p.Position.X^2+p.Position.Z^2),Config.World.RailRadius,'actual track must share the hub axis')
+  near(p.Position.Y,Config.World.RailHeight-0.42,'actual track must be flat')
   assert(p.CanCollide,'shopping track must be walkable')
   assert(p.Position.Y>4 and p.Position.Y<19,'shopping track must stay near deck level')
   local x,y=project(p.Position);loX,hiX=math.min(loX,x),math.max(hiX,x);loY,hiY=math.min(loY,y),math.max(hiY,y)
+ elseif p.Parent.Name=='GuideRail' then
+  guidePieces+=1
+  near(math.abs(math.sqrt(p.Position.X^2+p.Position.Z^2)-Config.World.RailRadius),Config.World.RailEdgeOffset,'actual guide rails must be concentric')
+  near(p.Position.Y,Config.World.RailHeight-0.42,'guide rails must share the flat cargo plane')
+ elseif p.Name=='RailChaser' then
+  chasers+=1
+  near(math.sqrt(p.Position.X^2+p.Position.Z^2),Config.World.RailRadius+p:GetAttribute('RailSide')*Config.World.RailEdgeOffset,'chasers must follow the centered guide rails')
+  near(p.Position.Y,Config.World.RailHeight+Config.World.RailChaserHeight,'chasers must share the flat rail plane')
  end
 end
+assert(railPieces==Config.World.RailSegments and guidePieces==2*Config.World.RailSegments and chasers==11,'check every chassis, guide and chaser piece')
 assert(hiX-loX>=1170*0.6,'orbit must span at least 60% of the phone frame')
 assert(loY>155 and hiY<490,'arrival cargo rail must clear the HUD and fit above the controls')
 assert(hiY-loY>100,'the low cargo track must still project as a visible arc')
@@ -159,6 +175,13 @@ for _,arc in ipairs(named('CelestialEnergyArc')) do
  assert(not arc.CanCollide,'sky halo must never block players')
  assert(arc.Position.Y>56,'celestial halo must stay above the portal and hologram')
  local halo=arc.Parent
+ local frame=halo:GetAttribute('HaloFrame')
+ local localPoint=frame:PointToObjectSpace(arc.Position)
+ local index=tonumber(halo.Name:match('_(%d+)$'))
+ near(localPoint.Y,0,'actual halo arcs must stay on their own plane')
+ near(localPoint.Magnitude,({60,72,84})[index],'actual halo arcs must be concentric at radii 60/72/84')
+ near(frame.U.X,0,'halo tilts must use the same gyroscope axis')
+ near(frame.U.Z,math.sin(math.rad(({0,10,-10})[index])),'halo tilts must remain small and symmetric')
  if not halos[halo] then
   halos[halo]=true;haloCount+=1
   local speed=halo:GetAttribute('HaloSpeed')
@@ -178,6 +201,12 @@ assert(Config.World.RailTilt==0 and Config.World.RailHeight>=8 and Config.World.
  'the cargo rail must be flat and 8–10 studs above the deck')
 assert(Config.World.RailPlane().Position.X==0 and Config.World.RailPlane().Position.Z==0,
  'the cargo ring must also share the hub centre')
+-- Sample the shared moving-cargo path for a full circuit, not only its config.
+for step=0,35 do
+ local p=Config.World.RailFrame(step*math.pi/18,Config.World.RailRadius,Config.Conveyor.HoverHeight).Position
+ near(math.sqrt(p.X^2+p.Z^2),Config.World.RailRadius,'moving cargo must stay centered on the hub')
+ near(p.Y,Config.World.RailHeight+Config.Conveyor.HoverHeight,'moving cargo must stay flat')
+end
 assert(#named('HologramSatellite')==3,'hologram needs three orbital energy shards')
 for _,p in ipairs(corners(title)) do
 	local x,y=project(p);assert(x>120 and x<1050 and y>145 and y<455,'title must stay below the HUD and inside the clear phone region')
